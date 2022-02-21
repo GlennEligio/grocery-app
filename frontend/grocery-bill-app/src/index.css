@@ -362,7 +362,7 @@ td svg:hover {
 
 /* Clerk page */
 .clerk-home {
-  flex: 23 0 1;
+  flex: 23 0 0;
   max-height: 90%;
   margin-bottom: 10px;
 

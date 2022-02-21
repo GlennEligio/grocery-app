@@ -9,7 +9,7 @@ export const fetchJwt = (user) => (dispatch) => {
   dispatch({
     type: FETCH_JWT_BEGIN,
   });
-  fetch("http://localhost:8080/users/authenticate", {
+  fetch("http://localhost:8080/users/login", {
     method: "POST",
     headers: {
       "Content-type": "application/json",

@@ -9,8 +9,6 @@ const BillTotal = ({ currentBill, updateCurrentBillType }) => {
   const [tax, setTax] = useState(10);
 
   useEffect(() => {
-    setSubTotal(0);
-    setSubTotalDiscount(0);
     setSubTotal(billTotal(currentBill, false));
     setSubTotalDiscount(billTotal(currentBill, true));
   }, [currentBill]);
@@ -23,7 +21,6 @@ const BillTotal = ({ currentBill, updateCurrentBillType }) => {
       total += item.price * item.amount;
       if (item.isDiscounted) {
         totalDiscounted +=
-          totalDiscounted +
           item.price * (1 - item.discountPercentage) * item.amount;
       } else {
         totalDiscounted += item.price * item.amount;

@@ -38,7 +38,7 @@ public class UserController {
 	private JwtUtil jwtUtil;
 
 	@PostMapping(value = "/users/login")
-	public ResponseEntity<AuthenticationResponse> signIn(@Valid @RequestBody AuthenticationRequest request)
+	public ResponseEntity<AuthenticationResponse> login(@Valid @RequestBody AuthenticationRequest request)
 			throws Exception {
 		log.info("Authentication started with username: " + request.getUsername() + " and password: "
 				+ request.getPassword());

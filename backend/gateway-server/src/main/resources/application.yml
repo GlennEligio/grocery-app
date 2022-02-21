@@ -5,13 +5,25 @@ spring:
     config:
       enabled: false
     gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedHeaders:
+              - Authorization
+              - content-type
+            allowedMethods:
+              - GET
+              - POST
+              - DELETE
+              - PUT
       discovery:
         locator: enabled
       routes:
         - id: service-user-id
           uri: lb://user-service
           predicates:
-            Path=/users/login
+            Path=/users/**
         - id: service-grocerybill-id
           uri: lb://grocery-bill-service
           predicates:
