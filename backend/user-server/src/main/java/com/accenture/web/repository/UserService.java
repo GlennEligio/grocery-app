@@ -19,11 +19,13 @@ import org.springframework.stereotype.Service;
 
 import com.accenture.web.domain.User;
 
+import javax.transaction.Transactional;
+
 @Service
 @RefreshScope
 public class UserService implements UserDetailsService {
 
-	@Value("${user-service.jwt}")
+	@Value("${user-service.secretKey}")
 	private String secretKey;
 
 	@Autowired
@@ -51,7 +53,7 @@ public class UserService implements UserDetailsService {
 		user.setRoles("ROLE_CLERK");
 		return repository.save(user);
 	}
-	
+
 	public boolean updateUser(User user) {
 		log.info("Updating user " + user);
 		Optional<User> op = repository.findById(user.getId());

@@ -8,6 +8,7 @@ const User = ({ user, updateUserSelected, setModalComponent }) => {
   return (
     <tr>
       <td>{user.id}</td>
+      <td>{user.name}</td>
       <td>{user.username}</td>
       <td>{user.active ? <FaCheck /> : <FaTimes />}</td>
       <td>{user.roles}</td>

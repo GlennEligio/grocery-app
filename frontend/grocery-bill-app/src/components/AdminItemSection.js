@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FaTimesCircle, FaPlus, FaSpinner } from "react-icons/fa";
+import { MdRefresh } from "react-icons/md";
 import { connect } from "react-redux";
 import { fetchItems } from "../actions/itemActions";
 import { setModalComponent } from "../actions/componentActions";
@@ -35,6 +36,7 @@ const AdminItemSection = ({
             document.getElementById("modal-id").style.display = "flex";
           }}
         />
+        <MdRefresh className="interactable" onClick={() => fetchItems(jwt)} />
       </div>
       <div className="admin-home-items table header">
         {loading && (

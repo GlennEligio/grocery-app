@@ -11,6 +11,7 @@ const EditUserModal = ({
   jwt,
   editUserInServer,
 }) => {
+  const [name, setName] = useState("");
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [active, setActive] = useState(false);
@@ -26,6 +27,7 @@ const EditUserModal = ({
 
     const user = {
       id: userSelected.id,
+      name: name,
       username: username,
       password: password,
       active: active,
@@ -59,6 +61,18 @@ const EditUserModal = ({
               <label>Error updating user</label>
             </div>
           )}
+          <div className="form-control">
+            <label>Name: </label>
+            <input
+              type="text"
+              name="name"
+              autoComplete="off"
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+              }}
+            />
+          </div>
           <div className="form-control">
             <label>Username: </label>
             <input
@@ -105,7 +119,7 @@ const EditUserModal = ({
             </select>
           </div>
           <div className="form-control-button">
-            <button className="btn">Add</button>
+            <button className="btn">Update</button>
           </div>
         </form>
       </div>

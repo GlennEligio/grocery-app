@@ -87,20 +87,26 @@ export const editUserInServer = (user, jwt) => (dispatch) => {
       "Content-type": "application/json",
     },
     body: JSON.stringify(user),
-  }).then((res) => {
-    switch (res.status) {
-      case 200:
-        dispatch({
-          type: EDIT_USER_SUCCESS,
-        });
-        break;
-      default:
-        dispatch({
-          type: EDIT_USER_FAILED,
-        });
-        break;
-    }
-  });
+  })
+    .then((res) => {
+      switch (res.status) {
+        case 200:
+          dispatch({
+            type: EDIT_USER_SUCCESS,
+          });
+          break;
+        default:
+          dispatch({
+            type: EDIT_USER_FAILED,
+          });
+          break;
+      }
+    })
+    .catch(() => {
+      dispatch({
+        type: EDIT_USER_FAILED,
+      });
+    });
 };
 
 export const deleteUserInServer = (id, jwt) => (dispatch) => {

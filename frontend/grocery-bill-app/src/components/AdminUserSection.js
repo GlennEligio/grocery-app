@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { FaTimesCircle, FaPlus, FaSpinner } from "react-icons/fa";
+import { MdRefresh } from "react-icons/md";
 import { connect } from "react-redux";
 import { fetchUsers } from "../actions/userActions";
 import { setModalComponent } from "../actions/componentActions";
 import User from "./User";
 
 const AdminUserSection = ({
+  user,
   users,
   loading,
   error,
@@ -35,6 +37,7 @@ const AdminUserSection = ({
             document.getElementById("modal-id").style.display = "flex";
           }}
         />
+        <MdRefresh className="interactable" onClick={() => fetchUsers(jwt)} />
       </div>
       <div className="admin-home-users table header">
         {loading && (
@@ -56,6 +59,7 @@ const AdminUserSection = ({
             <thead>
               <tr>
                 <th>Id</th>
+                <th>Name</th>
                 <th>Username</th>
                 <th>Active?</th>
                 <th>Role/s</th>
@@ -71,6 +75,7 @@ const AdminUserSection = ({
             <tbody>
               {users.length > 0 &&
                 users
+                  .filter((userItem) => userItem.username !== user.username)
                   .filter((user) =>
                     user.username.toLowerCase().includes(query.toLowerCase())
                   )
@@ -86,6 +91,7 @@ const AdminUserSection = ({
 };
 
 const mapStateToProps = (state) => ({
+  user: state.user.user,
   users: state.user.users,
   error: state.user.error,
   loading: state.user.loading,

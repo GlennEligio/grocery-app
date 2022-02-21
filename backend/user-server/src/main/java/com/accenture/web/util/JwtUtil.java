@@ -21,7 +21,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class JwtUtil {
 
 	// Fetch JWT in Config props
-	@Value("${user-service.jwt}")
+	@Value("${user-service.secretKey}")
 	private String SECRET_KEY;
 
 	private static final Logger log = LoggerFactory.getLogger(JwtUtil.class);
