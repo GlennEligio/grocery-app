@@ -1,0 +1,84 @@
+Routes
+/		home
+/login		Login page
+/admin		Admin page
+/clerk		Clerk page
+/clerk/history	Clerk's bill history
+/admin/user 	Admin user page
+
+
+
+Components
+Login
+	> Form
+Register
+	> Form
+Clerk page
+	> Bill
+		> Bill list
+			> Current bill
+			> On Hold bills (only showing bill id)
+		> Bill form for checkout/hold
+	> Items component
+		> Search bar for item
+	> Calculator
+		> punchcard for numbers, like numpad with extra buttons (CLR, 00, exact current price of bill, 100, 50, etc)
+Modals
+	> Confirm bill
+	> Delete on hold bill
+	> Add clerk
+	> Delete clerk
+	> Add Item
+	> Delete item
+	> Update item
+
+
+Redux
+Item reducer
+	State:
+		1. Items
+		2. Loading
+		3. Error
+		4. Item selected
+	Actions
+		1. Fetch items
+		2. Update Item selected
+		3. Delete Items and Item selected
+		4. Reset Item State
+
+Bill reducer
+	State
+		1. Bills of specific Clerk
+		2. Loading
+		3. Error
+		4. Current Bill
+		5. On Hold bills
+	Actions
+		1. Create Bill
+		2. Fetch Bill of specific Clerk
+		3. Update Current Bill
+		4. Add Bill on On Hold Bills
+		5. Reset Bill State
+
+
+
+User reducer
+	State
+		1. Users / Clerk
+		2. Loading 
+		3. Error
+	Action
+		1. Fetch User
+		2. Update User Selected
+		3. Reset User State		
+
+Auth reducer 
+	State
+		1. JWT
+	Action
+		1. Create Jwt
+		2. Update Jwt
+		3. Reset Auth State
+
+
+

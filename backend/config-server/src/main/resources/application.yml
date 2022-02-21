@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: config-server
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/GlennEligio/grocery-bill-config-props.git
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:7777/eureka
+
+server:
+  port: 8010
+
+# Logging
+logging:
+  level:
+    web: TRACE

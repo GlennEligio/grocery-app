@@ -1,0 +1,140 @@
+package com.accenture.web.controller;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+
+import com.accenture.web.domain.AuthenticationRequest;
+import com.accenture.web.domain.AuthenticationResponse;
+import com.accenture.web.domain.User;
+import com.accenture.web.repository.UserService;
+import com.accenture.web.util.JwtUtil;
+
+@RestController
+public class UserController {
+
+	private static final Logger log = LoggerFactory.getLogger(UserController.class);
+
+	@Autowired
+	private UserService service;
+
+	@Autowired
+	private AuthenticationManager authenticationManager;
+
+	@Autowired
+	private JwtUtil jwtUtil;
+
+	@PostMapping(value = "/users/login")
+	public ResponseEntity<AuthenticationResponse> signIn(@Valid @RequestBody AuthenticationRequest request)
+			throws Exception {
+		log.info("Authentication started with username: " + request.getUsername() + " and password: "
+				+ request.getPassword());
+		try {
+			log.info("Authentication starting...");
+			authenticationManager.authenticate(
+					new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+		} catch (BadCredentialsException e) {
+			log.info("Authentication failed");
+			throw new Exception("Incorrect credentials", e);
+		}
+
+		final UserDetails userDetails = service.loadUserByUsername(request.getUsername());
+		final String token = jwtUtil.generateToken(userDetails);
+		log.info("Authentication success with jwt: " + token);
+		return ResponseEntity.ok(new AuthenticationResponse(userDetails.getUsername(), token, userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(","))));
+	}
+
+	@PostMapping("/users/validateToken")
+	public ResponseEntity<AuthenticationResponse> validateToken(@RequestParam String token) throws Exception {
+		log.info("Authenticating with token {}", token);
+		return ResponseEntity.ok(service.validateToken(token));
+	}
+
+	@PostMapping("/users/register")
+	public ResponseEntity<?> registerUser(@Valid @RequestBody User user) {
+		log.info("Registering user " + user);
+		User userDb = service.addUser(user);
+
+		if (userDb != null) {
+			log.info("Register success");
+			return ResponseEntity.ok().build();
+		}
+		
+		return ResponseEntity.notFound().build();
+	}
+
+	@GetMapping("/users")
+	public ResponseEntity<List<User>> getAllUsers() {
+		log.info("Fetching all users");
+		
+		List<User> users = service.getAllUsers();
+		if (users != null) {
+			users = users.stream().map((user) -> {
+				User newUser = user;
+				newUser.setPassword(null);
+				return newUser;
+			}).collect(Collectors.toList());
+			log.info("Fetch success");
+			return ResponseEntity.ok(service.getAllUsers());
+		}
+		return ResponseEntity.notFound().build();
+	}
+
+	@GetMapping("/users/{id}")
+	public ResponseEntity<User> getUser(@PathVariable("id") Integer id) {
+		log.info("Fetching user with id: " + id);
+		User user = service.getUser(id);
+		if (user != null) {
+			log.info("Fetch success");
+			return ResponseEntity.ok(user);
+		}
+		return ResponseEntity.notFound().build();
+	}
+
+	@PostMapping("/users")
+	public ResponseEntity<?> createUser(@RequestBody User user) {
+		log.info("Adding user: " + user);
+		User userDb = service.addUser(user);
+
+		if (userDb != null) {
+			log.info("User added");
+			return new ResponseEntity<User>(userDb, HttpStatus.CREATED);
+		}
+		return ResponseEntity.notFound().build();
+	}
+
+	@DeleteMapping("/users/{id}")
+	public ResponseEntity<?> deleteUser(@PathVariable("id") Integer id) {
+		log.info("Deleting user with id: " + id);
+		boolean success = service.deleteUser(id);
+		if (success) {
+			log.info("Delete success");
+			return ResponseEntity.ok().build();
+		}
+		return ResponseEntity.notFound().build();
+	}
+
+	@PutMapping("/users")
+	public ResponseEntity<?> updateUser(@RequestBody User user) {
+		log.info("Updating user " + user);
+		boolean success = service.updateUser(user);
+		if (success) {
+			log.info("Update success");
+			return ResponseEntity.ok().build();
+		}
+		return ResponseEntity.notFound().build();
+	}
+}

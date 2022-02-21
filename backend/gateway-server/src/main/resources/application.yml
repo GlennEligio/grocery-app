@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    config:
+      enabled: false
+    gateway:
+      discovery:
+        locator: enabled
+      routes:
+        - id: service-user-id
+          uri: lb://user-service
+          predicates:
+            Path=/users/login
+        - id: service-grocerybill-id
+          uri: lb://grocery-bill-service
+          predicates:
+            Path=/groceryBills/**
+          filters:
+            - AuthFilter
+        - id: service-item-id
+          uri: lb://item-service
+          predicates:
+            Path=/items/**
+          filters:
+            - AuthFilter
+
+management:
+  endpoint:
+    gateway:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: gateway
+
+server:
+  port: 8080
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:7777/eureka

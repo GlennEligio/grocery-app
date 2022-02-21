@@ -1,0 +1,16 @@
++ public
+- private
+# protected
+~ default
++ naka italic = abstract method
+Italic ung title = abstract class o interface
+
+
+items 8030-8039
+shoppingclerk 8040-8049
+grocerybill 8050-8051
+user 8020-8029
+gateway 8080
+config server 8010
+eureka 7777
+react 3000
