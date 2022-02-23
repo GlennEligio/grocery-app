@@ -24,7 +24,7 @@ export const createBill = (bill, jwt) => (dispatch) => {
   })
     .then((res) => {
       switch (res.status) {
-        case 200:
+        case 201:
           return res.json();
         default:
           return null;

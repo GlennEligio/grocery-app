@@ -1,0 +1,167 @@
+package com.accenture.web.controller;
+
+import static org.mockito.Mockito.*;
+
+import com.accenture.web.domain.Item;
+import com.accenture.web.service.ItemServiceImpl;
+import com.google.gson.Gson;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import java.util.Arrays;
+import java.util.List;
+
+@WebMvcTest(ItemController.class)
+public class ItemControllerTest {
+
+    private static final Logger log = LoggerFactory.getLogger(ItemController.class);
+
+    @MockBean
+    private ItemServiceImpl service;
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    private Item item;
+    private List<Item> items;
+    private Gson gson;
+
+    @BeforeEach
+    void setup(){
+        gson = new Gson();
+        item = new Item(0, "name0", 100, true, 0.5);
+        items = Arrays.asList(new Item(0, "name0", 100, true, 0.5),
+                new Item(1, "name1", 101, true, 0.5),
+                new Item(2, "name2", 102, true, 0.5));
+    }
+
+    @Test
+    @DisplayName("Get All Items")
+    public void getAllItems_withExistingUser_returnOk() throws Exception {
+        // Arrange
+        when(service.getAllItems()).thenReturn(items);
+        log.info(items.toString());
+        log.info(gson.toJson(items));
+
+        // Assert
+        mockMvc.perform(MockMvcRequestBuilders.get("/items"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(gson.toJson(items)));
+    }
+
+    @Test
+    @DisplayName("Get Existing item")
+    public void getItem_withValidId_returnOk() throws Exception {
+        // Arrange
+        Integer id = 0;
+        when(service.getItem(0)).thenReturn(item);
+
+        // Assert
+        mockMvc.perform(MockMvcRequestBuilders.get("/items/" + id))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(gson.toJson(item)));
+    }
+
+    @Test
+    @DisplayName("Get Non existing item")
+    public void getItem_withInvalidId_returnOk() throws Exception {
+        // Arrange
+        Integer id = 3;
+        when(service.getItem(3)).thenReturn(null);
+
+        // Assert
+        mockMvc.perform(MockMvcRequestBuilders.get("/items/"+id))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Add New Item")
+    public void addItem_withNewItem_returnCreated() throws Exception {
+        // Arrange
+        Item newItem = new Item("name0", 100, true, 0.5);
+        when(service.addItem(newItem)).thenReturn(item);
+
+        // Assert
+        mockMvc.perform(MockMvcRequestBuilders.post("/items")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(gson.toJson(newItem)))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.content().json(gson.toJson(item)));
+    }
+
+    @Test
+    @DisplayName("Add Existing Item")
+    public void addItem_withExistingItem_returnNotFound() throws Exception {
+        // Arrange
+        Item existingItem = new Item("name3", 103, true, 0.5);
+        when(service.addItem(existingItem)).thenReturn(null);
+
+        // Assert
+        mockMvc.perform(MockMvcRequestBuilders.post("/items")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(gson.toJson(existingItem)))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Delete Existing Item")
+    public void deleteItem_withValidId_returnOk() throws Exception {
+        // Arrange
+        Integer id = 0;
+        when(service.deleteItem(0)).thenReturn(true);
+
+        // Assert
+        mockMvc.perform(MockMvcRequestBuilders.delete("/items/" + id))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    @DisplayName("Delete Non existing Item")
+    public void deleteItem_withInvalidId_returnNotFound() throws Exception {
+        // Arrange
+        Integer id = 3;
+        when(service.deleteItem(3)).thenReturn(false);
+
+        // Assert
+        mockMvc.perform(MockMvcRequestBuilders.delete("/items/" + id))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Update Existing Item")
+    public void updateItem_withExistingItem_returnOk() throws Exception {
+        // Arrange
+        Item existingItem = new Item(0, "name0", 1000, true, 0.5);
+        when(service.updateItem(existingItem)).thenReturn(existingItem);
+
+        // Assert
+        mockMvc.perform(MockMvcRequestBuilders.put("/items")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(gson.toJson(existingItem)))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    @DisplayName("Update Non existing Item")
+    public void updateItem_withNonExistingItem_returnOk() throws Exception {
+        // Arrange
+        Item nonExistingItem = new Item(3, "name0", 1000, true, 0.5);
+        when(service.updateItem(nonExistingItem)).thenReturn(null);
+
+        // Assert
+        mockMvc.perform(MockMvcRequestBuilders.put("/items")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(gson.toJson(nonExistingItem)))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+}

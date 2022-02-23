@@ -1,22 +1,24 @@
-package com.accenture.web.repository;
+package com.accenture.web.service;
 
 import java.util.List;
 import java.util.Optional;
 
+import com.accenture.web.repository.ItemRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import com.accenture.web.domain.Item;
 
 @Service
-public class ItemService {
+public class ItemServiceImpl implements ItemService{
 
 	@Autowired
-	ItemRepository repository;
+    ItemRepository repository;
 
-	private static final Logger log = LoggerFactory.getLogger(ItemService.class);
+	private static final Logger log = LoggerFactory.getLogger(ItemServiceImpl.class);
 
 	public List<Item> getAllItems() {
 		log.info("Fetching items from database");
@@ -25,7 +27,11 @@ public class ItemService {
 
 	public Item getItem(Integer id) {
 		log.info("Fetching item with name " + id);
-		return repository.findById(id).get();
+		Optional<Item> itemOp = repository.findById(id);
+		if(itemOp.isPresent()){
+			return itemOp.get();
+		}
+		return null;
 	}
 
 	public Item addItem(Item item) {
@@ -33,7 +39,7 @@ public class ItemService {
 		return repository.save(item);
 	}
 
-	public boolean updateItem(Item item) {
+	public Item updateItem(Item item) {
 		log.info("Updating item in database: " + item);
 		Optional<Item> op = repository.findById(item.getId());
 		if (op.isPresent()) {
@@ -42,10 +48,9 @@ public class ItemService {
 			oldItem.setPrice(item.getPrice());
 			oldItem.setDiscounted(item.isDiscounted());
 			oldItem.setDiscountPercentage(item.getDiscountPercentage());
-			repository.save(oldItem);
-			return true;
+			return repository.save(oldItem);
 		}
-		return false;
+		return null;
 	}
 
 	public boolean deleteItem(Integer id) {

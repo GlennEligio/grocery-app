@@ -28,7 +28,7 @@ public class RegularBill extends GroceryBill {
 
 	@Override
 	public String toString() {
-		return "RegularBill [itemList=" + itemList + ", totalBill=" + totalBill + "]";
+		return super.toString();
 	}
 
 }

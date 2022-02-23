@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -30,6 +32,18 @@ public class UserResponseEntityExceptionHandler extends ResponseEntityExceptionH
 
 		return new ResponseEntity(exceptionResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
+
+	@ExceptionHandler(value = {BadCredentialsException.class, UsernameNotFoundException.class})
+	public ResponseEntity<?> handleBadCredentialsException(Exception ex, WebRequest request) {
+		log.info("Encountered BadCredentialsException or UsernameNotFoundException");
+		ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(),
+				ex.getMessage(),
+				request.getDescription(false));
+
+		return new ResponseEntity(exceptionResponse, HttpStatus.FORBIDDEN);
+	}
+
+
 
 	@ExceptionHandler(value = io.jsonwebtoken.ExpiredJwtException.class)
 	public ResponseEntity<?> handleExpiredJwtException(Exception ex, WebRequest request) {

@@ -7,7 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.accenture.web.repository.UserService;
+import com.accenture.web.service.UserServiceImpl;
 import com.accenture.web.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,7 +24,7 @@ public class JwtRequestFilter extends OncePerRequestFilter{
 	private JwtUtil jwtUtil;
 	
 	@Autowired
-	private UserService service;
+	private UserServiceImpl service;
 	
 
 	@Override

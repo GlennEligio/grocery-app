@@ -1,10 +1,11 @@
-package com.accenture.web.repository;
+package com.accenture.web.service;
 
 import java.util.List;
 import java.util.Optional;
 
 import com.accenture.web.domain.AuthenticationResponse;
 import com.accenture.web.domain.MyUserDetails;
+import com.accenture.web.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,11 +20,9 @@ import org.springframework.stereotype.Service;
 
 import com.accenture.web.domain.User;
 
-import javax.transaction.Transactional;
-
 @Service
 @RefreshScope
-public class UserService implements UserDetailsService {
+public class UserServiceImpl implements UserService, UserDetailsService {
 
 	@Value("${user-service.secretKey}")
 	private String secretKey;
@@ -34,7 +33,7 @@ public class UserService implements UserDetailsService {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
-	private static final Logger log = LoggerFactory.getLogger(UserService.class);
+	private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 	
 	public List<User> getAllUsers(){
 		log.info("Fetching users from repository");
@@ -43,11 +42,19 @@ public class UserService implements UserDetailsService {
 	
 	public User getUser(Integer id) {
 		log.info("Fetching a user with id: " + id);
-		return repository.findById(id).get();
+		Optional<User> userOp = repository.findById(id);
+		if(userOp.isPresent()){
+			return userOp.get();
+		}
+		return null;
 	}
 	
 	public User addUser(User user) {
 		log.info("Adding user " + user);
+		User userDb = repository.findByUsername(user.getUsername());
+		if(userDb != null){
+			throw new RuntimeException("User with username already exist");
+		}
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
 		user.setActive(true);
 		user.setRoles("ROLE_CLERK");
@@ -58,7 +65,7 @@ public class UserService implements UserDetailsService {
 		log.info("Updating user " + user);
 		Optional<User> op = repository.findById(user.getId());
 		
-		if(op != null) {
+		if(op.isPresent()) {
 			User oldUser = op.get();
 			oldUser.setName(user.getName());
 			oldUser.setUsername(user.getUsername());
@@ -73,27 +80,27 @@ public class UserService implements UserDetailsService {
 	
 	public boolean deleteUser(Integer id) {
 		log.info("Deleting user with id: " + id);
-		User user = repository.findById(id).get();
-		if(user != null) {
-			repository.delete(user);
+		Optional<User> userOp = repository.findById(id);
+		if(userOp.isPresent()) {
+			repository.delete(userOp.get());
 			return true;
 		}
 		return false;
 	}
 
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		log.info("Looking for a User with username: " + username);
+	public UserDetails loadUserByUsername(String username){
+		log.info("Looking for a User with username: {}", username);
 		User user  = repository.findByUsername(username);
 		if(user != null) {
 			log.info("User found: " + user);
 			return new MyUserDetails(user);
 		}
 		log.info("User not found..");
-		throw new UsernameNotFoundException("User not found");
+		throw new UsernameNotFoundException("No User found");
 	}
 
-	public AuthenticationResponse validateToken(String token) throws Exception {
+	public AuthenticationResponse validateToken(String token){
 		String username = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
 		log.info("Username is {}", username);
 
@@ -104,6 +111,6 @@ public class UserService implements UserDetailsService {
 			return response;
 		}
 
-		throw new Exception("Jwt validation failed, Username in claims not found");
+		throw new RuntimeException("Jwt validation failed, Username in claims not found");
 	}
 }

@@ -1,4 +1,4 @@
-package com.accenture.web.repository;
+package com.accenture.web.service;
 
 import java.util.List;
 import java.util.Optional;
@@ -6,36 +6,42 @@ import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
+import com.accenture.web.repository.GroceryBillRepository;
+import com.accenture.web.repository.ItemRepository;
+import com.accenture.web.repository.ShoppingClerkRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.accenture.web.controller.GroceryBillController;
 import com.accenture.web.domain.GroceryBill;
 import com.accenture.web.domain.Item;
 import com.accenture.web.domain.ShoppingClerk;
 
 @Service
-public class GroceryBillService {
+public class GroceryBillServiceImpl implements GroceryBillService{
 
 	@Autowired
-	GroceryBillRepository billRepo;
+    GroceryBillRepository billRepo;
 
 	@Autowired
-	ShoppingClerkRepository clerkRepo;
+    ShoppingClerkRepository clerkRepo;
 
 	@Autowired
-	ItemRepository itemRepo;
+    ItemRepository itemRepo;
 
-	private static final Logger log = LoggerFactory.getLogger(GroceryBillService.class);
+	private static final Logger log = LoggerFactory.getLogger(GroceryBillServiceImpl.class);
 
 	public List<GroceryBill> getAllGroceryBills() {
 		return (List<GroceryBill>) billRepo.findAll();
 	}
 
 	public GroceryBill getGroceryBill(Integer id) {
-		return billRepo.findById(id).get();
+		Optional<GroceryBill> billOp = billRepo.findById(id);
+		if(billOp.isPresent()){
+			return billOp.get();
+		}
+		return null;
 	}
 
 	@Transactional
@@ -49,7 +55,7 @@ public class GroceryBillService {
 		}
 
 		// Check if Items already exist in db
-		// If it exist, update properties of Item except name
+		// If it exists, update properties of Item except name
 		if (groceryBill.getItemList() != null) {
 			List<Item> newItems = groceryBill.getItemList().stream().map(item -> {
 				Optional<Item> itemOp = itemRepo.findById(item.getId());
@@ -72,7 +78,7 @@ public class GroceryBillService {
 	}
 
 	@Transactional
-	public boolean updateGroceryBill(GroceryBill groceryBill) {
+	public GroceryBill updateGroceryBill(GroceryBill groceryBill) {
 		Optional<GroceryBill> op = billRepo.findById(groceryBill.getId());
 		if (op.isPresent()) {
 			GroceryBill oldGroceryBill = op.get();
@@ -104,16 +110,15 @@ public class GroceryBillService {
 				}).collect(Collectors.toList());
 				oldGroceryBill.setItemList(newItems);
 			}
-			billRepo.save(oldGroceryBill);
-			return true;
+			return billRepo.save(oldGroceryBill);
 		}
-		return false;
+		return null;
 	}
 
 	public boolean deleteGroceryBill(Integer id) {
-		GroceryBill groceryBill = billRepo.findById(id).get();
-		if (groceryBill != null) {
-			billRepo.delete(groceryBill);
+		Optional<GroceryBill> billOp = billRepo.findById(id);
+		if (billOp.isPresent()) {
+			billRepo.delete(billOp.get());
 			return true;
 		}
 		return false;

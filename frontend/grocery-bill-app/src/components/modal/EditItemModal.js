@@ -13,7 +13,7 @@ const EditItemModal = ({
 }) => {
   const [name, setName] = useState("");
   const [price, setPrice] = useState(0);
-  const [isDiscounted, setIsDiscounted] = useState(false);
+  const [discounted, setDiscounted] = useState(false);
   const [discountPercentage, setDiscountPercentage] = useState("");
 
   const onSubmit = (e) => {
@@ -41,7 +41,7 @@ const EditItemModal = ({
       id: parseInt(itemSelected.id),
       name: name,
       price: price,
-      isDiscounted: isDiscounted,
+      discounted: discounted,
       discountPercentage: discountPercentage / 100,
     };
 
@@ -99,10 +99,10 @@ const EditItemModal = ({
             <label>Discounted? </label>
             <input
               type="checkbox"
-              name="isDiscounted"
-              value={isDiscounted}
+              name="discounted"
+              value={discounted}
               onChange={(e) => {
-                setIsDiscounted(e.currentTarget.checked);
+                setDiscounted(e.currentTarget.checked);
               }}
             />
           </div>

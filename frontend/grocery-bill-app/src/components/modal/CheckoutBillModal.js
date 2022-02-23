@@ -21,7 +21,7 @@ const CheckoutBillModal = ({
           name: item.name,
           price: item.price,
           discountPercentage: item.discountPercentage,
-          isDiscounted: item.isDiscounted,
+          discounted: item.discounted,
         });
       }
     });

@@ -33,3 +33,6 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:7777/eureka
+
+user-service:
+  secretKey: grocerybillapp

@@ -19,7 +19,7 @@ const BillTotal = ({ currentBill, updateCurrentBillType }) => {
 
     bill.itemList.forEach((item) => {
       total += item.price * item.amount;
-      if (item.isDiscounted) {
+      if (item.discounted) {
         totalDiscounted +=
           item.price * (1 - item.discountPercentage) * item.amount;
       } else {
@@ -70,17 +70,3 @@ const mapStateToProps = (state) => ({
 });
 
 export default connect(mapStateToProps, { updateCurrentBillType })(BillTotal);
-
-// if (discounted) {
-//   currentBill.itemList.forEach((item) => {
-//     if (item.isDiscounted) {
-//       setSubTotal((subTotal += item.price * item.discountPercentage));
-//     } else {
-//       setSubTotal((subTotal += item.price));
-//     }
-//   });
-// } else {
-//   currentBill.itemList.forEach((item) => {
-//     setSubTotal((subTotal += item.price));
-//   });
-// }

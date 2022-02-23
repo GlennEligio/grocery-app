@@ -35,6 +35,6 @@ public class DiscountedBill extends GroceryBill{
 
 	@Override
 	public String toString() {
-		return "DiscountedBill [itemList=" + itemList + ", totalBill=" + totalBill + "]";
+		return super.toString();
 	}
 }

@@ -33,6 +33,11 @@ public class ShoppingClerk {
 		this.name = name;
 	}
 
+	public ShoppingClerk(int id, String name) {
+		this.id = id;
+		this.name = name;
+	}
+
 	public int getId() {
 		return id;
 	}
@@ -53,4 +58,11 @@ public class ShoppingClerk {
 		this.groceryBill = groceryBill;
 	}
 
+	@Override
+	public String toString() {
+		return "ShoppingClerk{" +
+				"id=" + id +
+				", name='" + name + '\'' +
+				'}';
+	}
 }

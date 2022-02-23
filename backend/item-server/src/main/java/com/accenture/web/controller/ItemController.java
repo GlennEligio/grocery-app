@@ -18,13 +18,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.accenture.web.domain.Item;
-import com.accenture.web.repository.ItemService;
+import com.accenture.web.service.ItemServiceImpl;
 
 @RestController
 public class ItemController {
 	
 	@Autowired
-	private ItemService service;
+	private ItemServiceImpl service;
 	
 	private static final Logger log = LoggerFactory.getLogger(ItemController.class);
 	
@@ -50,14 +50,14 @@ public class ItemController {
 		return ResponseEntity.notFound().build();
 	}
 	
-	@PostMapping(value="/items", consumes = "application/json")
-	public ResponseEntity<?> createItem(@Valid @RequestBody Item item){
+	@PostMapping(value = "/items", consumes = "application/json")
+	public ResponseEntity<Item> createItem(@Valid @RequestBody Item item){
 		log.info("Adding " + item);
 		Item itemDb = service.addItem(item);
 		
 		if(itemDb != null) { 
 			log.info("Add success");
-			return new ResponseEntity<Item>(itemDb, HttpStatus.CREATED);
+			return new ResponseEntity<>(itemDb, HttpStatus.CREATED);
 		}
 		return ResponseEntity.notFound().build();
 	}
@@ -75,8 +75,8 @@ public class ItemController {
 	@PutMapping(value="/items", consumes = "application/json")
 	public ResponseEntity<?> updateItem(@Valid @RequestBody Item item){
 		log.info("Updating item with " + item);
-		boolean success = service.updateItem(item);
-		if(success) {
+		Item itemUpdated = service.updateItem(item);
+		if(itemUpdated != null) {
 			log.info("Update success");
 			return ResponseEntity.ok().build();
 		}

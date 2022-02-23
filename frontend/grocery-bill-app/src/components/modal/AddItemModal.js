@@ -6,7 +6,7 @@ import { fetchItems } from "../../actions/itemActions";
 const AddItemModal = ({ jwt, fetchItems }) => {
   const [name, setName] = useState("");
   const [price, setPrice] = useState(0);
-  const [isDiscounted, setIsDiscounted] = useState(false);
+  const [discounted, setDiscounted] = useState(false);
   const [discountPercentage, setDiscountPercentage] = useState("");
   const [error, setError] = useState(false);
 
@@ -34,7 +34,7 @@ const AddItemModal = ({ jwt, fetchItems }) => {
     const item = {
       name: name,
       price: price,
-      isDiscounted: isDiscounted,
+      discounted: discounted,
       discountPercentage: discountPercentage / 100,
     };
 
@@ -101,10 +101,10 @@ const AddItemModal = ({ jwt, fetchItems }) => {
             <label>Discounted?: </label>
             <input
               type="checkbox"
-              name="isDiscounted"
-              value={isDiscounted}
+              name="discounted"
+              value={discounted}
               onChange={(e) => {
-                setIsDiscounted(e.currentTarget.checked);
+                setDiscounted(e.currentTarget.checked);
               }}
             />
           </div>

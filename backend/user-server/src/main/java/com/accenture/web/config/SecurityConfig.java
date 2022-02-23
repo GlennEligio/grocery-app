@@ -3,7 +3,7 @@ package com.accenture.web.config;
 import java.time.Duration;
 import java.util.Arrays;
 
-import com.accenture.web.repository.UserService;
+import com.accenture.web.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,7 +22,7 @@ import org.springframework.web.filter.CorsFilter;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private UserService service;
+    private UserServiceImpl service;
 
     @Autowired
     JwtRequestFilter jwtRequestFilter;
@@ -39,7 +39,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests().antMatchers( "/users/login", "/users/register", "/users/validateToken").permitAll()
-                .anyRequest().authenticated();
+                .anyRequest().hasAnyRole("ADMIN");
 
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 

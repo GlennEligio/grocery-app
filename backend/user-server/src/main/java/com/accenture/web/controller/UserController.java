@@ -12,7 +12,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
@@ -20,7 +23,7 @@ import org.slf4j.Logger;
 import com.accenture.web.domain.AuthenticationRequest;
 import com.accenture.web.domain.AuthenticationResponse;
 import com.accenture.web.domain.User;
-import com.accenture.web.repository.UserService;
+import com.accenture.web.service.UserServiceImpl;
 import com.accenture.web.util.JwtUtil;
 
 @RestController
@@ -29,32 +32,29 @@ public class UserController {
 	private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
 	@Autowired
-	private UserService service;
+	private PasswordEncoder passwordEncoder;
 
 	@Autowired
-	private AuthenticationManager authenticationManager;
+	private UserServiceImpl service;
 
 	@Autowired
 	private JwtUtil jwtUtil;
 
 	@PostMapping(value = "/users/login")
-	public ResponseEntity<AuthenticationResponse> login(@Valid @RequestBody AuthenticationRequest request)
-			throws Exception {
+	public ResponseEntity<AuthenticationResponse> login(@Valid @RequestBody AuthenticationRequest request) throws BadCredentialsException, UsernameNotFoundException{
 		log.info("Authentication started with username: " + request.getUsername() + " and password: "
 				+ request.getPassword());
-		try {
-			log.info("Authentication starting...");
-			authenticationManager.authenticate(
-					new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-		} catch (BadCredentialsException e) {
-			log.info("Authentication failed");
-			throw new Exception("Incorrect credentials", e);
-		}
 
 		final UserDetails userDetails = service.loadUserByUsername(request.getUsername());
-		final String token = jwtUtil.generateToken(userDetails);
-		log.info("Authentication success with jwt: " + token);
-		return ResponseEntity.ok(new AuthenticationResponse(userDetails.getUsername(), token, userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(","))));
+		if(userDetails == null){
+			throw new UsernameNotFoundException("No user exist");
+		}
+		if(passwordEncoder.matches(request.getPassword(), userDetails.getPassword())){
+			final String token = jwtUtil.generateToken(userDetails);
+			log.info("Authentication success with jwt: " + token);
+			return ResponseEntity.ok(new AuthenticationResponse(userDetails.getUsername(), token, userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(","))));
+		}
+		throw new BadCredentialsException("Incorrect credentials");
 	}
 
 	@PostMapping("/users/validateToken")

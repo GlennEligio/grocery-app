@@ -18,13 +18,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.accenture.web.domain.GroceryBill;
-import com.accenture.web.repository.GroceryBillService;
+import com.accenture.web.service.GroceryBillServiceImpl;
 
 @RestController
 public class GroceryBillController {
 
 	@Autowired
-	private GroceryBillService service;
+	private GroceryBillServiceImpl service;
 	
 	private static final Logger log = LoggerFactory.getLogger(GroceryBillController.class);
 
@@ -35,12 +35,11 @@ public class GroceryBillController {
 			// To set the value of totalBill
 			groceryBill.getTotalBill();
 			log.info("Total bill: " + groceryBill.getTotalBill());
-			if(groceryBill != null) {
-				GroceryBill billDb = service.addGroceryBill(groceryBill);
-				if(billDb != null) {
-					log.info("Grocery bill added: " + billDb);
-					return ResponseEntity.ok(billDb);
-				}
+			GroceryBill billDb = service.addGroceryBill(groceryBill);
+			log.info("billDb: {}", billDb);
+			if(billDb != null) {
+				log.info("Grocery bill added: " + billDb);
+				return new ResponseEntity<>(billDb, HttpStatus.CREATED);
 			}
 		}
 		return ResponseEntity.notFound().build();
@@ -68,18 +67,6 @@ public class GroceryBillController {
 		return ResponseEntity.notFound().build();
 	}
 
-	@PostMapping("/groceryBills/post")
-	public ResponseEntity<?> createGroceryBill(@Valid @RequestBody GroceryBill groceryBill) {
-		log.info("Creating grocery bill: " + groceryBill);
-		GroceryBill groceryBillDb = service.addGroceryBill(groceryBill);
-
-		if (groceryBillDb != null) {
-			log.info("Grocery bill added");
-			return new ResponseEntity<GroceryBill>(groceryBillDb, HttpStatus.CREATED);
-		}
-		return ResponseEntity.notFound().build();
-	}
-
 	@DeleteMapping("/groceryBills/{id}")
 	public ResponseEntity<?> deleteGroceryBill(@PathVariable("id") Integer id) {
 		log.info("Deleting grocery bill with id: " + id);
@@ -94,8 +81,8 @@ public class GroceryBillController {
 	@PutMapping("/groceryBills")
 	public ResponseEntity<?> updateGroceryBill(@Valid @RequestBody GroceryBill groceryBill) {
 		log.info("Updating grocery bill: " + groceryBill);
-		boolean success = service.updateGroceryBill(groceryBill);
-		if (success) {
+		GroceryBill updatedBill = service.updateGroceryBill(groceryBill);
+		if (updatedBill != null) {
 			log.info("Update success");
 			return ResponseEntity.ok().build();
 		}

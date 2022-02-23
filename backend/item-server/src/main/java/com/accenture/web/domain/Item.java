@@ -27,7 +27,6 @@ public class Item {
 	private double price;
 
 	@NotNull(message = "isDiscounted must be defined")
-	@JsonProperty("isDiscounted")
 	private boolean discounted; 
 
 	@NotNull(message = "Discount percentage must be defined")
@@ -40,6 +39,14 @@ public class Item {
 
 	public Item(String name, double price, boolean discounted, double discountPercentage) {
 		super();
+		this.name = name;
+		this.price = price;
+		this.discounted = discounted;
+		this.discountPercentage = discountPercentage;
+	}
+
+	public Item(int id, String name, double price, boolean discounted, double discountPercentage) {
+		this.id = id;
 		this.name = name;
 		this.price = price;
 		this.discounted = discounted;
