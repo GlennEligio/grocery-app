@@ -13,11 +13,11 @@ const Home = ({ isLoggedIn, role, resetAuthState, resetUserState }) => {
         navigate("/clerk");
       } else if (role === "ROLE_ADMIN") {
         navigate("/admin");
+      } else {
+        resetAuthState();
+        resetUserState();
       }
     }
-
-    resetAuthState();
-    resetUserState();
   }, []);
 
   return (

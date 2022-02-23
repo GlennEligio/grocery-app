@@ -1,12 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
-import { fetchJwt } from "../actions/authActions";
-import { updateUser } from "../actions/userActions";
 import { FaSpinner, FaTimesCircle } from "react-icons/fa";
 import { useNavigate, Link } from "react-router-dom";
+import { fetchJwt } from "../actions/authActions";
+import { updateUser } from "../actions/userActions";
+import { resetAuthState } from "../actions/authActions";
+import { resetUserState } from "../actions/userActions";
 
-const Login = ({ role, error, loading, isLoggedIn, fetchJwt, updateUser }) => {
-  const [username, setUsername] = useState("");
+const Login = ({
+  user,
+  role,
+  error,
+  loading,
+  isLoggedIn,
+  fetchJwt,
+  updateUser,
+  resetAuthState,
+  resetUserState,
+}) => {
+  const [username, setUsername] = useState(user.username);
   const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
@@ -20,6 +32,9 @@ const Login = ({ role, error, loading, isLoggedIn, fetchJwt, updateUser }) => {
         navigate("/clerk");
       } else if (role === "ROLE_ADMIN") {
         navigate("/admin");
+      } else {
+        resetAuthState();
+        resetUserState();
       }
     }
   });
@@ -90,10 +105,16 @@ const Login = ({ role, error, loading, isLoggedIn, fetchJwt, updateUser }) => {
 };
 
 const mapStateToProps = (state) => ({
+  user: state.user.user,
   role: state.auth.role,
   error: state.auth.error,
   loading: state.auth.loading,
   isLoggedIn: state.auth.isLoggedIn,
 });
 
-export default connect(mapStateToProps, { fetchJwt, updateUser })(Login);
+export default connect(mapStateToProps, {
+  fetchJwt,
+  updateUser,
+  resetAuthState,
+  resetUserState,
+})(Login);

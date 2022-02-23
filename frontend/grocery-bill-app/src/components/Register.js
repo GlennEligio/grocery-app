@@ -1,13 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
-import { createUser } from "../actions/userActions";
 import { FaSpinner, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { createUser } from "../actions/userActions";
+import { resetAuthState } from "../actions/authActions";
+import { resetUserState } from "../actions/userActions";
 
-const Register = ({ error, loading, status, createUser }) => {
+const Register = ({
+  role,
+  isLoggedIn,
+  error,
+  loading,
+  status,
+  createUser,
+  resetAuthState,
+  resetUserState,
+}) => {
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      if (role === "ROLE_CLERK") {
+        navigate("/clerk");
+      } else if (role === "ROLE_ADMIN") {
+        navigate("/admin");
+      } else {
+        resetAuthState();
+        resetUserState();
+      }
+    }
+  }, []);
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -94,9 +120,15 @@ const Register = ({ error, loading, status, createUser }) => {
 };
 
 const mapStateToProps = (state) => ({
+  isLoggedIn: state.auth.isLoggedIn,
+  role: state.auth.role,
   error: state.user.error,
   loading: state.user.loading,
   status: state.user.status,
 });
 
-export default connect(mapStateToProps, { createUser })(Register);
+export default connect(mapStateToProps, {
+  createUser,
+  resetAuthState,
+  resetUserState,
+})(Register);

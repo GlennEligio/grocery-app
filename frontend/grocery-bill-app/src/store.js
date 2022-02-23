@@ -1,13 +1,22 @@
 import { createStore, applyMiddleware, compose } from "redux";
 import rootReducer from "./reducers";
 import thunk from "redux-thunk";
+import { persistStore, persistReducer } from "redux-persist";
+import storage from "redux-persist/lib/storage";
 
 const initialState = {};
 
+const persistConfig = {
+  key: "persist-key",
+  storage,
+};
+
 const middleware = [thunk];
 
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
 const store = createStore(
-  rootReducer,
+  persistedReducer,
   initialState,
   compose(
     applyMiddleware(...middleware),
@@ -15,4 +24,5 @@ const store = createStore(
   )
 );
 
+export const persistor = persistStore(store);
 export default store;

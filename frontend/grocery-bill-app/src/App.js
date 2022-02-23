@@ -1,7 +1,5 @@
 import * as Components from "./components";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { Provider } from "react-redux";
-import store from "./store.js";
 
 function App() {
   // Remove modal when click outside content
@@ -13,21 +11,19 @@ function App() {
   };
 
   return (
-    <Provider store={store}>
-      <Router>
-        <div className="app">
-          <div className="viewContainer">
-            <Routes>
-              <Route path="/" element={<Components.Home />} />
-              <Route path="/login" element={<Components.Login />} />
-              <Route path="/register" element={<Components.Register />} />
-              <Route path="/clerk" element={<Components.ClerkHome />} />
-              <Route path="/admin" element={<Components.AdminHome />} />
-            </Routes>
-          </div>
+    <Router>
+      <div className="app">
+        <div className="viewContainer">
+          <Routes>
+            <Route path="/" element={<Components.Home />} />
+            <Route path="/login" element={<Components.Login />} />
+            <Route path="/register" element={<Components.Register />} />
+            <Route path="/clerk" element={<Components.ClerkHome />} />
+            <Route path="/admin" element={<Components.AdminHome />} />
+          </Routes>
         </div>
-      </Router>
-    </Provider>
+      </div>
+    </Router>
   );
 }
 
