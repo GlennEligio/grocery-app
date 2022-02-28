@@ -3,6 +3,7 @@ package com.accenture.web.service;
 import static org.mockito.Mockito.*;
 
 import com.accenture.web.domain.Item;
+import com.accenture.web.exception.AppException;
 import com.accenture.web.repository.ItemRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -69,16 +70,13 @@ class ItemServiceTest {
     
     @Test
     @DisplayName("Get Item with Invalid Id")
-    public void getItem_withInvalidId_returnNull(){
+    public void getItem_withInvalidId_throwsException(){
         // Arrange
         Integer id = 3;
         when(repository.findById(3)).thenReturn(Optional.empty());
 
-        // Act
-        Item itemDb = service.getItem(id);
-
         // Assert
-        assertNull(itemDb);
+        assertThrows(AppException.class, () -> service.getItem(id));
     }
 
     @Test
@@ -122,11 +120,8 @@ class ItemServiceTest {
         Item updatedItem = new Item(1, "name0", 1000, true, 0.8);
         when(repository.findById(1)).thenReturn(Optional.empty());
 
-        // Act
-        Item newItem = service.updateItem(updatedItem);
-
         // Assert
-        assertNull(newItem);
+        assertThrows(AppException.class, () -> service.updateItem(updatedItem));
     }
 
     @Test
@@ -150,10 +145,7 @@ class ItemServiceTest {
         Integer id = 1;
         when(repository.findById(1)).thenReturn(Optional.empty());
 
-        // Act
-        boolean success = service.deleteItem(id);
-
         // Assert
-        assertFalse(success);
+        assertThrows(AppException.class, () -> service.deleteItem(id));
     }
 }

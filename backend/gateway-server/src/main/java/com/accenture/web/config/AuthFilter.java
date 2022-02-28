@@ -44,6 +44,7 @@ public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> 
                     .uri("http://user-service/users/validateToken?token=" + parts[1])
                     .retrieve().bodyToMono(UserDto.class)
                     .map(userDto -> {
+                        log.info("Authentication success: {}", userDto.getUsername());
                         exchange.getRequest()
                                 .mutate()
                                 .header("X-auth-user-id", userDto.getUsername());

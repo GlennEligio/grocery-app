@@ -4,6 +4,7 @@ import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.accenture.web.domain.*;
+import com.accenture.web.exception.AppException;
 import com.accenture.web.repository.GroceryBillRepository;
 import com.accenture.web.repository.ItemRepository;
 import com.accenture.web.repository.ShoppingClerkRepository;
@@ -95,11 +96,8 @@ public class GroceryBillServiceTest {
         Integer id = 3;
         when(billRepo.findById(3)).thenReturn(Optional.empty());
 
-        // Act
-        GroceryBill billDb = service.getGroceryBill(id);
-
         // Assert
-        assertNull(billDb);
+        assertThrows(AppException.class, () -> service.getGroceryBill(id));
     }
 
     @Test
@@ -150,11 +148,8 @@ public class GroceryBillServiceTest {
         // Arrange
         when(billRepo.findById(0)).thenReturn(Optional.empty());
 
-        // Act
-        GroceryBill billDb = service.updateGroceryBill(bill);
-
         // Assert
-        assertNull(billDb);
+        assertThrows(AppException.class, () -> service.updateGroceryBill(bill));
     }
 
     @Test
@@ -178,10 +173,7 @@ public class GroceryBillServiceTest {
         Integer id = 3;
         when(billRepo.findById(3)).thenReturn(Optional.empty());
 
-        // Act
-        boolean success = service.deleteGroceryBill(id);
-
         // Assert
-        assertFalse(success);
+        assertThrows(AppException.class, () -> service.deleteGroceryBill(id));
     }
 }

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.accenture.web.domain.AuthenticationResponse;
 import com.accenture.web.domain.MyUserDetails;
 import com.accenture.web.domain.User;
+import com.accenture.web.exception.AppException;
 import com.accenture.web.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -77,11 +78,8 @@ public class UserServiceTest {
         // Arrange
         Integer id = 3;
 
-        // Act
-        User user = userServiceImpl.getUser(3);
-
         // Assert
-        assertNull(user);
+        assertThrows(AppException.class, () -> userServiceImpl.getUser(id));
     }
 
     @Test
@@ -139,11 +137,8 @@ public class UserServiceTest {
         // Arrange
         User userToUpdate = new User(3 ,"name0", "user0", "pass0", false, "ROLE_ADMIN");
 
-        // Act
-        Boolean result = userServiceImpl.updateUser(userToUpdate);
-
         // Assert
-        assertFalse(result);
+        assertThrows(AppException.class, () -> userServiceImpl.updateUser(userToUpdate));
     }
 
     @Test
@@ -165,11 +160,8 @@ public class UserServiceTest {
         // Arrange
         Integer userIdToDelete = 3;
 
-        // Act
-        Boolean result = userServiceImpl.deleteUser(userIdToDelete);
-
         // Assert
-        assertFalse(result);
+        assertThrows(AppException.class, () -> userServiceImpl.deleteUser(userIdToDelete));
     }
 
     @Test

@@ -2,8 +2,6 @@ package com.accenture.web.exception;
 
 import java.util.Date;
 
-import com.accenture.web.controller.UserController;
-import io.jsonwebtoken.ExpiredJwtException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -13,7 +11,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -30,7 +27,17 @@ public class UserResponseEntityExceptionHandler extends ResponseEntityExceptionH
 				ex.getMessage(),
 				request.getDescription(false));
 
-		return new ResponseEntity(exceptionResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+		return new ResponseEntity<>(exceptionResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
+	@ExceptionHandler(value = AppException.class)
+	public ResponseEntity<?> handleUserNotFoundException(AppException ex, WebRequest request) {
+		log.info("Encountered UserNotException");
+		ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(),
+				ex.getMessage(),
+				request.getDescription(false));
+
+		return new ResponseEntity<>(exceptionResponse, ex.getStatus());
 	}
 
 	@ExceptionHandler(value = {BadCredentialsException.class, UsernameNotFoundException.class})
@@ -40,7 +47,7 @@ public class UserResponseEntityExceptionHandler extends ResponseEntityExceptionH
 				ex.getMessage(),
 				request.getDescription(false));
 
-		return new ResponseEntity(exceptionResponse, HttpStatus.FORBIDDEN);
+		return new ResponseEntity<>(exceptionResponse, HttpStatus.FORBIDDEN);
 	}
 
 
@@ -52,7 +59,7 @@ public class UserResponseEntityExceptionHandler extends ResponseEntityExceptionH
 				ex.getMessage(),
 				request.getDescription(false));
 
-		return new ResponseEntity(exceptionResponse, HttpStatus.FORBIDDEN);
+		return new ResponseEntity<>(exceptionResponse, HttpStatus.FORBIDDEN);
 	}
 
 	@Override

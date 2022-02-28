@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import com.accenture.web.domain.AuthenticationResponse;
 import com.accenture.web.domain.MyUserDetails;
+import com.accenture.web.exception.AppException;
 import com.accenture.web.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -46,14 +48,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 		if(userOp.isPresent()){
 			return userOp.get();
 		}
-		return null;
+		throw new AppException("User not found", HttpStatus.NOT_FOUND);
 	}
 	
 	public User addUser(User user) {
 		log.info("Adding user " + user);
 		User userDb = repository.findByUsername(user.getUsername());
 		if(userDb != null){
-			throw new RuntimeException("User with username already exist");
+			throw new AppException("User with username already exist", HttpStatus.CONFLICT);
 		}
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
 		user.setActive(true);
@@ -72,10 +74,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 			oldUser.setPassword(passwordEncoder.encode(user.getPassword()));
 			oldUser.setActive(user.isActive());
 			oldUser.setRoles(user.getRoles());
-			repository.save(oldUser);
 			return true;
 		}
-		return false;
+		throw new AppException("No User exist to update", HttpStatus.NOT_FOUND);
 	}
 	
 	public boolean deleteUser(Integer id) {
@@ -85,7 +86,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 			repository.delete(userOp.get());
 			return true;
 		}
-		return false;
+		throw new AppException("No User exist to delete", HttpStatus.NOT_FOUND);
 	}
 
 	@Override

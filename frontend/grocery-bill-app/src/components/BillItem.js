@@ -1,8 +1,18 @@
 import React from "react";
+import { connect } from "react-redux";
+import { updateItemSelected } from "../actions/itemActions";
+import { setModalComponent } from "../actions/componentActions";
 
-const BillItem = ({ billItem }) => {
+const BillItem = ({ billItem, updateItemSelected, setModalComponent }) => {
   return (
-    <div className="bill">
+    <div
+      className="bill"
+      onClick={() => {
+        updateItemSelected(billItem);
+        setModalComponent("remove-item-to-bill-modal");
+        document.getElementById("modal-id").style.display = "flex";
+      }}
+    >
       <div className="bill-item">
         <div className="bill-item-name">{billItem.name}</div>
         <div className="bill-item-price">
@@ -14,4 +24,6 @@ const BillItem = ({ billItem }) => {
   );
 };
 
-export default BillItem;
+export default connect(null, { updateItemSelected, setModalComponent })(
+  BillItem
+);

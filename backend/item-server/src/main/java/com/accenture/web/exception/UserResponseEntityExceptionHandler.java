@@ -24,6 +24,15 @@ public class UserResponseEntityExceptionHandler extends ResponseEntityExceptionH
 		return new ResponseEntity<Object>(exceptionResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
+	@ExceptionHandler(value = AppException.class)
+	public ResponseEntity<Object> handleAppException(AppException ex, WebRequest request) {
+		ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(),
+				ex.getMessage(),
+				request.getDescription(false));
+
+		return new ResponseEntity<Object>(exceptionResponse, ex.getStatus());
+	}
+
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
 			HttpHeaders headers, HttpStatus status, WebRequest request) {

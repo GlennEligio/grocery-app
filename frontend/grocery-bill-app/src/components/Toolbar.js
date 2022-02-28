@@ -6,12 +6,14 @@ import { resetItemStates } from "../actions/itemActions";
 import { resetBillStates } from "../actions/billActions";
 import { resetAuthState } from "../actions/authActions";
 import { resetComponentStates } from "../actions/componentActions";
+import { resetUserState } from "../actions/userActions";
 
 const Toolbar = ({
   resetItemStates,
   resetBillStates,
   resetAuthState,
   resetComponentStates,
+  resetUserState,
 }) => {
   const navigate = useNavigate();
   return (
@@ -24,6 +26,7 @@ const Toolbar = ({
             resetBillStates();
             resetAuthState();
             resetComponentStates();
+            resetUserState();
             navigate("/");
           }}
         >
@@ -40,4 +43,5 @@ export default connect(null, {
   resetBillStates,
   resetAuthState,
   resetComponentStates,
+  resetUserState,
 })(Toolbar);

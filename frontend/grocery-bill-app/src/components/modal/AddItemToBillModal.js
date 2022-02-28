@@ -30,12 +30,33 @@ const AddItemToBillModal = ({
       return;
     }
 
+    var isInCurrentBill = false;
+
     const item = {
       ...itemSelected,
       amount: parseInt(amount),
     };
 
-    updateCurrentBill(item, {
+    var updatedItemList = [];
+
+    if (currentBill.itemList.length > 0) {
+      updatedItemList = currentBill.itemList.map((item) => {
+        if (itemSelected.id === item.id) {
+          isInCurrentBill = true;
+          return {
+            ...item,
+            amount: item.amount + parseInt(amount),
+          };
+        }
+        return item;
+      });
+    }
+
+    if (!isInCurrentBill) {
+      updatedItemList.push(item);
+    }
+
+    updateCurrentBill(updatedItemList, {
       name: user.username,
     });
 
@@ -69,6 +90,16 @@ const AddItemToBillModal = ({
               type="text"
               name="price"
               value={itemSelected.price}
+              readOnly={true}
+              className="immutable"
+            />
+          </div>
+          <div className="form-control">
+            <label>Discount %: </label>
+            <input
+              type="text"
+              name="discountPercentage"
+              value={itemSelected.discountPercentage * 100}
               readOnly={true}
               className="immutable"
             />

@@ -6,12 +6,14 @@ import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
+import com.accenture.web.exception.AppException;
 import com.accenture.web.repository.GroceryBillRepository;
 import com.accenture.web.repository.ItemRepository;
 import com.accenture.web.repository.ShoppingClerkRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.accenture.web.domain.GroceryBill;
@@ -41,7 +43,7 @@ public class GroceryBillServiceImpl implements GroceryBillService{
 		if(billOp.isPresent()){
 			return billOp.get();
 		}
-		return null;
+		throw new AppException("Grocery with id given was not found", HttpStatus.NOT_FOUND);
 	}
 
 	@Transactional
@@ -55,7 +57,7 @@ public class GroceryBillServiceImpl implements GroceryBillService{
 		}
 
 		// Check if Items already exist in db
-		// If it exists, update properties of Item except name
+		// If it exists, update properties of Item
 		if (groceryBill.getItemList() != null) {
 			List<Item> newItems = groceryBill.getItemList().stream().map(item -> {
 				Optional<Item> itemOp = itemRepo.findById(item.getId());
@@ -112,7 +114,7 @@ public class GroceryBillServiceImpl implements GroceryBillService{
 			}
 			return billRepo.save(oldGroceryBill);
 		}
-		return null;
+		throw new AppException("GroceryBill to update was not found", HttpStatus.NOT_FOUND);
 	}
 
 	public boolean deleteGroceryBill(Integer id) {
@@ -121,7 +123,7 @@ public class GroceryBillServiceImpl implements GroceryBillService{
 			billRepo.delete(billOp.get());
 			return true;
 		}
-		return false;
+		throw new AppException("Grocerybill to delete was not found", HttpStatus.NOT_FOUND);
 	}
 
 }

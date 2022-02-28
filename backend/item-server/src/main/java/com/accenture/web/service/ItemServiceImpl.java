@@ -3,10 +3,12 @@ package com.accenture.web.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.accenture.web.exception.AppException;
 import com.accenture.web.repository.ItemRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +33,7 @@ public class ItemServiceImpl implements ItemService{
 		if(itemOp.isPresent()){
 			return itemOp.get();
 		}
-		return null;
+		throw new AppException("Item with given id was not found", HttpStatus.NOT_FOUND);
 	}
 
 	public Item addItem(Item item) {
@@ -50,7 +52,7 @@ public class ItemServiceImpl implements ItemService{
 			oldItem.setDiscountPercentage(item.getDiscountPercentage());
 			return repository.save(oldItem);
 		}
-		return null;
+		throw new AppException("No Item found to be updated", HttpStatus.NOT_FOUND);
 	}
 
 	public boolean deleteItem(Integer id) {
@@ -60,6 +62,6 @@ public class ItemServiceImpl implements ItemService{
 			repository.delete(op.get());
 			return true;
 		}
-		return false;
+		throw new AppException("No Item found to be deleted", HttpStatus.NOT_FOUND);
 	}
 }

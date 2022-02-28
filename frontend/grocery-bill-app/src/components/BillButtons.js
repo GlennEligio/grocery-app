@@ -6,7 +6,7 @@ import {
   FaClipboardList,
 } from "react-icons/fa";
 import { connect } from "react-redux";
-import { resetCurrentBill } from "../actions/billActions";
+import { resetBillStates, resetCurrentBill } from "../actions/billActions";
 import {
   setModalComponent,
   setBillComponent,
@@ -18,6 +18,7 @@ const BillButtons = ({
   billName,
   setModalComponent,
   setBillComponent,
+  resetBillStates,
 }) => {
   return (
     <div className="bill-buttons">
@@ -32,7 +33,9 @@ const BillButtons = ({
       {billName === "on-hold-bill" && (
         <div
           className="bill-buttons-item"
-          onClick={() => setBillComponent("current-bill")}
+          onClick={() => {
+            setBillComponent("current-bill");
+          }}
         >
           <FaClipboardList />
         </div>
@@ -82,4 +85,5 @@ export default connect(mapStateToProps, {
   resetCurrentBill,
   setModalComponent,
   setBillComponent,
+  resetBillStates,
 })(BillButtons);

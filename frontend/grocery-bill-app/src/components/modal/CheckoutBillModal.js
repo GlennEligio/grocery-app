@@ -1,14 +1,20 @@
 import React from "react";
 import { FaTimesCircle, FaSpinner } from "react-icons/fa";
 import { connect } from "react-redux";
-import { createBill } from "../../actions/billActions";
+import {
+  createBillBegin,
+  createBillSuccess,
+  createBillFail,
+} from "../../actions/billActions";
 
 const CheckoutBillModal = ({
   jwt,
   loading,
   error,
   currentBill,
-  createBill,
+  createBillBegin,
+  createBillSuccess,
+  createBillFail,
 }) => {
   const onSubmit = (e) => {
     e.preventDefault();
@@ -26,18 +32,57 @@ const CheckoutBillModal = ({
       }
     });
 
-    createBill(
-      {
-        itemList: itemList,
-        shoppingClerk: currentBill.shoppingClerk,
-        type: currentBill.type,
-      },
-      jwt
-    );
+    var bill = {
+      itemList: itemList,
+      shoppingClerk: currentBill.shoppingClerk,
+      type: currentBill.type,
+    };
 
-    if (!loading && !error) {
-      document.getElementById("modal-id").style.display = "none";
-    }
+    createBillBegin();
+
+    fetch("http://localhost:8080/groceryBills", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify(bill),
+    })
+      .then((res) => {
+        switch (res.status) {
+          case 201:
+            return res.json();
+          default:
+            return null;
+        }
+      })
+      .then((data) => {
+        switch (data) {
+          case null:
+            createBillFail();
+            break;
+          default:
+            createBillSuccess();
+            document.getElementById("modal-id").style.display = "none";
+            break;
+        }
+      })
+      .catch((error) => {
+        createBillFail();
+      });
+
+    // createBill(
+    //   {
+    //     itemList: itemList,
+    //     shoppingClerk: currentBill.shoppingClerk,
+    //     type: currentBill.type,
+    //   },
+    //   jwt
+    // );
+
+    // if (!loading && !error) {
+    //   document.getElementById("modal-id").style.display = "none";
+    // }
   };
 
   return (
@@ -61,8 +106,40 @@ const CheckoutBillModal = ({
               <label>Check out failed</label>
             </div>
           )}
-          <div className="form-control-prompt">
+          {/* <div className="form-control-prompt">
             <label>Are you sure?</label>
+          </div> */}
+          <div className="form-control">
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Qty</th>
+                  <th>Each</th>
+                  <th>Discount %</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentBill.itemList.map((item, index) => {
+                  return (
+                    <tr key={index}>
+                      <td>{item.name}</td>
+                      <td>{item.amount}</td>
+                      <td>{item.price}</td>
+                      <td>{item.discountPercentage}</td>
+                      <td>
+                        {currentBill.type === "regular"
+                          ? item.amount * item.price
+                          : item.amount *
+                            item.price *
+                            (1 - item.discountPercentage)}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
           <div className="form-control-prompt">
             <button className="btn" type="submit">
@@ -82,4 +159,8 @@ const mapStateToProps = (state) => ({
   loading: state.bill.loading,
 });
 
-export default connect(mapStateToProps, { createBill })(CheckoutBillModal);
+export default connect(mapStateToProps, {
+  createBillBegin,
+  createBillSuccess,
+  createBillFail,
+})(CheckoutBillModal);

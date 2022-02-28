@@ -70,7 +70,7 @@ td svg:hover {
   align-items: center;
 }
 .modal-content {
-  width: 300px;
+  min-width: 400px;
   background-color: white;
   border: 1px solid black;
   border-radius: 5px;
@@ -78,10 +78,11 @@ td svg:hover {
 
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   justify-content: space-between;
 }
 .modal-title {
+  display: block;
   width: inherit;
   text-align: center;
   border-bottom: 1px solid black;
@@ -504,7 +505,7 @@ td svg:hover {
 /* Item section */
 .item-search-bar {
   width: 100%;
-  flex: 1 0 0;
+  flex: 1 0 1;
   margin: 0px 20px 20px 20px;
 
   display: flex;
@@ -522,7 +523,7 @@ td svg:hover {
 }
 .item-list {
   width: 100%;
-  flex-grow: 10;
+  flex: 12 0 0;
   overflow-x: hidden;
   overflow-y: auto;
 
@@ -556,6 +557,7 @@ td svg:hover {
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  overflow-y: auto;
 }
 .admin-home-users,
 .admin-home-items {
@@ -570,8 +572,9 @@ td svg:hover {
 }
 .admin-home-users.search-bar,
 .admin-home-items.search-bar {
-  margin-bottom: 10px;
+  flex: 1 0 10%;
   max-height: 10%;
+  margin-bottom: 10px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -591,8 +594,8 @@ td svg:hover {
 }
 .admin-home-items.table.header,
 .admin-home-users.table.header {
-  flex: 10 0 0;
-  max-height: 10%;
+  flex: 1 0 10%;
+  max-height: 15%;
 
   display: flex;
   flex-direction: column;
@@ -600,8 +603,7 @@ td svg:hover {
 }
 .admin-home-items.table.body,
 .admin-home-users.table.body {
-  flex: 1 0 auto;
-  max-height: 70%;
+  flex: 10 0 60%;
   overflow-y: auto;
 }
 .admin-home-items.table.header th:nth-child(1),

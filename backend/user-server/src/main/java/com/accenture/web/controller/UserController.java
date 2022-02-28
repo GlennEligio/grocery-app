@@ -131,10 +131,7 @@ public class UserController {
 	public ResponseEntity<?> updateUser(@RequestBody User user) {
 		log.info("Updating user " + user);
 		boolean success = service.updateUser(user);
-		if (success) {
-			log.info("Update success");
-			return ResponseEntity.ok().build();
-		}
-		return ResponseEntity.notFound().build();
+		if(success) return ResponseEntity.ok().build();
+		else return ResponseEntity.notFound().build();
 	}
 }

@@ -24,6 +24,7 @@ const ItemSection = ({
       <div className="item-search-bar">
         <input
           type="text"
+          placeholder="Search for item here..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />

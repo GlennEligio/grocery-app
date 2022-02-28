@@ -10,46 +10,58 @@ import {
   UPDATE_CURRENT_BILL_TYPE,
 } from "../actions/types";
 
-export const createBill = (bill, jwt) => (dispatch) => {
-  dispatch({
-    type: CREATE_BILL_BEGIN,
-  });
-  fetch("http://localhost:8080/groceryBills", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${jwt}`,
-      "Content-type": "application/json",
-    },
-    body: JSON.stringify(bill),
-  })
-    .then((res) => {
-      switch (res.status) {
-        case 201:
-          return res.json();
-        default:
-          return null;
-      }
-    })
-    .then((data) => {
-      switch (data) {
-        case null:
-          dispatch({
-            type: CREATE_BILL_FAILED,
-          });
-          break;
-        default:
-          dispatch({
-            type: CREATE_BILL_SUCCESS,
-          });
-          break;
-      }
-    })
-    .catch((error) => {
-      dispatch({
-        type: CREATE_BILL_FAILED,
-      });
-    });
+export const createBillBegin = () => (dispatch) => {
+  dispatch({ type: CREATE_BILL_BEGIN });
 };
+
+export const createBillSuccess = () => (dispatch) => {
+  dispatch({ type: CREATE_BILL_SUCCESS });
+};
+
+export const createBillFail = () => (dispatch) => {
+  dispatch({ type: CREATE_BILL_FAILED });
+};
+
+// export const createBill = (bill, jwt) => (dispatch) => {
+//   dispatch({
+//     type: CREATE_BILL_BEGIN,
+//   });
+//   fetch("http://localhost:8080/groceryBills", {
+//     method: "POST",
+//     headers: {
+//       Authorization: `Bearer ${jwt}`,
+//       "Content-type": "application/json",
+//     },
+//     body: JSON.stringify(bill),
+//   })
+//     .then((res) => {
+//       switch (res.status) {
+//         case 201:
+//           return res.json();
+//         default:
+//           return null;
+//       }
+//     })
+//     .then((data) => {
+//       switch (data) {
+//         case null:
+//           dispatch({
+//             type: CREATE_BILL_FAILED,
+//           });
+//           break;
+//         default:
+//           dispatch({
+//             type: CREATE_BILL_SUCCESS,
+//           });
+//           break;
+//       }
+//     })
+//     .catch((error) => {
+//       dispatch({
+//         type: CREATE_BILL_FAILED,
+//       });
+//     });
+// };
 
 export const addOnHoldBill = (id) => (dispatch) => {
   dispatch({
@@ -58,11 +70,11 @@ export const addOnHoldBill = (id) => (dispatch) => {
   });
 };
 
-export const updateCurrentBill = (item, clerk) => (dispatch) => {
+export const updateCurrentBill = (items, clerk) => (dispatch) => {
   dispatch({
     type: UPDATE_CURRENT_BILL,
     payload: {
-      item: item,
+      items: items,
       clerk: clerk,
     },
   });

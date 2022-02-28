@@ -69,7 +69,7 @@ const billReducer = function (state = initialState, action) {
         ...state,
         currentBill: {
           ...state.currentBill,
-          itemList: [...state.currentBill.itemList, action.payload.item],
+          itemList: action.payload.items,
           shoppingClerk: action.payload.clerk,
         },
       };
