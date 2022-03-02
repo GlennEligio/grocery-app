@@ -4,6 +4,7 @@ import AdminUserSection from "./AdminUserSection";
 import Toolbar from "./Toolbar";
 import Modal from "./modal/Modal";
 import { connect } from "react-redux";
+import AdminBillSection from "./AdminBillSection";
 
 const AdminHome = ({ modalName }) => {
   return (
@@ -12,6 +13,7 @@ const AdminHome = ({ modalName }) => {
         <Modal modal={modalName} />
         <AdminUserSection />
         <AdminItemSection />
+        <AdminBillSection />
       </div>
       <Toolbar />
     </>

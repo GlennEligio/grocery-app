@@ -1,9 +1,11 @@
 package com.accenture.web.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
+import com.accenture.web.dto.BillSummaryDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +30,7 @@ public class GroceryBillController {
 	
 	private static final Logger log = LoggerFactory.getLogger(GroceryBillController.class);
 
-	@PostMapping("/groceryBills")
+	@PostMapping("/bills")
 	public ResponseEntity<? extends GroceryBill> createNewGroceryBill(@Valid @RequestBody GroceryBill groceryBill) {
 		log.info("Creating Grocery Bill " + groceryBill);
 		if(groceryBill != null) {
@@ -45,7 +47,7 @@ public class GroceryBillController {
 		return ResponseEntity.notFound().build();
 	}
 
-	@GetMapping("/groceryBills")
+	@GetMapping("/bills")
 	public ResponseEntity<List<GroceryBill>> getAllGroceryBills() {
 		log.info("Fetching all grocery bills");
 		List<GroceryBill> groceryBills = service.getAllGroceryBills();
@@ -56,7 +58,19 @@ public class GroceryBillController {
 		return ResponseEntity.notFound().build();
 	}
 
-	@GetMapping("/groceryBills/{id}")
+	@GetMapping("/bills/summary")
+	public ResponseEntity<List<BillSummaryDto>> getAllBillSummary() {
+		log.info("Fetching all grocery bills summary");
+		List<GroceryBill> groceryBills = service.getAllGroceryBills();
+		if (groceryBills != null) {
+			log.info("Fetch success");
+			List<BillSummaryDto> billSummaryDtoList = groceryBills.stream().map(BillSummaryDto::new).collect(Collectors.toList());
+			return ResponseEntity.ok(billSummaryDtoList);
+		}
+		return ResponseEntity.notFound().build();
+	}
+
+	@GetMapping("/bills/{id}")
 	public ResponseEntity<GroceryBill> getGroceryBill(@PathVariable("id") Integer id) {
 		log.info("Fetching grocery bill with id: " + id);
 		GroceryBill groceryBill = service.getGroceryBill(id);
@@ -67,7 +81,7 @@ public class GroceryBillController {
 		return ResponseEntity.notFound().build();
 	}
 
-	@DeleteMapping("/groceryBills/{id}")
+	@DeleteMapping("/bills/{id}")
 	public ResponseEntity<?> deleteGroceryBill(@PathVariable("id") Integer id) {
 		log.info("Deleting grocery bill with id: " + id);
 		boolean success = service.deleteGroceryBill(id);
@@ -78,7 +92,7 @@ public class GroceryBillController {
 		return ResponseEntity.notFound().build();
 	}
 
-	@PutMapping("/groceryBills")
+	@PutMapping("/bills")
 	public ResponseEntity<?> updateGroceryBill(@Valid @RequestBody GroceryBill groceryBill) {
 		log.info("Updating grocery bill: " + groceryBill);
 		GroceryBill updatedBill = service.updateGroceryBill(groceryBill);

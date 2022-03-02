@@ -1,5 +1,6 @@
 package com.accenture.web.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -75,6 +76,9 @@ public class GroceryBillServiceImpl implements GroceryBillService{
 			}).collect(Collectors.toList());
 			groceryBill.setItemList(newItems);
 		}
+
+		// Set the date created time
+		groceryBill.setDateCreated(LocalDateTime.now());
 
 		return billRepo.save(groceryBill);
 	}

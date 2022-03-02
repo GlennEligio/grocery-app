@@ -10,7 +10,7 @@ import com.accenture.web.domain.User;
 import com.accenture.web.repository.UserRepository;
 import com.accenture.web.service.UserServiceImpl;
 import com.accenture.web.util.JwtUtil;
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -54,11 +54,11 @@ public class UserControllerTest {
 
     private User user;
     private List<User> userList;
-    private Gson gson;
+    private ObjectMapper objectMapper;
 
     @BeforeEach
     void setup(){
-        gson = new Gson();
+        objectMapper = new ObjectMapper();
         user = new User(0, "name0", "user0", "pass0", true, "ROLE_CLERK");
     }
 
@@ -106,7 +106,7 @@ public class UserControllerTest {
         // Assert
         mockMvc.perform(MockMvcRequestBuilders.post("/users/register")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(gson.toJson(newUser)))
+                .content(objectMapper.writeValueAsString(newUser)))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -121,7 +121,7 @@ public class UserControllerTest {
         // Assert
         mockMvc.perform(MockMvcRequestBuilders.post("/users/register")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(gson.toJson(newUser)))
+                        .content(objectMapper.writeValueAsString(newUser)))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
@@ -136,7 +136,7 @@ public class UserControllerTest {
         // Assert
         mockMvc.perform(MockMvcRequestBuilders.get("/users/0"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(gson.toJson(user)));
+                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(user)));
     }
 
     @Test
@@ -163,9 +163,9 @@ public class UserControllerTest {
         // Assert
         mockMvc.perform(MockMvcRequestBuilders.post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(gson.toJson(newUser)))
+                .content(objectMapper.writeValueAsString(newUser)))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.content().json(gson.toJson(user)));
+                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(user)));
     }
 
     @Test
@@ -179,7 +179,7 @@ public class UserControllerTest {
         // Assert
         mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(gson.toJson(existingUser)))
+                        .content(objectMapper.writeValueAsString(existingUser)))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
@@ -218,7 +218,7 @@ public class UserControllerTest {
 
         // Assert
         mockMvc.perform(MockMvcRequestBuilders.put("/users")
-                .content(gson.toJson(user))
+                .content(objectMapper.writeValueAsString(user))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
@@ -232,7 +232,7 @@ public class UserControllerTest {
 
         // Assert
         mockMvc.perform(MockMvcRequestBuilders.put("/users")
-                        .content(gson.toJson(user))
+                        .content(objectMapper.writeValueAsString(user))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
@@ -254,9 +254,9 @@ public class UserControllerTest {
         // Assert
         mockMvc.perform(MockMvcRequestBuilders.post("/users/login")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(gson.toJson(validUser)))
+                .content(objectMapper.writeValueAsString(validUser)))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(gson.toJson(response)));
+                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(response)));
 
     }
 
@@ -271,7 +271,7 @@ public class UserControllerTest {
         // Assert
         mockMvc.perform(MockMvcRequestBuilders.post("/users/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(gson.toJson(nonExistingUser)))
+                        .content(objectMapper.writeValueAsString(nonExistingUser)))
                 .andExpect(MockMvcResultMatchers.status().isForbidden());
     }
 
@@ -288,7 +288,7 @@ public class UserControllerTest {
         // Assert
         mockMvc.perform(MockMvcRequestBuilders.post("/users/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(gson.toJson(validUser)))
+                        .content(objectMapper.writeValueAsString(validUser)))
                 .andExpect(MockMvcResultMatchers.status().isForbidden());
     }
 }

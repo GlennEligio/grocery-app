@@ -8,9 +8,14 @@ import {
   RESET_CURRENT_BILL,
   ADD_ON_HOLD_BILL,
   UPDATE_CURRENT_BILL_TYPE,
+  FETCH_BILLS_BEGIN,
+  FETCH_BILLS_SUCCESS,
+  FETCH_BILLS_FAILED,
+  UPDATE_BILL_SELECTED,
 } from "../actions/types";
 
 const initialState = {
+  billHistory: [],
   onHoldBills: [],
   currentBill: {
     itemList: [],
@@ -18,6 +23,7 @@ const initialState = {
     id: "",
     type: "regular",
   },
+  billSelected: {},
   loading: false,
   error: false,
   status: false,
@@ -25,6 +31,30 @@ const initialState = {
 
 const billReducer = function (state = initialState, action) {
   switch (action.type) {
+    case FETCH_BILLS_BEGIN:
+      return {
+        ...state,
+        loading: true,
+        error: false,
+        status: false,
+      };
+    case FETCH_BILLS_SUCCESS: {
+      return {
+        ...state,
+        loading: false,
+        error: false,
+        status: true,
+        billHistory: action.payload,
+      };
+    }
+    case FETCH_BILLS_FAILED: {
+      return {
+        ...state,
+        loading: false,
+        error: true,
+        status: false,
+      };
+    }
     case CREATE_BILL_BEGIN:
       return {
         ...state,
@@ -62,6 +92,8 @@ const billReducer = function (state = initialState, action) {
         currentBill: {
           ...state.currentBill,
           itemList: [],
+          id: "",
+          type: "regular",
         },
       };
     case UPDATE_CURRENT_BILL:
@@ -81,6 +113,11 @@ const billReducer = function (state = initialState, action) {
           type: action.payload,
         },
       };
+    case UPDATE_BILL_SELECTED:
+      return {
+        ...state,
+        billSelected: action.payload,
+      };
     case CHANGE_CURRENT_BILL:
       return {
         ...state,
@@ -97,6 +134,7 @@ const billReducer = function (state = initialState, action) {
       };
     case RESET_BILL_STATES:
       return {
+        billHistory: [],
         onHoldBills: [],
         currentBill: {
           itemList: [],

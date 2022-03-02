@@ -26,6 +26,7 @@ const AdminItemSection = ({
         <input
           type="text"
           value={query}
+          placeholder={"Search item here"}
           onChange={(e) => setQuery(e.target.value)}
         />
         <FaTimesCircle className="interactable" onClick={() => setQuery("")} />

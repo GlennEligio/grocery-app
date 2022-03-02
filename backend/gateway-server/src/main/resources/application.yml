@@ -27,7 +27,7 @@ spring:
         - id: service-grocerybill-id
           uri: lb://grocery-bill-service
           predicates:
-            Path=/groceryBills/**
+            Path=/bills/**
           filters:
             - AuthFilter
         - id: service-item-id

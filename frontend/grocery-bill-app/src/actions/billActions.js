@@ -8,6 +8,10 @@ import {
   ADD_ON_HOLD_BILL,
   RESET_CURRENT_BILL,
   UPDATE_CURRENT_BILL_TYPE,
+  FETCH_BILLS_BEGIN,
+  FETCH_BILLS_FAILED,
+  FETCH_BILLS_SUCCESS,
+  UPDATE_BILL_SELECTED,
 } from "../actions/types";
 
 export const createBillBegin = () => (dispatch) => {
@@ -20,6 +24,49 @@ export const createBillSuccess = () => (dispatch) => {
 
 export const createBillFail = () => (dispatch) => {
   dispatch({ type: CREATE_BILL_FAILED });
+};
+
+export const fetchBills = (jwt) => (dispatch) => {
+  dispatch({
+    type: FETCH_BILLS_BEGIN,
+  });
+  fetch("http://localhost:8080/bills/summary", {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+    },
+  })
+    .then((res) => {
+      switch (res.status) {
+        case 200:
+          return res.json();
+        default:
+          return null;
+      }
+    })
+    .then((data) => {
+      switch (data) {
+        case null:
+          dispatch({
+            type: FETCH_BILLS_FAILED,
+          });
+          break;
+        default:
+          dispatch({
+            type: FETCH_BILLS_SUCCESS,
+            payload: data,
+          });
+          break;
+      }
+    })
+    .catch(() => dispatch({ type: FETCH_BILLS_FAILED }));
+};
+
+export const updateBillSelected = (bill) => (dispatch) => {
+  dispatch({
+    type: UPDATE_BILL_SELECTED,
+    payload: bill,
+  });
 };
 
 // export const createBill = (bill, jwt) => (dispatch) => {

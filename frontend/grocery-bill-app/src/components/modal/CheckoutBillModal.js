@@ -40,7 +40,7 @@ const CheckoutBillModal = ({
 
     createBillBegin();
 
-    fetch("http://localhost:8080/groceryBills", {
+    fetch("http://localhost:8080/bills", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${jwt}`,

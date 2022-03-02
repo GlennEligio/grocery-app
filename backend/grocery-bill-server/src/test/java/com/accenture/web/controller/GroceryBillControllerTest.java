@@ -4,8 +4,8 @@ import static org.mockito.Mockito.*;
 
 import com.accenture.web.domain.*;
 import com.accenture.web.service.GroceryBillServiceImpl;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,7 +33,7 @@ public class GroceryBillControllerTest {
     private GroceryBillServiceImpl service;
 
     private static final Logger log = LoggerFactory.getLogger(GroceryBillController.class);
-    private Gson gson;
+    private ObjectMapper objectMapper;
     private GroceryBill bill;
     private List<GroceryBill> bills;
     private ShoppingClerk clerk;
@@ -42,7 +42,7 @@ public class GroceryBillControllerTest {
 
     @BeforeEach
     void setup(){
-        gson = new Gson();
+        objectMapper = new ObjectMapper();
         clerk = new ShoppingClerk(0, "clerk0");
         Item item = new Item(0, "name0", 100, true, 0.5);
         Item item1 = new Item(1, "name1", 101, true, 0.5);
@@ -68,9 +68,9 @@ public class GroceryBillControllerTest {
         when(service.getAllGroceryBills()).thenReturn(bills);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.get("/groceryBills"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/bills"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(gson.toJson(bills)));
+                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(bills)));
     }
 
     @Test
@@ -80,7 +80,7 @@ public class GroceryBillControllerTest {
         when(service.getAllGroceryBills()).thenReturn(null);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.get("/groceryBills"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/bills"))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
@@ -92,9 +92,9 @@ public class GroceryBillControllerTest {
         when(service.getGroceryBill(id)).thenReturn(bill);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.get("/groceryBills/" + id))
+        mockMvc.perform(MockMvcRequestBuilders.get("/bills/" + id))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(gson.toJson(bill)));
+                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(bill)));
     }
 
     @Test
@@ -105,7 +105,7 @@ public class GroceryBillControllerTest {
         when(service.getGroceryBill(id)).thenReturn(null);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.get("/groceryBills/" + id))
+        mockMvc.perform(MockMvcRequestBuilders.get("/bills/" + id))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
@@ -117,16 +117,16 @@ public class GroceryBillControllerTest {
         GroceryBill newBill = new DiscountedBill(clerk);
         newBill.setItemList(items);
         newBill.getTotalBill();
-        JsonElement jsonElement = gson.toJsonTree(newBill);
-        jsonElement.getAsJsonObject().addProperty("type", "discounted");    // add the required "type" field
+        ObjectNode objectNode = objectMapper.valueToTree(newBill);
+        objectNode.put("type", "discounted");   // add the "type" required property
         when(service.addGroceryBill(Mockito.any())).thenReturn(bill);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.post("/groceryBills")
+        mockMvc.perform(MockMvcRequestBuilders.post("/bills")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(gson.toJson(jsonElement)))
+                .content(objectNode.toPrettyString()))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.content().json(gson.toJson(bill)));
+                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(bill)));
     }
 
     @Test
@@ -136,14 +136,14 @@ public class GroceryBillControllerTest {
         GroceryBill newBill = new DiscountedBill(clerk);
         newBill.setItemList(items);
         newBill.getTotalBill();
-        JsonElement jsonElement = gson.toJsonTree(newBill);
-        jsonElement.getAsJsonObject().addProperty("type", "discounted");    // add the required "type" field
+        ObjectNode objectNode = objectMapper.valueToTree(newBill);
+        objectNode.put("type", "discounted");   // add the "type" field required
         when(service.addGroceryBill(newBill)).thenReturn(null);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.post("/groceryBills")
+        mockMvc.perform(MockMvcRequestBuilders.post("/bills")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(gson.toJson(jsonElement)))
+                        .content(objectNode.toPrettyString()))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
@@ -155,7 +155,7 @@ public class GroceryBillControllerTest {
         when(service.deleteGroceryBill(id)).thenReturn(true);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.delete("/groceryBills/" + id))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/bills/" + id))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -167,7 +167,7 @@ public class GroceryBillControllerTest {
         when(service.deleteGroceryBill(id)).thenReturn(false);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.delete("/groceryBills/" + id))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/bills/" + id))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
@@ -176,14 +176,14 @@ public class GroceryBillControllerTest {
     @DisplayName("Update Existing Bill")
     public void updateGroceryBill_withExistingBill_returnOk() throws Exception {
         // Arrange
-        JsonElement jsonElement = gson.toJsonTree(bill);
-        jsonElement.getAsJsonObject().addProperty("type", "discounted");
+        ObjectNode objectNode = objectMapper.valueToTree(bill);
+        objectNode.put("type", "discounted");
         when(service.updateGroceryBill(Mockito.any())).thenReturn(bill);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.put("/groceryBills")
+        mockMvc.perform(MockMvcRequestBuilders.put("/bills")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(gson.toJson(jsonElement)))
+                .content(objectNode.toPrettyString()))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -192,15 +192,15 @@ public class GroceryBillControllerTest {
     public void updateGroceryBill_withNonExistingBill_returnNotFound() throws Exception {
         // Arrange
         GroceryBill newBill = bill;
-        JsonElement jsonElement = gson.toJsonTree(bill);
-        jsonElement.getAsJsonObject().addProperty("type", "discounted");
-        GroceryBill billInput = gson.fromJson(jsonElement, DiscountedBill.class);
+        ObjectNode objectNode = objectMapper.valueToTree(bill);
+        objectNode.put("type", "discounted");
+        GroceryBill billInput = objectMapper.treeToValue(objectNode, DiscountedBill.class);
         when(service.updateGroceryBill(billInput)).thenReturn(null);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.put("/groceryBills")
+        mockMvc.perform(MockMvcRequestBuilders.put("/bills")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(gson.toJson(jsonElement)))
+                        .content(objectNode.toPrettyString()))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 }

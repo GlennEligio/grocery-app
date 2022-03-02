@@ -2,6 +2,7 @@ import React from "react";
 import AddItemModal from "./AddItemModal";
 import AddItemToBillModal from "./AddItemToBillModal";
 import AddUserModal from "./AddUserModal";
+import BillDetailsModal from "./BillDetailsModal";
 import CheckoutBillModal from "./CheckoutBillModal";
 import DeleteItemModal from "./DeleteItemModal";
 import DeleteUserModal from "./DeleteUserModal";
@@ -24,6 +25,7 @@ const Modal = ({ modal }) => {
         {modal === "set-bill-id-modal" && <SetBillIdModal />}
         {modal === "checkout-bill-modal" && <CheckoutBillModal />}
         {modal === "remove-item-to-bill-modal" && <RemoveItemInBill />}
+        {modal === "bill-details-modal" && <BillDetailsModal />}
       </div>
     </div>
   );

@@ -1,22 +1,10 @@
 package com.accenture.web.domain;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -42,6 +30,9 @@ public abstract class GroceryBill implements Serializable {
 
 	protected double totalBill;
 
+	@Column(columnDefinition = "TIMESTAMP")
+	protected LocalDateTime dateCreated;
+
 	@ManyToOne(targetEntity = ShoppingClerk.class, cascade = { CascadeType.MERGE, CascadeType.REFRESH,
 			CascadeType.PERSIST, CascadeType.DETACH })
 	@JoinColumn(name = "shoppingClerk")
@@ -63,7 +54,7 @@ public abstract class GroceryBill implements Serializable {
 	}
 
 	public void printReceipt() {
-		itemList.forEach(item -> System.out.println(item));
+		itemList.forEach(System.out::println);
 	}
 
 	public abstract double getTotalBill();
@@ -90,6 +81,14 @@ public abstract class GroceryBill implements Serializable {
 
 	public void setShoppingClerk(ShoppingClerk shoppingClerk) {
 		this.shoppingClerk = shoppingClerk;
+	}
+
+	public LocalDateTime getDateCreated() {
+		return dateCreated;
+	}
+
+	public void setDateCreated(LocalDateTime dateCreated) {
+		this.dateCreated = dateCreated;
 	}
 
 	@Override

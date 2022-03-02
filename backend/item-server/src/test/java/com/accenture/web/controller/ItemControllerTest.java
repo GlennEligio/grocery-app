@@ -4,6 +4,7 @@ import static org.mockito.Mockito.*;
 
 import com.accenture.web.domain.Item;
 import com.accenture.web.service.ItemServiceImpl;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,11 +35,11 @@ public class ItemControllerTest {
 
     private Item item;
     private List<Item> items;
-    private Gson gson;
+    private ObjectMapper objectMapper;
 
     @BeforeEach
     void setup(){
-        gson = new Gson();
+        objectMapper = new ObjectMapper();
         item = new Item(0, "name0", 100, true, 0.5);
         items = Arrays.asList(new Item(0, "name0", 100, true, 0.5),
                 new Item(1, "name1", 101, true, 0.5),
@@ -50,13 +51,11 @@ public class ItemControllerTest {
     public void getAllItems_withExistingUser_returnOk() throws Exception {
         // Arrange
         when(service.getAllItems()).thenReturn(items);
-        log.info(items.toString());
-        log.info(gson.toJson(items));
 
         // Assert
         mockMvc.perform(MockMvcRequestBuilders.get("/items"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(gson.toJson(items)));
+                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(items)));
     }
 
     @Test
@@ -69,7 +68,7 @@ public class ItemControllerTest {
         // Assert
         mockMvc.perform(MockMvcRequestBuilders.get("/items/" + id))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(gson.toJson(item)));
+                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(item)));
     }
 
     @Test
@@ -94,9 +93,9 @@ public class ItemControllerTest {
         // Assert
         mockMvc.perform(MockMvcRequestBuilders.post("/items")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(gson.toJson(newItem)))
+                .content(objectMapper.writeValueAsString(newItem)))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.content().json(gson.toJson(item)));
+                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(newItem)));
     }
 
     @Test
@@ -109,7 +108,7 @@ public class ItemControllerTest {
         // Assert
         mockMvc.perform(MockMvcRequestBuilders.post("/items")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(gson.toJson(existingItem)))
+                .content(objectMapper.writeValueAsString(existingItem)))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
@@ -147,7 +146,7 @@ public class ItemControllerTest {
         // Assert
         mockMvc.perform(MockMvcRequestBuilders.put("/items")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(gson.toJson(existingItem)))
+                .content(objectMapper.writeValueAsString(existingItem)))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -161,7 +160,7 @@ public class ItemControllerTest {
         // Assert
         mockMvc.perform(MockMvcRequestBuilders.put("/items")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(gson.toJson(nonExistingItem)))
+                        .content(objectMapper.writeValueAsString(nonExistingItem)))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 }
