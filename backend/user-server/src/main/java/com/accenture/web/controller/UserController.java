@@ -3,15 +3,17 @@ package com.accenture.web.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
+import javax.ws.rs.HeaderParam;
 
+import com.accenture.web.exception.AppException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,8 +22,8 @@ import org.springframework.web.bind.annotation.*;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
-import com.accenture.web.domain.AuthenticationRequest;
-import com.accenture.web.domain.AuthenticationResponse;
+import com.accenture.web.dtos.AuthenticationRequest;
+import com.accenture.web.dtos.AuthenticationResponse;
 import com.accenture.web.domain.User;
 import com.accenture.web.service.UserServiceImpl;
 import com.accenture.web.util.JwtUtil;
@@ -66,13 +68,16 @@ public class UserController {
 	@PostMapping("/users/register")
 	public ResponseEntity<?> registerUser(@Valid @RequestBody User user) {
 		log.info("Registering user " + user);
+
+		user.setRoles("ROLE_CLERK");
+
 		User userDb = service.addUser(user);
 
 		if (userDb != null) {
 			log.info("Register success");
 			return ResponseEntity.ok().build();
 		}
-		
+
 		return ResponseEntity.notFound().build();
 	}
 
@@ -105,8 +110,14 @@ public class UserController {
 	}
 
 	@PostMapping("/users")
-	public ResponseEntity<?> createUser(@RequestBody User user) {
+	public ResponseEntity<?> createUser(@Valid @RequestBody User user) {
 		log.info("Adding user: " + user);
+
+		if(user.getRoles().contains("ROLE_ADMIN")
+			&& !SecurityContextHolder.getContext().getAuthentication().getAuthorities().contains(new SimpleGrantedAuthority("ROLE_SADMIN"))){
+			throw new AppException("Only Super Admin can create Admins", HttpStatus.UNAUTHORIZED);
+		}
+
 		User userDb = service.addUser(user);
 
 		if (userDb != null) {

@@ -53,7 +53,6 @@ public class JwtUtil {
 
 	// EXTRACTING CLAIM(S)
 	private Claims extractAllClaims(String token) {
-		log.info(SECRET_KEY);
 		return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
 	}
 

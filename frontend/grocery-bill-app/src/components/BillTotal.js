@@ -38,7 +38,9 @@ const BillTotal = ({ currentBill, updateCurrentBillType }) => {
     <div className="bill-total">
       <div className="bill-total-info">
         <sub>Sub Total</sub>
-        <sub>${discounted ? subTotalDiscount : subTotal}</sub>
+        <sub>
+          ${discounted ? subTotalDiscount.toFixed(2) : subTotal.toFixed(2)}
+        </sub>
       </div>
       <div className="bill-total-info">
         <sub>Discounted?</sub>
@@ -59,7 +61,12 @@ const BillTotal = ({ currentBill, updateCurrentBillType }) => {
       </div>
       <div className="bill-total-info">
         <h3>Total</h3>
-        <h3>${discounted ? subTotalDiscount - tax : subTotal - tax}</h3>
+        <h3>
+          $
+          {discounted
+            ? (subTotalDiscount - tax).toFixed(2)
+            : (subTotal - tax).toFixed(2)}
+        </h3>
       </div>
     </div>
   );

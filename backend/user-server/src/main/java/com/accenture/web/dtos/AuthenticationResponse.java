@@ -1,4 +1,4 @@
-package com.accenture.web.domain;
+package com.accenture.web.dtos;
 
 import java.util.Objects;
 

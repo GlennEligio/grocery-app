@@ -16,7 +16,7 @@ import {
   DELETE_USER_FAILED,
 } from "./types";
 
-export const createUser = (user) => (dispatch) => {
+export const registerUser = (user) => (dispatch) => {
   dispatch({
     type: CREATE_USER_BEGIN,
   });
@@ -29,6 +29,32 @@ export const createUser = (user) => (dispatch) => {
   }).then((res) => {
     switch (res.status) {
       case 200:
+        dispatch({
+          type: CREATE_USER_SUCCESS,
+        });
+        break;
+      default:
+        dispatch({
+          type: CREATE_USER_FAILED,
+        });
+    }
+  });
+};
+
+export const createUser = (user, jwt) => (dispatch) => {
+  dispatch({
+    type: CREATE_USER_BEGIN,
+  });
+  fetch("http://localhost:8080/users", {
+    method: "POST",
+    headers: {
+      "Content-type": "application/json",
+      Authorization: `Bearer ${jwt}`,
+    },
+    body: JSON.stringify(user),
+  }).then((res) => {
+    switch (res.status) {
+      case 201:
         dispatch({
           type: CREATE_USER_SUCCESS,
         });

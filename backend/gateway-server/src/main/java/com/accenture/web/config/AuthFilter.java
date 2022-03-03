@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -44,7 +45,7 @@ public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> 
                     .uri("http://user-service/users/validateToken?token=" + parts[1])
                     .retrieve().bodyToMono(UserDto.class)
                     .map(userDto -> {
-                        log.info("Authentication success: {}", userDto.getUsername());
+                        log.info("Authentication success! " + "Username " + userDto.getUsername() + " access " + exchange.getRequest().getPath());
                         exchange.getRequest()
                                 .mutate()
                                 .header("X-auth-user-id", userDto.getUsername());

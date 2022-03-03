@@ -15,7 +15,7 @@ const AdminBillSection = ({ billHistory, loading, error, jwt, fetchBills }) => {
 
   return (
     <div className="admin-home-bills">
-      <div className="admin-home-bills search-bar">
+      <div className="search-bar">
         <input
           type="text"
           value={query}
@@ -25,7 +25,7 @@ const AdminBillSection = ({ billHistory, loading, error, jwt, fetchBills }) => {
         <FaTimesCircle className="interactable" onClick={() => setQuery("")} />
         <MdRefresh className="interactable" onClick={() => fetchBills(jwt)} />
       </div>
-      <div className="admin-home-bills table header">
+      <div className="table header">
         {loading && (
           <div className="form-control-loading">
             <div>
@@ -55,7 +55,7 @@ const AdminBillSection = ({ billHistory, loading, error, jwt, fetchBills }) => {
           </table>
         )}
       </div>
-      <div className="admin-home-bills table body">
+      <div className="table body">
         {!error && !loading && (
           <table className="table">
             <tbody>

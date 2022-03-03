@@ -1,6 +1,6 @@
 package com.accenture.web.service;
 
-import com.accenture.web.domain.AuthenticationResponse;
+import com.accenture.web.dtos.AuthenticationResponse;
 import com.accenture.web.domain.User;
 
 import java.util.List;

@@ -22,7 +22,7 @@ const AdminItemSection = ({
 
   return (
     <div className="admin-home-items">
-      <div className="admin-home-items search-bar">
+      <div className="search-bar">
         <input
           type="text"
           value={query}
@@ -39,7 +39,7 @@ const AdminItemSection = ({
         />
         <MdRefresh className="interactable" onClick={() => fetchItems(jwt)} />
       </div>
-      <div className="admin-home-items table header">
+      <div className="table header">
         {loading && (
           <div className="form-control-loading">
             <div>
@@ -69,7 +69,7 @@ const AdminItemSection = ({
           </table>
         )}
       </div>
-      <div className="admin-home-items table body">
+      <div className="table body">
         {!error && !loading && (
           <table className="table">
             <tbody>

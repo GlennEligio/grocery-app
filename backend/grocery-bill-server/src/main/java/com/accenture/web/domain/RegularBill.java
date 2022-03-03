@@ -2,6 +2,8 @@ package com.accenture.web.domain;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import java.text.NumberFormat;
+import java.util.Formatter;
 
 @Entity
 @DiscriminatorValue(value = "regular_bill")
@@ -20,8 +22,11 @@ public class RegularBill extends GroceryBill {
 	@Override
 	public double getTotalBill() {
 		totalBill = 0;
-		for (Item item : itemList) {
-			totalBill += item.getPrice();
+		if(itemList != null){
+			for (Item item : itemList) {
+				totalBill += item.getPrice();
+			}
+			return totalBill;
 		}
 		return totalBill;
 	}

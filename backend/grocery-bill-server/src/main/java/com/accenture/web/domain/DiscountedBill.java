@@ -2,6 +2,8 @@ package com.accenture.web.domain;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import java.text.NumberFormat;
+import java.util.Formatter;
 
 @Entity
 @DiscriminatorValue(value = "discounted_bill")

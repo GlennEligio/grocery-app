@@ -17,7 +17,7 @@ const AdminBill = ({ bill, setModalComponent, updateBillSelected }) => {
       <td>{bill.shoppingClerk.name}</td>
       <td>{bill.dateCreated}</td>
       <td>{bill.type}</td>
-      <td>{bill.totalBill}</td>
+      <td>{bill.totalBill.toFixed(2)}</td>
     </tr>
   );
 };

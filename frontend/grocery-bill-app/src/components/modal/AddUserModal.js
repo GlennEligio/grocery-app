@@ -4,10 +4,11 @@ import { connect } from "react-redux";
 import { FaSpinner } from "react-icons/fa";
 import { createUser } from "../../actions/userActions";
 
-const AddUserModal = ({ error, loading, createUser }) => {
+const AddUserModal = ({ jwt, role, error, loading, createUser }) => {
   const [name, setName] = useState("");
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
+  const [roles, setRoles] = useState("ROLE_CLERK");
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -21,9 +22,10 @@ const AddUserModal = ({ error, loading, createUser }) => {
       name: name,
       username: username,
       password: password,
+      roles: roles,
     };
 
-    createUser(user);
+    createUser(user, jwt);
 
     if (!loading && !error) {
       document.getElementById("modal-id").style.display = "none";
@@ -85,6 +87,21 @@ const AddUserModal = ({ error, loading, createUser }) => {
               }}
             />
           </div>
+          <div className="form-control">
+            <label>Role: </label>
+            <select
+              name="roles"
+              id="roles"
+              value={roles}
+              onChange={(e) => setRoles(e.target.value)}
+            >
+              <option value="ROLE_CLERK">CLERK</option>
+              {role === "ROLE_SADMIN" && (
+                <option value="ROLE_ADMIN">ADMIN</option>
+              )}
+            </select>
+          </div>
+
           <div className="form-control-button">
             <button className="btn">Add</button>
           </div>
@@ -95,9 +112,10 @@ const AddUserModal = ({ error, loading, createUser }) => {
 };
 
 const mapStateToProps = (state) => ({
+  jwt: state.auth.jwt,
+  role: state.auth.role,
   error: state.user.error,
   loading: state.user.loading,
-  jwt: state.auth.jwt,
 });
 
 export default connect(mapStateToProps, { createUser })(AddUserModal);

@@ -2,8 +2,9 @@ package com.accenture.web.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-import com.accenture.web.domain.AuthenticationResponse;
+import com.accenture.web.dtos.AuthenticationResponse;
 import com.accenture.web.domain.MyUserDetails;
 import com.accenture.web.exception.AppException;
 import com.accenture.web.repository.UserRepository;
@@ -39,7 +40,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	
 	public List<User> getAllUsers(){
 		log.info("Fetching users from repository");
-		return (List<User>) repository.findAll();
+		List<User> users = (List<User>) repository.findAll();
+		return users.stream().filter((user) -> !user.getRoles().contains("ROLE_SADMIN")).collect(Collectors.toList());
 	}
 	
 	public User getUser(Integer id) {
@@ -59,7 +61,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 		}
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
 		user.setActive(true);
-		user.setRoles("ROLE_CLERK");
 		return repository.save(user);
 	}
 

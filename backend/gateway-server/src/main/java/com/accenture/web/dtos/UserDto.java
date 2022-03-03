@@ -1,10 +1,14 @@
 package com.accenture.web.dtos;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+
 import java.util.Objects;
 
 public class UserDto {
 
+    @JsonAlias({"username", "user"})
     private String username;
+    @JsonAlias({"token", "jwt"})
     private String token;
     private String role;
 

@@ -30,7 +30,7 @@ const Login = ({
       });
       if (role === "ROLE_CLERK") {
         navigate("/clerk");
-      } else if (role === "ROLE_ADMIN") {
+      } else if (role === "ROLE_ADMIN" || role === "ROLE_SADMIN") {
         navigate("/admin");
       } else {
         resetAuthState();

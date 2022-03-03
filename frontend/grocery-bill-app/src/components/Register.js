@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { FaSpinner, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-import { createUser } from "../actions/userActions";
+import { registerUser } from "../actions/userActions";
 import { resetAuthState } from "../actions/authActions";
 import { resetUserState } from "../actions/userActions";
 
@@ -12,7 +12,7 @@ const Register = ({
   error,
   loading,
   status,
-  createUser,
+  registerUser,
   resetAuthState,
   resetUserState,
 }) => {
@@ -44,7 +44,7 @@ const Register = ({
       password: password,
     };
 
-    createUser(user);
+    registerUser(user);
 
     setName("");
     setPassword("");
@@ -128,7 +128,7 @@ const mapStateToProps = (state) => ({
 });
 
 export default connect(mapStateToProps, {
-  createUser,
+  registerUser,
   resetAuthState,
   resetUserState,
 })(Register);

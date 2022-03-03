@@ -7,6 +7,7 @@ const billConverter = (bill) => {
     /*
       Checks if the item in bill already exist in the item array
       If it does, increment the item's amount and set inItemList bool to true
+      Else, just return the item
     */
     itemListWithAmount = itemListWithAmount.map((itemInList) => {
       if (itemInList.id === item.id) {

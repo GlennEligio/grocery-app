@@ -315,8 +315,8 @@ td svg:hover {
 
 /* Toolbar */
 .toolbar {
-  flex: 1 0 0;
-  margin: 0px 20px;
+  flex: 1 1 0;
+  margin: 10px 20px 0px 20px;
   padding: 0px 20px;
   border-radius: 5px;
   border: 1px solid gray;
@@ -364,12 +364,11 @@ td svg:hover {
 
 /* Clerk page */
 .clerk-home {
-  flex: 23 0 0;
-  max-height: 90%;
-  margin-bottom: 10px;
+  flex: 9 0 0;
 
   display: flex;
   align-items: center;
+  overflow-y: hidden;
 }
 .bill-section {
   height: 100%;
@@ -550,143 +549,124 @@ td svg:hover {
 
 /* Admin page */
 .admin-home {
-  flex: 23 1 auto;
-  max-height: 90%;
+  flex: 9 0 0;
   margin: 0px 20px;
+  overflow-y: hidden;
 
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  overflow-y: auto;
 }
 .admin-home-users,
 .admin-home-items,
 .admin-home-bills {
-  flex: 1 0 0;
+  flex: 1 1 0;
+  max-height: 30%;
   width: 100%;
-  max-height: 33%;
+  margin-bottom: 20px;
 
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
 }
-.admin-home-users.search-bar,
-.admin-home-items.search-bar,
-.admin-home-bills.search-bar {
+.search-bar {
   flex: 1 0 10%;
-  max-height: 10%;
-  margin-bottom: 10px;
+  width: 100%;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: flex-start;
 }
-.admin-home-users.search-bar input,
-.admin-home-items.search-bar input,
-.admin-home-bills.search-bar input {
+.search-bar input {
   flex: 1 0 auto;
 }
-.admin-home-users.search-bar svg,
-.admin-home-items.search-bar svg,
-.admin-home-bills.search-bar svg {
+.search-bar svg {
   margin-left: 10px;
 }
-.admin-home-users.table,
-.admin-home-items.table,
-.admin-home-bills.table {
+.admin-home .table {
   width: 100%;
 }
-.admin-home-items.table.header,
-.admin-home-users.table.header,
-.admin-home-bills.table.header {
+.admin-home .table.header {
   flex: 1 0 10%;
-  max-height: 15%;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
-.admin-home-items.table.body,
-.admin-home-users.table.body,
-.admin-home-bills.table.body {
-  flex: 10 0 70%;
-  max-height: 50%;
+.admin-home .table.body {
+  flex: 10 0 50%;
   overflow-y: auto;
 }
-.admin-home-items.table.header th:nth-child(1),
-.admin-home-items.table.body td:nth-child(1) {
+.admin-home-items .table.header th:nth-child(1),
+.admin-home-items .table.body td:nth-child(1) {
   width: 10%;
 }
-.admin-home-items.table.header th:nth-child(2),
-.admin-home-items.table.body td:nth-child(2) {
+.admin-home-items .table.header th:nth-child(2),
+.admin-home-items .table.body td:nth-child(2) {
   width: 30%;
 }
-.admin-home-items.table.header th:nth-child(3),
-.admin-home-items.table.body td:nth-child(3) {
+.admin-home-items .table.header th:nth-child(3),
+.admin-home-items .table.body td:nth-child(3) {
   width: 20%;
 }
-.admin-home-items.table.header th:nth-child(4),
-.admin-home-items.table.body td:nth-child(4) {
+.admin-home-items .table.header th:nth-child(4),
+.admin-home-items .table.body td:nth-child(4) {
   width: 10%;
 }
-.admin-home-items.table.header th:nth-child(5),
-.admin-home-items.table.body td:nth-child(5) {
+.admin-home-items .table.header th:nth-child(5),
+.admin-home-items .table.body td:nth-child(5) {
   width: 15%;
 }
-.admin-home-items.table.header th:nth-child(6),
-.admin-home-items.table.body td:nth-child(6) {
+.admin-home-items .table.header th:nth-child(6),
+.admin-home-items .table.body td:nth-child(6) {
   width: 10%;
 }
 
 /* User table */
-.admin-home-users.table.header th:nth-child(1),
-.admin-home-users.table.body td:nth-child(1) {
+.admin-home-users .table.header th:nth-child(1),
+.admin-home-users .table.body td:nth-child(1) {
   width: 10%;
 }
-.admin-home-users.table.header th:nth-child(2),
-.admin-home-users.table.body td:nth-child(2) {
+.admin-home-users .table.header th:nth-child(2),
+.admin-home-users .table.body td:nth-child(2) {
   width: 30%;
 }
-.admin-home-users.table.header th:nth-child(3),
-.admin-home-users.table.body td:nth-child(3) {
+.admin-home-users .table.header th:nth-child(3),
+.admin-home-users .table.body td:nth-child(3) {
   width: 20%;
 }
-.admin-home-users.table.header th:nth-child(4),
-.admin-home-users.table.body td:nth-child(4) {
+.admin-home-users .table.header th:nth-child(4),
+.admin-home-users .table.body td:nth-child(4) {
   width: 10%;
 }
-.admin-home-users.table.header th:nth-child(5),
-.admin-home-users.table.body td:nth-child(5) {
+.admin-home-users .table.header th:nth-child(5),
+.admin-home-users .table.body td:nth-child(5) {
   width: 20%;
 }
-.admin-home-users.table.header th:nth-child(6),
-.admin-home-users.table.body td:nth-child(6) {
+.admin-home-users .table.header th:nth-child(6),
+.admin-home-users .table.body td:nth-child(6) {
   width: 10%;
 }
 
 /* Bills table */
-.admin-home-bills.table.header th:nth-child(1),
-.admin-home-bills.table.body td:nth-child(1) {
+.admin-home-bills .table.header th:nth-child(1),
+.admin-home-bills .table.body td:nth-child(1) {
   width: 16%;
 }
-.admin-home-bills.table.header th:nth-child(2),
-.admin-home-bills.table.body td:nth-child(2) {
+.admin-home-bills .table.header th:nth-child(2),
+.admin-home-bills .table.body td:nth-child(2) {
   width: 16%;
 }
-.admin-home-bills.table.header th:nth-child(3),
-.admin-home-bills.table.body td:nth-child(3) {
+.admin-home-bills .table.header th:nth-child(3),
+.admin-home-bills .table.body td:nth-child(3) {
   width: 20%;
 }
-.admin-home-bills.table.header th:nth-child(4),
-.admin-home-bills.table.body td:nth-child(4) {
+.admin-home-bills .table.header th:nth-child(4),
+.admin-home-bills .table.body td:nth-child(4) {
   width: 16%;
 }
-.admin-home-bills.table.header th:nth-child(5),
-.admin-home-bills.table.body td:nth-child(5) {
+.admin-home-bills .table.header th:nth-child(5),
+.admin-home-bills .table.body td:nth-child(5) {
   width: 16%;
 }
-.admin-home-bills.table.header th:nth-child(6),
-.admin-home-bills.table.body td:nth-child(6) {
+.admin-home-bills .table.header th:nth-child(6),
+.admin-home-bills .table.body td:nth-child(6) {
   width: 16%;
 }
