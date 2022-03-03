@@ -23,6 +23,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @SpringBootTest
 @TestPropertySource(properties = { "user-service.jwt=grocerybillapp" })
@@ -40,9 +41,9 @@ public class UserServiceTest {
     @BeforeEach
     void setup(){
         List<User> users = new ArrayList<User>();
-        users.add(new User(0, "name0", "user0", "pass0"));
-        users.add(new User(1, "name1", "user1", "pass1"));
-        users.add(new User(2, "name2", "user2", "pass2"));
+        users.add(new User(0, "name0", "user0", "pass0", true, "ROLE_CLERK"));
+        users.add(new User(1, "name1", "user1", "pass1", true, "ROLE_ADMIN"));
+        users.add(new User(2, "name2", "user2", "pass2", true, "ROLE_SADMIN"));
 
         User user = new User(0, "name0", "user0", "pass0", true, "ROLE_CLERK");
 
@@ -92,7 +93,8 @@ public class UserServiceTest {
         List<User> users = userServiceImpl.getAllUsers();
 
         // Assert
-        assertEquals(3, users.size());
+        assertEquals(2, users.size());
+        assertEquals(0, users.stream().filter((user -> user.getRoles().contains("ROLE_SADMIN"))).count());
     }
 
     @Test

@@ -10,7 +10,9 @@ import com.accenture.web.domain.User;
 import com.accenture.web.repository.UserRepository;
 import com.accenture.web.service.UserServiceImpl;
 import com.accenture.web.util.JwtUtil;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -52,7 +54,7 @@ public class UserControllerTest {
     @MockBean
     private AuthenticationManager authenticationManager;
 
-    private User user;
+    private User user, admin;
     private List<User> userList;
     private ObjectMapper objectMapper;
 
@@ -60,6 +62,7 @@ public class UserControllerTest {
     void setup(){
         objectMapper = new ObjectMapper();
         user = new User(0, "name0", "user0", "pass0", true, "ROLE_CLERK");
+        admin = new User(1, "name1", "admin1", "pass1", true, "ROLE_ADMIN");
     }
 
     @Test
@@ -95,13 +98,15 @@ public class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isForbidden());
     }
 
-    @Test
-    @DisplayName("Register New User")
-    @WithMockUser(roles = "CLERK")
-    public void registerUser_withNewUser_returnOk() throws Exception{
-        // Arrange
-        User newUser = new User("name0", "user0", "pass0");
-        when(service.addUser(newUser)).thenReturn(user);
+        @Test
+        @DisplayName("Register New User")
+        @WithMockUser(roles = "CLERK")
+        public void registerUser_withNewUser_returnOk() throws Exception{
+            // Arrange
+            User newUser = new User("name0", "user0", "pass0");
+            ObjectNode node = objectMapper.valueToTree(newUser);
+            node.put("roles", "ROLE_CLERK");
+            when(service.addUser(objectMapper.readValue(node.toString(), User.class))).thenReturn(user);
 
         // Assert
         mockMvc.perform(MockMvcRequestBuilders.post("/users/register")
@@ -123,6 +128,37 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(newUser)))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Create Admin using user with ROLE_SADMIN privilege")
+    @WithMockUser(roles = "SADMIN")
+    public void createAdmin_withSAdminPrivilege_returnsCreated() throws Exception{
+        // Arrange
+        User newUser = new User("name1", "admin1", "pass1", "ROLE_ADMIN");
+        when(service.addUser(newUser)).thenReturn(admin);
+
+        // Assert
+        mockMvc.perform(MockMvcRequestBuilders.post("/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(newUser)))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(admin)));
+    }
+
+    @Test
+    @DisplayName("Create Admin using user with no ROLE_SADMIN privilege")
+    @WithMockUser(roles = "ADMIN")
+    public void createAdmin_withNoSAdminPrivilege_returnsCreated() throws Exception{
+        // Arrange
+        User newUser = new User("name1", "admin1", "pass1", "ROLE_ADMIN");
+        when(service.addUser(newUser)).thenReturn(admin);
+
+        // Assert
+        mockMvc.perform(MockMvcRequestBuilders.post("/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(newUser)))
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
 
     @Test
@@ -157,7 +193,7 @@ public class UserControllerTest {
     @WithMockUser(roles = "ADMIN")
     public void createUser_withNewUser_returnCreated() throws Exception {
         // Arrange
-        User newUser = new User("name0", "user0", "pass0");
+        User newUser = new User("name0", "user0", "pass0", "ROLE_CLERK");
         when(service.addUser(newUser)).thenReturn(user);
 
         // Assert
@@ -173,7 +209,7 @@ public class UserControllerTest {
     @WithMockUser(roles = "ADMIN")
     public void createUser_withExistingUser_returnNotFound() throws Exception {
         // Arrange
-        User existingUser = new User("name3", "user3", "pass3");
+        User existingUser = new User("name3", "user3", "pass3", "ROLE_CLERK");
         when(service.addUser(existingUser)).thenReturn(null);
 
         // Assert
