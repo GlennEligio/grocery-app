@@ -82,7 +82,7 @@ public class UserControllerTest {
         when(service.getAllUsers()).thenReturn(userList);
 
         // Act
-        mockMvc.perform(MockMvcRequestBuilders.get("/users"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/users"))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -94,7 +94,7 @@ public class UserControllerTest {
         when(service.getAllUsers()).thenReturn(userList);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.get("/users"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/users"))
                 .andExpect(MockMvcResultMatchers.status().isForbidden());
     }
 
@@ -109,7 +109,7 @@ public class UserControllerTest {
             when(service.addUser(objectMapper.readValue(node.toString(), User.class))).thenReturn(user);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.post("/users/register")
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(newUser)))
                 .andExpect(MockMvcResultMatchers.status().isOk());
@@ -124,7 +124,7 @@ public class UserControllerTest {
         when(service.addUser(newUser)).thenReturn(null);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.post("/users/register")
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(newUser)))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
@@ -139,7 +139,7 @@ public class UserControllerTest {
         when(service.addUser(newUser)).thenReturn(admin);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.post("/users")
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(newUser)))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
@@ -155,7 +155,7 @@ public class UserControllerTest {
         when(service.addUser(newUser)).thenReturn(admin);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.post("/users")
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(newUser)))
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized());
@@ -170,7 +170,7 @@ public class UserControllerTest {
         when(service.getUser(0)).thenReturn(user);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.get("/users/0"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/users/0"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(user)));
     }
@@ -184,7 +184,7 @@ public class UserControllerTest {
         when(service.getUser(3)).thenReturn(null);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.get("/users/3"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/users/3"))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
@@ -197,7 +197,7 @@ public class UserControllerTest {
         when(service.addUser(newUser)).thenReturn(user);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.post("/users")
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(newUser)))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
@@ -213,7 +213,7 @@ public class UserControllerTest {
         when(service.addUser(existingUser)).thenReturn(null);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.post("/users")
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(existingUser)))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
@@ -224,11 +224,11 @@ public class UserControllerTest {
     @WithMockUser(roles = "ADMIN")
     public void deleteUser_withExistingUser_returnOk() throws Exception {
         // Arrange
-        Integer userId = 0;
+        int userId = 0;
         when(service.deleteUser(0)).thenReturn(true);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.delete("/users/" + userId))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/users/" + userId))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -237,11 +237,11 @@ public class UserControllerTest {
     @WithMockUser(roles = "ADMIN")
     public void deleteUser_withNonExistingUser_returnNotFound() throws Exception {
         // Arrange
-        Integer userId = 3;
+        int userId = 3;
         when(service.deleteUser(3)).thenReturn(false);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.delete("/users/" + userId))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/users/" + userId))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
@@ -253,7 +253,7 @@ public class UserControllerTest {
         when(service.updateUser(user)).thenReturn(true);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.put("/users")
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/users")
                 .content(objectMapper.writeValueAsString(user))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk());
@@ -267,7 +267,7 @@ public class UserControllerTest {
         when(service.updateUser(user)).thenReturn(false);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.put("/users")
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/users")
                         .content(objectMapper.writeValueAsString(user))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
@@ -288,7 +288,7 @@ public class UserControllerTest {
         when(passwordEncoder.matches(validUser.getPassword(), userDetails.getPassword())).thenReturn(true);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.post("/users/login")
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(validUser)))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -305,7 +305,7 @@ public class UserControllerTest {
         when(service.loadUserByUsername("user3")).thenReturn(null);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.post("/users/login")
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(nonExistingUser)))
                 .andExpect(MockMvcResultMatchers.status().isForbidden());
@@ -322,7 +322,7 @@ public class UserControllerTest {
         when(passwordEncoder.matches(validUser.getPassword(), myUserDetails.getPassword())).thenReturn(false);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.post("/users/login")
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validUser)))
                 .andExpect(MockMvcResultMatchers.status().isForbidden());

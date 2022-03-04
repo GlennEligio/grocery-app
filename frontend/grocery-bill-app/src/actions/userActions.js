@@ -20,7 +20,7 @@ export const registerUser = (user) => (dispatch) => {
   dispatch({
     type: CREATE_USER_BEGIN,
   });
-  fetch("http://localhost:8080/users/register", {
+  fetch("http://localhost:8080/api/v1/users/register", {
     method: "POST",
     headers: {
       "Content-type": "application/json",
@@ -45,7 +45,7 @@ export const createUser = (user, jwt) => (dispatch) => {
   dispatch({
     type: CREATE_USER_BEGIN,
   });
-  fetch("http://localhost:8080/users", {
+  fetch("http://localhost:8080/api/v1/users", {
     method: "POST",
     headers: {
       "Content-type": "application/json",
@@ -71,7 +71,7 @@ export const fetchUsers = (jwt) => (dispatch) => {
   dispatch({
     type: FETCH_USERS_BEGIN,
   });
-  fetch("http://localhost:8080/users", {
+  fetch("http://localhost:8080/api/v1/users", {
     method: "GET",
     headers: {
       Authorization: `Bearer ${jwt}`,
@@ -106,7 +106,7 @@ export const editUserInServer = (user, jwt) => (dispatch) => {
   dispatch({
     type: EDIT_USER_BEGIN,
   });
-  fetch("http://localhost:8080/users", {
+  fetch("http://localhost:8080/api/v1/users", {
     method: "PUT",
     headers: {
       Authorization: `Bearer ${jwt}`,
@@ -139,7 +139,7 @@ export const deleteUserInServer = (id, jwt) => (dispatch) => {
   dispatch({
     type: DELETE_USER_BEGIN,
   });
-  fetch(`http://localhost:8080/users/${id}`, {
+  fetch(`http://localhost:8080/api/v1/users/${id}`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${jwt}`,

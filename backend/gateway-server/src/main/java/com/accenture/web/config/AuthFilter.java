@@ -42,7 +42,7 @@ public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> 
 
             return webClientBuilder.build()
                     .post()
-                    .uri("http://user-service/users/validateToken?token=" + parts[1])
+                    .uri("http://user-service/api/v1/users/validateToken?token=" + parts[1])
                     .retrieve().bodyToMono(UserDto.class)
                     .map(userDto -> {
                         log.info("Authentication success! " + "Username " + userDto.getUsername() + " access " + exchange.getRequest().getPath());

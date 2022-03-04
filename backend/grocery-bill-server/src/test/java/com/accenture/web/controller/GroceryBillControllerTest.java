@@ -68,7 +68,7 @@ public class GroceryBillControllerTest {
         when(service.getAllGroceryBills()).thenReturn(bills);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.get("/bills"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/bills"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(bills)));
     }
@@ -80,7 +80,7 @@ public class GroceryBillControllerTest {
         when(service.getAllGroceryBills()).thenReturn(null);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.get("/bills"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/bills"))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
@@ -92,7 +92,7 @@ public class GroceryBillControllerTest {
         when(service.getGroceryBill(id)).thenReturn(bill);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.get("/bills/" + id))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/bills/" + id))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(bill)));
     }
@@ -105,7 +105,7 @@ public class GroceryBillControllerTest {
         when(service.getGroceryBill(id)).thenReturn(null);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.get("/bills/" + id))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/bills/" + id))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
@@ -122,7 +122,7 @@ public class GroceryBillControllerTest {
         when(service.addGroceryBill(Mockito.any())).thenReturn(bill);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.post("/bills")
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/bills")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectNode.toPrettyString()))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
@@ -141,7 +141,7 @@ public class GroceryBillControllerTest {
         when(service.addGroceryBill(newBill)).thenReturn(null);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.post("/bills")
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/bills")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectNode.toPrettyString()))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
@@ -155,7 +155,7 @@ public class GroceryBillControllerTest {
         when(service.deleteGroceryBill(id)).thenReturn(true);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.delete("/bills/" + id))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/bills/" + id))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -167,7 +167,7 @@ public class GroceryBillControllerTest {
         when(service.deleteGroceryBill(id)).thenReturn(false);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.delete("/bills/" + id))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/bills/" + id))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
@@ -181,7 +181,7 @@ public class GroceryBillControllerTest {
         when(service.updateGroceryBill(Mockito.any())).thenReturn(bill);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.put("/bills")
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/bills")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectNode.toPrettyString()))
                 .andExpect(MockMvcResultMatchers.status().isOk());
@@ -198,7 +198,7 @@ public class GroceryBillControllerTest {
         when(service.updateGroceryBill(billInput)).thenReturn(null);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.put("/bills")
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/bills")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectNode.toPrettyString()))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());

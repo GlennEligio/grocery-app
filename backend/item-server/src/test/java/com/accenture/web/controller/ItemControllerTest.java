@@ -53,7 +53,7 @@ public class ItemControllerTest {
         when(service.getAllItems()).thenReturn(items);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.get("/items"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/items"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(items)));
     }
@@ -66,7 +66,7 @@ public class ItemControllerTest {
         when(service.getItem(0)).thenReturn(item);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.get("/items/" + id))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/items/" + id))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(item)));
     }
@@ -79,7 +79,7 @@ public class ItemControllerTest {
         when(service.getItem(3)).thenReturn(null);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.get("/items/"+id))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/items/"+id))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
@@ -91,7 +91,7 @@ public class ItemControllerTest {
         when(service.addItem(newItem)).thenReturn(item);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.post("/items")
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/items")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(newItem)))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
@@ -106,7 +106,7 @@ public class ItemControllerTest {
         when(service.addItem(existingItem)).thenReturn(null);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.post("/items")
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/items")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(existingItem)))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
@@ -120,7 +120,7 @@ public class ItemControllerTest {
         when(service.deleteItem(0)).thenReturn(true);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.delete("/items/" + id))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/items/" + id))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -132,7 +132,7 @@ public class ItemControllerTest {
         when(service.deleteItem(3)).thenReturn(false);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.delete("/items/" + id))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/items/" + id))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
@@ -144,7 +144,7 @@ public class ItemControllerTest {
         when(service.updateItem(existingItem)).thenReturn(existingItem);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.put("/items")
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/items")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(existingItem)))
                 .andExpect(MockMvcResultMatchers.status().isOk());
@@ -158,7 +158,7 @@ public class ItemControllerTest {
         when(service.updateItem(nonExistingItem)).thenReturn(null);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.put("/items")
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/items")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(nonExistingItem)))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());

@@ -9,7 +9,7 @@ const BillDetailsModal = ({ jwt, billSelected }) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetch(`http://localhost:8080/bills/${billSelected.id}`, {
+    fetch(`http://localhost:8080/api/v1/bills/${billSelected.id}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${jwt}`,

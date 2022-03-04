@@ -23,17 +23,17 @@ spring:
         - id: service-user-id
           uri: lb://user-service
           predicates:
-            Path=/users/**
+            Path=/api/v1/users/**
         - id: service-grocerybill-id
           uri: lb://grocery-bill-service
           predicates:
-            Path=/bills/**
+            Path=/api/v1/bills/**
           filters:
             - AuthFilter
         - id: service-item-id
           uri: lb://item-service
           predicates:
-            Path=/items/**
+            Path=/api/v1/items/**
           filters:
             - AuthFilter
 

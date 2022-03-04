@@ -30,7 +30,7 @@ export const fetchBills = (jwt) => (dispatch) => {
   dispatch({
     type: FETCH_BILLS_BEGIN,
   });
-  fetch("http://localhost:8080/bills/summary", {
+  fetch("http://localhost:8080/api/v1/bills/summary", {
     method: "GET",
     headers: {
       Authorization: `Bearer ${jwt}`,
@@ -68,47 +68,6 @@ export const updateBillSelected = (bill) => (dispatch) => {
     payload: bill,
   });
 };
-
-// export const createBill = (bill, jwt) => (dispatch) => {
-//   dispatch({
-//     type: CREATE_BILL_BEGIN,
-//   });
-//   fetch("http://localhost:8080/groceryBills", {
-//     method: "POST",
-//     headers: {
-//       Authorization: `Bearer ${jwt}`,
-//       "Content-type": "application/json",
-//     },
-//     body: JSON.stringify(bill),
-//   })
-//     .then((res) => {
-//       switch (res.status) {
-//         case 201:
-//           return res.json();
-//         default:
-//           return null;
-//       }
-//     })
-//     .then((data) => {
-//       switch (data) {
-//         case null:
-//           dispatch({
-//             type: CREATE_BILL_FAILED,
-//           });
-//           break;
-//         default:
-//           dispatch({
-//             type: CREATE_BILL_SUCCESS,
-//           });
-//           break;
-//       }
-//     })
-//     .catch((error) => {
-//       dispatch({
-//         type: CREATE_BILL_FAILED,
-//       });
-//     });
-// };
 
 export const addOnHoldBill = (id) => (dispatch) => {
   dispatch({

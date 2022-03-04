@@ -38,7 +38,7 @@ const AddItemModal = ({ jwt, fetchItems }) => {
       discountPercentage: discountPercentage / 100,
     };
 
-    fetch("http://localhost:8080/items", {
+    fetch("http://localhost:8080/api/v1/items", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${jwt}`,

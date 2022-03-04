@@ -29,6 +29,7 @@ import com.accenture.web.service.UserServiceImpl;
 import com.accenture.web.util.JwtUtil;
 
 @RestController
+@RequestMapping("/api/v1")
 public class UserController {
 
 	private static final Logger log = LoggerFactory.getLogger(UserController.class);
