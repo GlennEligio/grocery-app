@@ -6,7 +6,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.http.server.reactive.ServerHttpResponseDecorator;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -46,6 +49,10 @@ public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> 
                     .retrieve().bodyToMono(UserDto.class)
                     .map(userDto -> {
                         log.info("Authentication success! " + "Username " + userDto.getUsername() + " access " + exchange.getRequest().getPath());
+                        if(!exchange.getRequest().getMethod().toString().equals("GET") && userDto.getRole().contains("ROLE_CLERK")){
+                            log.info("Clerks sent non GET request");
+                            throw new RuntimeException("Clerks can only send GET request");
+                        }
                         exchange.getRequest()
                                 .mutate()
                                 .header("X-auth-user-id", userDto.getUsername());

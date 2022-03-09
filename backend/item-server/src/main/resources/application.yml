@@ -9,15 +9,6 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-  config:
-    import: "optional:configserver:"
-  cloud:
-    config:
-      discovery:
-        enabled: true
-        serviceId: config-server
-      name: user-service
-      profile: default
 
 server:
   port: 8030
