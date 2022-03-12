@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+      crossorigin="anonymous"
+    />
+    <!-- Bootstrap Icon CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main>
+      <div class="container vh-100">
+        <div class="row h-100">
+          <!-- Home page banner -->
+          <div class="col-7 d-flex align-items-center">
+            <div class="row">
+              <div class="col-7 text-end">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                  class="bi bi-shop"
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    d="M2.97 1.35A1 1 0 0 1 3.73 1h8.54a1 1 0 0 1 .76.35l2.609 3.044A1.5 1.5 0 0 1 16 5.37v.255a2.375 2.375 0 0 1-4.25 1.458A2.371 2.371 0 0 1 9.875 8 2.37 2.37 0 0 1 8 7.083 2.37 2.37 0 0 1 6.125 8a2.37 2.37 0 0 1-1.875-.917A2.375 2.375 0 0 1 0 5.625V5.37a1.5 1.5 0 0 1 .361-.976l2.61-3.045zm1.78 4.275a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 1 0 2.75 0V5.37a.5.5 0 0 0-.12-.325L12.27 2H3.73L1.12 5.045A.5.5 0 0 0 1 5.37v.255a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0zM1.5 8.5A.5.5 0 0 1 2 9v6h1v-5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v5h6V9a.5.5 0 0 1 1 0v6h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1V9a.5.5 0 0 1 .5-.5zM4 15h3v-5H4v5zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-3zm3 0h-2v3h2v-3z"
+                  />
+                </svg>
+              </div>
+              <div class="col-5 d-flex align-items-center">
+                <div class="vstack justify-content-center">
+                  <strong class="fs-1">Grocery</strong>
+                  <strong class="fs-1">Bill</strong>
+                  <strong class="fs-1">App</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Login form -->
+          <div class="col-5 d-flex flex-column justify-content-center">
+            <div>
+              <p class="lead text-center">Login</p>
+            </div>
+            <div class="d-flex align-items-center justify-content-center fs-6">
+              <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <span class="ms-3 align-middle"
+                ><strong>Logging in...</strong></span
+              >
+            </div>
+            <div
+              class="d-flex align-items-center justify-content-center text-danger fs-6"
+            >
+              <i class="bi bi-x-circle-fill fs-3"></i>
+              <span class="ms-2"
+                ><strong>Incorrect username/password</strong></span
+              >
+            </div>
+
+            <form
+              action=""
+              novalidate
+              class="w-100 text-center needs-validation"
+            >
+              <div class="form-floating my-3">
+                <input
+                  class="form-control"
+                  type="text"
+                  id="username"
+                  name="username"
+                  placeholder=""
+                  required
+                />
+                <label for="username">Username</label>
+                <div class="valid-feedback">Looks good!</div>
+                <div class="invalid-feedback">Please enter a username!</div>
+              </div>
+              <div class="form-floating my-3">
+                <input
+                  class="form-control"
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder=""
+                  required
+                />
+                <label for="username">Password</label>
+                <div class="valid-feedback">Looks good!</div>
+                <div class="invalid-feedback">Please enter a username!</div>
+              </div>
+              <div>
+                <button type="submit" class="btn btn-lg btn-primary">
+                  Login
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+    <!-- Custom JS for form validation -->
+    <script>
+      (function () {
+        "use strict";
+
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        var forms = document.querySelectorAll(".needs-validation");
+
+        // Loop over them and prevent submission
+        Array.prototype.slice.call(forms).forEach(function (form) {
+          form.addEventListener(
+            "submit",
+            function (event) {
+              if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+              }
+
+              form.classList.add("was-validated");
+            },
+            false
+          );
+        });
+      })();
+    </script>
+    <!-- Bootstrap JS bundle -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>

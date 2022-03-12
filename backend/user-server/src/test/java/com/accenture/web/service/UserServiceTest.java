@@ -23,7 +23,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @SpringBootTest
 @TestPropertySource(properties = { "user-service.jwt=grocerybillapp" })
@@ -204,7 +203,7 @@ public class UserServiceTest {
 
         // Assert
         assertNotNull(response);
-        assertEquals(response.getUser(), "user0");
+        assertEquals(response.getUsername(), "user0");
         assertEquals(response.getJwt(), token);
         assertEquals(response.getRole(), "ROLE_CLERK");
     }

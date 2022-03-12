@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+      crossorigin="anonymous"
+    />
+    <!-- Bootstrap Icon CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Hold Bill Modal -->
+    <div
+      class="modal fade"
+      id="holdBillModal"
+      tabindex="-1"
+      aria-labelledby="holdBillModal"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="holdBillModalLabel">Bill Details</h5>
+            <button
+              type="button"
+              class="btn btn-outline-dark"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            >
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form action="" novalidate class="needs-validation">
+              <div class="form-floating">
+                <input
+                  type="text"
+                  id="holdBillId"
+                  name="holdBillId"
+                  placeholder=""
+                  required
+                  class="form-control"
+                />
+                <label for="holdBillId">Hold Bill Id</label>
+                <div class="invalid-feedback text-center">Required.</div>
+              </div>
+              <div class="mt-4 hstack justify-content-end">
+                <button class="btn btn-dark" data-bs-dismiss="modal">
+                  Close
+                </button>
+                <button type="submit" class="btn btn-primary ms-3">
+                  <i class="bi bi-hourglass"></i>
+                  <strong>Hold</strong>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Checkout Bill Modal -->
+    <div
+      class="modal fade"
+      id="checkoutBillModal"
+      tabindex="-1"
+      aria-labelledby="checkoutBillModal"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="checkoutBillModalLabel">
+              Bill Details
+            </h5>
+            <button
+              type="button"
+              class="btn btn-outline-dark"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            >
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="hstack align-items-center justify-content-center">
+              <div class="spinner-border" role="status">
+                <span class="visually-hidden">Checking out...</span>
+              </div>
+              <strong class="ms-2">Checking out...</strong>
+            </div>
+            <div
+              class="hstack align-items-center justify-content-center text-danger"
+            >
+              <i class="bi bi-x-circle-fill fs-3"></i>
+              <strong class="ms-2">Something went wrong....</strong>
+            </div>
+            <p class="lead">Bill type: Regular</p>
+            <table class="table table-sm table-striped text-centered">
+              <thead>
+                <tr>
+                  <th scope="col">Id</th>
+                  <th scope="col">Name</th>
+                  <th scope="col">Qty</th>
+                  <th scope="col">Each</th>
+                  <th scope="col">Discount %</th>
+                  <th scope="col">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">1212</th>
+                  <td>Item name 1</td>
+                  <td>23</td>
+                  <td>$1</td>
+                  <td>24%</td>
+                  <td>$4</td>
+                </tr>
+                <tr>
+                  <th scope="row">1212</th>
+                  <td>Item name 1</td>
+                  <td>23</td>
+                  <td>$1</td>
+                  <td>24%</td>
+                  <td>$4</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+            <button class="btn btn-primary">
+              <i class="bi bi-clipboard-check"></i>
+              <strong class="ms-2">Checkout</strong>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Main Content -->
+    <main>
+      <div class="container-lg py-5 vh-100">
+        <div class="row h-100">
+          <!-- Bill Section -->
+          <div class="col-6 col-lg-6 col-xl-5 h-100 pb-5">
+            <div class="card h-90">
+              <div
+                class="card-header text-center border-bottom-2 border-primary"
+              >
+                <!-- Nav tab for Current Bill and On Hold Bill -->
+                <nav>
+                  <div
+                    class="nav nav-pills nav-fill"
+                    id="billSection-nav-tabs"
+                    role="tablist"
+                  >
+                    <button
+                      class="nav-link active"
+                      id="nav-currentBill-tab"
+                      data-bs-toggle="tab"
+                      data-bs-target="#nav-currentBill"
+                      type="button"
+                      role="tab"
+                      aria-controls="nav-currentBill"
+                      aria-selected="true"
+                    >
+                      Current Bill
+                    </button>
+                    <button
+                      class="nav-link position-relative"
+                      id="nav-onHoldBills-tab"
+                      data-bs-toggle="tab"
+                      data-bs-target="#nav-onHoldBills"
+                      type="button"
+                      role="tab"
+                      aria-controls="nav-onHoldBills"
+                      aria-selected="false"
+                    >
+                      On Hold Bills
+                      <span
+                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                      >
+                        99+
+                        <span class="visually-hidden">on hold bills</span>
+                      </span>
+                    </button>
+                  </div>
+                </nav>
+              </div>
+              <div class="card-body h-75 overflow-auto">
+                <!-- Nav Tab Content for Current Bill and On Hold bills -->
+                <div class="tab-content" id="billSection-nav-tabContent">
+                  <!-- Current Bill -->
+                  <div
+                    class="tab-pane fade show active"
+                    id="nav-currentBill"
+                    role="tabpanel"
+                    aria-labelledby="nav-currentBill-tab"
+                  >
+                    <!-- Bill Item List -->
+                    <ul class="list-group list-group-flush">
+                      <!-- Bill item -->
+                      <li class="list-group-item">
+                        <div class="row gx-0">
+                          <div
+                            class="col-6 d-flex flex-column justify-content-start text-truncate"
+                          >
+                            <strong class="my-auto">Item no.1</strong>
+
+                            <p class="ms-2">@ $1.00</p>
+                          </div>
+                          <div class="col-4 d-flex align-items-start">
+                            <div class="input-group">
+                              <button class="btn btn-outline-danger">-</button>
+                              <input
+                                type="text"
+                                class="form-control"
+                                aria-label="Amount (to the nearest dollar)"
+                              />
+                              <button class="btn btn-outline-primary">+</button>
+                            </div>
+                          </div>
+                          <div
+                            class="col-2 d-flex justify-content-center align-items-start"
+                          >
+                            <p>$20</p>
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                  <!-- On Hold Bill -->
+                  <div
+                    class="tab-pane fade show"
+                    id="nav-onHoldBills"
+                    role="tabpanel"
+                    aria-labelledby="nav-onHoldBills-tab"
+                  >
+                    <table class="table table-sm table-hover">
+                      <tbody>
+                        <tr>
+                          <td>On Hold Bill ID 1</td>
+                        </tr>
+                        <tr>
+                          <td>On Hold Bill ID 2</td>
+                        </tr>
+                        <tr>
+                          <td>On Hold Bill ID 3</td>
+                        </tr>
+                        <tr>
+                          <td>On Hold Bill ID 4</td>
+                        </tr>
+                        <tr>
+                          <td>On Hold Bill ID 5</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <!-- Bill Total -->
+              <div class="card-footer m-1 h-25 vstack">
+                <div class="row text-secondary">
+                  <div class="col">Subtotal:</div>
+                  <div class="col text-end">$20</div>
+                </div>
+                <div class="row text-secondary">
+                  <div class="col">Discount:</div>
+                  <div class="col text-end">$0.25</div>
+                </div>
+                <div class="row text-secondary">
+                  <div class="col">Discounted?</div>
+                  <div class="col text-end">
+                    <input
+                      type="checkbox"
+                      name="isDiscounted"
+                      id="isDiscounted"
+                    />
+                  </div>
+                </div>
+                <div class="row my-auto">
+                  <div class="col"><p class="h2">Total:</p></div>
+                  <div class="col text-end"><p class="h2">$42.40</p></div>
+                </div>
+              </div>
+            </div>
+            <!-- Bill Buttons -->
+            <div class="row mt-3 gx-1 gy-1 text-center">
+              <div class="col-4">
+                <button
+                  class="btn btn-outline-dark d-flex justify-content-center align-items-center w-100"
+                >
+                  <i class="bi bi-x fs-3"></i>
+                  <span class="ms-1 fs-5">Cancel</span>
+                </button>
+              </div>
+              <div class="col-4">
+                <button
+                  class="btn btn-outline-primary d-flex justify-content-center align-items-center w-100"
+                  data-bs-toggle="modal"
+                  data-bs-target="#holdBillModal"
+                >
+                  <i class="bi bi-hourglass fs-3"></i>
+                  <span class="ms-1 fs-5">Hold</span>
+                </button>
+              </div>
+              <div class="col-4">
+                <button
+                  class="btn btn-outline-success d-flex justify-content-center align-items-center w-100"
+                  data-bs-toggle="modal"
+                  data-bs-target="#checkoutBillModal"
+                >
+                  <i class="bi bi-clipboard-check fs-3"></i>
+                  <span class="ms-1 fs-5">Checkout</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- Clerk Item and Calculator Section -->
+          <div class="col-6 h-100 col-lg-6 col-xl-7 pb-5">
+            <!-- Clerk Item Section -->
+            <div class="card h-50 d-flex flex-column mb-2">
+              <!-- Item header -->
+              <div
+                class="card-header flex-shrink-1 text-center border-bottom-2 border-primary"
+              >
+                <strong>Items</strong>
+              </div>
+              <div class="card-body h-75 d-flex flex-column">
+                <!-- Item search bar -->
+                <div class="input-group flex-shrink-1">
+                  <input
+                    type="text"
+                    name="item"
+                    id="item"
+                    class="form-control"
+                  />
+                  <i class="bi bi-search input-group-text"></i>
+                </div>
+
+                <!-- Item list header -->
+                <div class="row mt-2 gx-0 text-center">
+                  <div class="table-responsive">
+                    <table class="table table-sm">
+                      <thead>
+                        <tr>
+                          <th scope="col">Id</th>
+                          <th scope="col" class="w-20">Name</th>
+                          <th scope="col" class="w-20">Price</th>
+                          <th scope="col" class="w-30">Discounted?</th>
+                          <th scope="col" class="w-20">Discount</th>
+                        </tr>
+                      </thead>
+                    </table>
+                  </div>
+                </div>
+                <!-- Item list body -->
+                <div class="row gx-0 overflow-auto text-center">
+                  <div class="table-responsive">
+                    <table class="table table-sm table-hover">
+                      <tbody>
+                        <tr>
+                          <td scope="col">1212</td>
+                          <td scope="col" class="w-20">item no.1</td>
+                          <td scope="col" class="w-20">95%</td>
+                          <td scope="col" class="w-30">
+                            <i class="bi bi-check2"></i>
+                          </td>
+                          <td scope="col" class="w-20">$25</td>
+                        </tr>
+                        <tr>
+                          <td scope="col">1212</td>
+                          <td scope="col" class="w-20">item no.1</td>
+                          <td scope="col" class="w-20">95%</td>
+                          <td scope="col" class="w-30">
+                            <i class="bi bi-check2"></i>
+                          </td>
+                          <td scope="col" class="w-20">$25</td>
+                        </tr>
+                        <tr>
+                          <td scope="col">1212</td>
+                          <td scope="col" class="w-20">item no.1</td>
+                          <td scope="col" class="w-20">95%</td>
+                          <td scope="col" class="w-30">
+                            <i class="bi bi-check2"></i>
+                          </td>
+                          <td scope="col" class="w-20">$25</td>
+                        </tr>
+                        <tr>
+                          <td scope="col">1212</td>
+                          <td scope="col" class="w-20">item no.1</td>
+                          <td scope="col" class="w-20">95%</td>
+                          <td scope="col" class="w-30">
+                            <i class="bi bi-check2"></i>
+                          </td>
+                          <td scope="col" class="w-20">$25</td>
+                        </tr>
+                        <tr>
+                          <td scope="col">1212</td>
+                          <td scope="col" class="w-20">item no.1</td>
+                          <td scope="col" class="w-20">95%</td>
+                          <td scope="col" class="w-30">
+                            <i class="bi bi-check2"></i>
+                          </td>
+                          <td scope="col" class="w-20">$25</td>
+                        </tr>
+                        <tr>
+                          <td scope="col">1212</td>
+                          <td scope="col" class="w-20">item no.1</td>
+                          <td scope="col" class="w-20">95%</td>
+                          <td scope="col" class="w-30">
+                            <i class="bi bi-check2"></i>
+                          </td>
+                          <td scope="col" class="w-20">$25</td>
+                        </tr>
+                        <tr>
+                          <td scope="col">1212</td>
+                          <td scope="col" class="w-20">item no.1</td>
+                          <td scope="col" class="w-20">95%</td>
+                          <td scope="col" class="w-30">
+                            <i class="bi bi-check2"></i>
+                          </td>
+                          <td scope="col" class="w-20">$25</td>
+                        </tr>
+                        <tr>
+                          <td scope="col">1212</td>
+                          <td scope="col" class="w-20">item no.1</td>
+                          <td scope="col" class="w-20">95%</td>
+                          <td scope="col" class="w-30">
+                            <i class="bi bi-check2"></i>
+                          </td>
+                          <td scope="col" class="w-20">$25</td>
+                        </tr>
+                        <tr>
+                          <td scope="col">1212</td>
+                          <td scope="col" class="w-20">item no.1</td>
+                          <td scope="col" class="w-20">95%</td>
+                          <td scope="col" class="w-30">
+                            <i class="bi bi-check2"></i>
+                          </td>
+                          <td scope="col" class="w-20">$25</td>
+                        </tr>
+                        <tr>
+                          <td scope="col">1212</td>
+                          <td scope="col" class="w-20">item no.1</td>
+                          <td scope="col" class="w-20">95%</td>
+                          <td scope="col" class="w-30">
+                            <i class="bi bi-check2"></i>
+                          </td>
+                          <td scope="col" class="w-20">$25</td>
+                        </tr>
+                        <tr>
+                          <td scope="col">1212</td>
+                          <td scope="col" class="w-20">item no.1</td>
+                          <td scope="col" class="w-20">95%</td>
+                          <td scope="col" class="w-30">
+                            <i class="bi bi-check2"></i>
+                          </td>
+                          <td scope="col" class="w-20">$25</td>
+                        </tr>
+                        <tr>
+                          <td scope="col">1212</td>
+                          <td scope="col" class="w-20">item no.1</td>
+                          <td scope="col" class="w-20">95%</td>
+                          <td scope="col" class="w-30">
+                            <i class="bi bi-check2"></i>
+                          </td>
+                          <td scope="col" class="w-20">$25</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Clerk Calculator Section -->
+            <div class="card h-50 d-flex flex-column justify-content-between">
+              <div class="row">
+                <div class="col">
+                  <div class="input-group">
+                    <input
+                      type="text"
+                      name="pay-amount"
+                      id="pay-amount"
+                      class="form-control"
+                    />
+                    <button class="btn btn-outline-secondary">
+                      <i class="bi bi-x-circle-fill fs-5"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="row g-1 mt-1 flex-grow-1">
+                <div class="col-3">
+                  <button class="btn btn-outline-secondary w-100 h-100 fs-3">
+                    7
+                  </button>
+                </div>
+                <div class="col-3">
+                  <button class="btn btn-outline-secondary w-100 h-100 fs-3">
+                    8
+                  </button>
+                </div>
+                <div class="col-3">
+                  <button class="btn btn-outline-secondary w-100 h-100 fs-3">
+                    9
+                  </button>
+                </div>
+                <div class="col-3">
+                  <button class="btn btn-secondary w-100 h-100 fs-3">
+                    $50
+                  </button>
+                </div>
+                <div class="col-3">
+                  <button class="btn btn-outline-secondary w-100 h-100 fs-3">
+                    4
+                  </button>
+                </div>
+                <div class="col-3">
+                  <button class="btn btn-outline-primary w-100 h-100 fs-3">
+                    5
+                  </button>
+                </div>
+                <div class="col-3">
+                  <button class="btn btn-outline-secondary w-100 h-100 fs-3">
+                    6
+                  </button>
+                </div>
+                <div class="col-3">
+                  <button class="btn btn-secondary w-100 h-100 fs-3">
+                    $100
+                  </button>
+                </div>
+                <div class="col-3">
+                  <button class="btn btn-outline-secondary w-100 h-100 fs-3">
+                    7
+                  </button>
+                </div>
+                <div class="col-3">
+                  <button class="btn btn-outline-secondary w-100 h-100 fs-3">
+                    8
+                  </button>
+                </div>
+                <div class="col-3">
+                  <button class="btn btn-outline-secondary w-100 h-100 fs-3">
+                    9
+                  </button>
+                </div>
+                <div class="col-3">
+                  <button class="btn btn-secondary w-100 h-100 fs-3">
+                    $43
+                  </button>
+                </div>
+                <div class="col-3">
+                  <button class="btn btn-outline-secondary w-100 h-100 fs-3">
+                    7
+                  </button>
+                </div>
+                <div class="col-3">
+                  <button class="btn btn-outline-secondary w-100 h-100 fs-3">
+                    8
+                  </button>
+                </div>
+                <div class="col-3">
+                  <button class="btn btn-outline-secondary w-100 h-100 fs-3">
+                    9
+                  </button>
+                </div>
+                <div class="col-3">
+                  <button class="btn btn-dark w-100 h-100 fs-3">$42.24</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <!-- Nav bar -->
+    <footer>
+      <nav class="navbar fixed-bottom navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+          <a class="navbar-brand" href="#"
+            ><i class="bi bi-shop"></i><span class="ms-2">GBA</span></a
+          >
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav w-100 mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="#"
+                  >Clerk Section</a
+                >
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="#"
+                  >Admin Section</a
+                >
+              </li>
+              <li class="nav-item ms-auto">
+                <a class="nav-link" href="#"
+                  ><span class="me-2">Logout</span
+                  ><i class="bi bi-box-arrow-right"></i
+                ></a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </footer>
+    <!-- Script for Form validation -->
+    <script>
+      // Example starter JavaScript for disabling form submissions if there are invalid fields
+      (function () {
+        "use strict";
+
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        var forms = document.querySelectorAll(".needs-validation");
+
+        // Loop over them and prevent submission
+        Array.prototype.slice.call(forms).forEach(function (form) {
+          form.addEventListener(
+            "submit",
+            function (event) {
+              if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+              }
+
+              form.classList.add("was-validated");
+            },
+            false
+          );
+        });
+      })();
+    </script>
+    <!-- Bootstrap JS bundle -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>

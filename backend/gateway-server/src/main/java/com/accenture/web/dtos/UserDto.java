@@ -1,23 +1,19 @@
 package com.accenture.web.dtos;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
-
 import java.util.Objects;
 
 public class UserDto {
 
-    @JsonAlias({"username", "user"})
     private String username;
-    @JsonAlias({"token", "jwt"})
-    private String token;
+    private String jwt;
     private String role;
 
     public UserDto() {
     }
 
-    public UserDto(String username, String token, String role) {
+    public UserDto(String username, String jwt, String role) {
         this.username = username;
-        this.token = token;
+        this.jwt = jwt;
         this.role = role;
     }
 
@@ -29,12 +25,12 @@ public class UserDto {
         this.username = username;
     }
 
-    public String getToken() {
-        return token;
+    public String getJwt() {
+        return jwt;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public void setJwt(String jwt) {
+        this.jwt = jwt;
     }
 
     public String getRole() {
@@ -50,19 +46,19 @@ public class UserDto {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UserDto userDto = (UserDto) o;
-        return Objects.equals(username, userDto.username) && Objects.equals(token, userDto.token) && Objects.equals(role, userDto.role);
+        return Objects.equals(username, userDto.username) && Objects.equals(jwt, userDto.jwt) && Objects.equals(role, userDto.role);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(username, token, role);
+        return Objects.hash(username, jwt, role);
     }
 
     @Override
     public String toString() {
         return "UserDto{" +
                 "username='" + username + '\'' +
-                ", token='" + token + '\'' +
+                ", token='" + jwt + '\'' +
                 ", role='" + role + '\'' +
                 '}';
     }
