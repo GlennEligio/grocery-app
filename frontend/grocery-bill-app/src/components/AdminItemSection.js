@@ -6,7 +6,6 @@ import {
   fetchItemsFailed,
   resetItemList,
 } from "../actions/itemActions";
-import { setModalComponent } from "../actions/componentActions";
 import AdminItem from "./AdminItem";
 
 const AdminItemSection = ({
@@ -50,7 +49,7 @@ const AdminItemSection = ({
       .catch(() => {
         fetchItemsFailed();
       });
-  }, [items.length]);
+  }, [items.length, user.jwt]);
 
   return (
     <div

@@ -46,7 +46,7 @@ const ClerkItemSection = ({
       .catch(() => {
         fetchItemsFailed();
       });
-  }, [items.length]);
+  }, [items.length, user.jwt]);
 
   return (
     <div className="card h-50 d-flex flex-column mb-2">
