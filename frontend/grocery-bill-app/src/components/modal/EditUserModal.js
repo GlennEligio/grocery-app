@@ -25,11 +25,13 @@ const EditUserModal = ({
   const form = useRef();
 
   useEffect(() => {
-    setName(userSelected.name);
-    setUserName(userSelected.username);
-    setPassword("");
-    setRoles(userSelected.roles);
-    setActive(userSelected.active);
+    if (userSelected === null) {
+      setName(userSelected.name);
+      setUserName(userSelected.username);
+      setPassword("");
+      setRoles(userSelected.roles);
+      setActive(userSelected.active);
+    }
   }, [userSelected]);
 
   const onSubmit = (e) => {

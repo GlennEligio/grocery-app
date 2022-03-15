@@ -6,14 +6,12 @@ import {
 } from "./types";
 
 export const fetchJwtBegin = () => (dispatch) => {
-  console.log("Fetching JWT begins");
   dispatch({
     type: FETCH_JWT_BEGIN,
   });
 };
 
 export const fetchJwtSuccess = (user) => (dispatch) => {
-  console.log("Fetching JWT successful");
   dispatch({
     type: FETCH_JWT_SUCCESS,
     payload: {
@@ -25,7 +23,6 @@ export const fetchJwtSuccess = (user) => (dispatch) => {
 };
 
 export const fetchJwtFailed = () => (dispatch) => {
-  console.log("Fetching JWT failed");
   dispatch({
     type: FETCH_JWT_FAILED,
   });

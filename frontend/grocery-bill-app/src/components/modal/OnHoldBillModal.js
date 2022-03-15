@@ -4,13 +4,12 @@ import { connect } from "react-redux";
 
 const OnHoldBillModal = ({ currentBill, onHoldBills, addOnHoldBill }) => {
   const [id, setId] = useState(currentBill.id);
-  const [alreadyExist, setAlreadyExist] = useState();
+  const [alreadyExist, setAlreadyExist] = useState(false);
   const form = useRef();
-  const modal = useRef();
 
   const onSubmit = (e) => {
     e.preventDefault();
-    setAlreadyExist(null);
+    setAlreadyExist(false);
 
     // Checks if currentBill have items
     if (currentBill.itemList.length === 0) {
@@ -41,7 +40,6 @@ const OnHoldBillModal = ({ currentBill, onHoldBills, addOnHoldBill }) => {
 
   return (
     <div
-      ref={modal}
       className="modal fade"
       id="holdBillModal"
       tabIndex="-1"
@@ -66,13 +64,13 @@ const OnHoldBillModal = ({ currentBill, onHoldBills, addOnHoldBill }) => {
           <div className="modal-body">
             {alreadyExist && (
               <div className="text-center mb-2 text-danger">
-                <i class="bi bi-exclamation-circle-fill"></i>
+                <i className="bi bi-exclamation-circle-fill"></i>
                 <strong className="ms-2">Id is already in use</strong>
               </div>
             )}
             {alreadyExist === false && (
               <div className="text-center mb-2 text-success">
-                <i class="bi bi-check-circle-fill"></i>
+                <i className="bi bi-check-circle-fill"></i>
                 <strong className="ms-2">Add success</strong>
               </div>
             )}

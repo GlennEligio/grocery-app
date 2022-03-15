@@ -18,7 +18,7 @@ const ClerkItem = ({ item, addItemOnCurrentBill }) => {
         {item.discounted ? (
           <i className="bi bi-check2"></i>
         ) : (
-          <i class="bi bi-x-lg"></i>
+          <i className="bi bi-x-lg"></i>
         )}
       </td>
     </tr>

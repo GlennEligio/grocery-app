@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import AdminBill from "./AdminBill";
 import { connect } from "react-redux";
 import {
@@ -20,7 +20,7 @@ const AdminBillSection = ({
     fetchBills();
   }, [billHistory.length, user]);
 
-  const fetchBills = () => {
+  const fetchBills = useCallback(() => {
     fetchBillsBegin();
     fetch("http://localhost:8080/api/v1/bills/summary", {
       method: "GET",
@@ -47,7 +47,7 @@ const AdminBillSection = ({
         }
       })
       .catch(() => fetchBillsFailed());
-  };
+  }, [billHistory.length, user]);
 
   const [query, setQuery] = useState("");
 

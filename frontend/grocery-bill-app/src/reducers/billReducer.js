@@ -24,7 +24,9 @@ const initialState = {
     id: "",
     type: "regular",
   },
-  billSelected: {},
+  billSelected: {
+    id: -1,
+  },
   loading: false,
   error: false,
 };
@@ -165,9 +167,11 @@ const billReducer = function (state = initialState, action) {
           id: "",
           type: "regular",
         },
+        billSelected: {
+          id: -1,
+        },
         loading: false,
         error: false,
-        status: false,
       };
     default:
       return state;

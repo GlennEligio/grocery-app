@@ -16,7 +16,7 @@ const AdminItem = ({ item, updateItemSelected }) => {
         {item.discounted ? (
           <i className="bi bi-check"></i>
         ) : (
-          <i class="bi bi-x"></i>
+          <i className="bi bi-x"></i>
         )}
       </td>
       <td>{`$ ${item.price}`}</td>

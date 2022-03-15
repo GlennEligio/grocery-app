@@ -15,7 +15,7 @@ const CheckoutBillModal = ({
   createBillSuccess,
   createBillFail,
 }) => {
-  const [status, setStatus] = useState(null);
+  const [status, setStatus] = useState(false);
   const checkout = () => {
     if (currentBill.itemList.length === 0) {
       alert("Current bill doesn't contain any item");

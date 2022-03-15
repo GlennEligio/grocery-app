@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import BillSection from "./ClerkBillSection";
 import ClerkCalculatorSection from "./ClerkCalculatorSection";
 import ClerkItemSection from "./ClerkItemSection";
-import Modal from "./modal/Modal";
+import * as Modals from "./modal";
 import NavBar from "./NavBar";
 
 const ClerkHome = ({ modalName }) => {
@@ -20,7 +20,10 @@ const ClerkHome = ({ modalName }) => {
         </div>
       </div>
       <NavBar page="clerk" />
-      <Modal />
+      <div>
+        <Modals.CheckoutBillModal />
+        <Modals.OnHoldBillModal />
+      </div>
     </main>
   );
 };

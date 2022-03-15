@@ -3,11 +3,14 @@ import { connect } from "react-redux";
 import billConverter from "../util/billConverter";
 
 const BillDetailsModal = ({ user, billSelected }) => {
-  const [bill, setBill] = useState({});
+  const [bill, setBill] = useState(null);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    if (billSelected.id === -1) {
+      return;
+    }
     fetch(`http://localhost:8080/api/v1/bills/${billSelected.id}`, {
       method: "GET",
       headers: {
@@ -99,7 +102,7 @@ const BillDetailsModal = ({ user, billSelected }) => {
                 </tr>
               </thead>
               <tbody>
-                {bill.itemList.length > 0 &&
+                {bill !== null &&
                   bill.itemList.map((item, index) => {
                     return (
                       <tr key={index}>

@@ -2,10 +2,10 @@ import React from "react";
 import AdminBillSection from "./AdminBillSection";
 import AdminItemSection from "./AdminItemSection";
 import AdminUserSection from "./AdminUserSection";
-import Modal from "./modal/Modal";
+import * as Modals from "./modal";
 import NavBar from "./NavBar";
 
-const AdminHome = ({ modalName }) => {
+const AdminHome = () => {
   return (
     <>
       {/** Main Content */}
@@ -76,7 +76,15 @@ const AdminHome = ({ modalName }) => {
         </div>
       </main>
       <NavBar page="admin" />
-      <Modal />
+      <div>
+        <Modals.AddItemModal />
+        <Modals.EditItemModal />
+        <Modals.DeleteItemModal />
+        <Modals.AddUserModal />
+        <Modals.EditUserModal />
+        <Modals.DeleteUserModal />
+        <Modals.BillDetailsModal />
+      </div>
     </>
   );
 };
