@@ -42,7 +42,7 @@ const BillDetailsModal = ({ user, billSelected }) => {
         setError(true);
         setLoading(false);
       });
-  }, [billSelected]);
+  }, [billSelected, user.jwt]);
 
   return (
     <div

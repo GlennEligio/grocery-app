@@ -2,7 +2,6 @@ import {
   CREATE_BILL_BEGIN,
   CREATE_BILL_FAILED,
   CREATE_BILL_SUCCESS,
-  RESET_BILL_STATES,
   CHANGE_CURRENT_BILL,
   RESET_CURRENT_BILL,
   ADD_ON_HOLD_BILL,
@@ -12,8 +11,10 @@ import {
   FETCH_BILLS_FAILED,
   UPDATE_BILL_SELECTED,
   ADD_ITEM_ON_CURRENT_BILL,
+  REMOVE_ITEM_ON_CURRENT_BILL,
   UPDATE_ITEM_IN_CURRENT_BILL,
   RESET_BILL_LIST,
+  RESET_BILL_STATES,
 } from "../actions/types";
 
 const initialState = {
@@ -110,6 +111,16 @@ const billReducer = function (state = initialState, action) {
       } else {
         return state;
       }
+    case REMOVE_ITEM_ON_CURRENT_BILL:
+      return {
+        ...state,
+        currentBill: {
+          ...state.currentBill,
+          itemList: state.currentBill.itemList.filter(
+            (item) => item.id !== action.payload.id
+          ),
+        },
+      };
     case UPDATE_ITEM_IN_CURRENT_BILL:
       return {
         ...state,

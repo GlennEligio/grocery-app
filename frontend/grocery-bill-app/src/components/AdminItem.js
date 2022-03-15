@@ -1,8 +1,6 @@
 import React from "react";
-import { FaCheck, FaTimes, FaEdit, FaTrashAlt } from "react-icons/fa";
 import { connect } from "react-redux";
 import { updateItemSelected } from "../actions/itemActions";
-import { setModalComponent } from "../actions/componentActions";
 
 const AdminItem = ({ item, updateItemSelected }) => {
   return (

@@ -14,6 +14,7 @@ import {
   ADD_ITEM_ON_CURRENT_BILL,
   RESET_BILL_LIST,
   UPDATE_ITEM_IN_CURRENT_BILL,
+  REMOVE_ITEM_ON_CURRENT_BILL,
 } from "../actions/types";
 
 export const createBillBegin = () => (dispatch) => {
@@ -64,6 +65,13 @@ export const addOnHoldBill = (id) => (dispatch) => {
 export const addItemOnCurrentBill = (item) => (dispatch) => {
   dispatch({
     type: ADD_ITEM_ON_CURRENT_BILL,
+    payload: item,
+  });
+};
+
+export const removeItemOnCurrentBill = (item) => (dispatch) => {
+  dispatch({
+    type: REMOVE_ITEM_ON_CURRENT_BILL,
     payload: item,
   });
 };

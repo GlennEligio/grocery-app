@@ -16,3 +16,6 @@
 .mw-20 {
   max-width: 20% !important;
 }
+.clerk-bill-item:hover {
+  border-bottom: 1px red solid !important;
+}
