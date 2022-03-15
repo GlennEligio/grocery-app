@@ -51,8 +51,10 @@ public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> 
                     .retrieve().bodyToMono(UserDto.class)
                     .map(userDto -> {
                         log.info("Authentication success! " + "Username " + userDto.getUsername() + " access " + exchange.getRequest().getPath());
+                        // Prevent Clerk roles to non-GET request
                         if(!Objects.equals(exchange.getRequest().getMethod(), HttpMethod.GET)
                                 && userDto.getRole().contains("ROLE_CLERK")){
+                            // But for POST request at /api/v1/bills, let it pass through
                             if(!Objects.equals(exchange.getRequest().getMethod(), HttpMethod.POST)
                                     && !exchange.getRequest().getPath().toString().equals("/api/v1/bills")){
                                 log.info("Clerks sent non GET request");
