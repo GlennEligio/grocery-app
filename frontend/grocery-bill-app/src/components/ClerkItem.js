@@ -1,24 +1,30 @@
 import React from "react";
 import { connect } from "react-redux";
 import { updateItemSelected } from "../actions/itemActions";
-import { setModalComponent } from "../actions/componentActions";
+import { addItemOnCurrentBill } from "../actions/billActions";
 
-const ClerkItem = ({ item, updateItemSelected, setModalComponent }) => {
+const ClerkItem = ({ item, addItemOnCurrentBill }) => {
   return (
-    <div
-      className="item"
+    <tr
       onClick={() => {
-        updateItemSelected(item);
-        setModalComponent("add-item-to-bill-modal");
-        document.getElementById("modal-id").style.display = "flex";
+        addItemOnCurrentBill({ ...item, amount: 0 });
       }}
     >
-      <div>{item.name}</div>
-      <div>${item.price}</div>
-    </div>
+      <th scope="row">{item.id}</th>
+      <td className="mw-20 w-20 text-truncate">{item.name}</td>
+      <td className="w-20">{item.price}</td>
+      <td className="w-20">{`${item.discountPercentage * 100}%`}</td>
+      <td className="w-30">
+        {item.discounted ? (
+          <i className="bi bi-check2"></i>
+        ) : (
+          <i className="bi bi-x-lg"></i>
+        )}
+      </td>
+    </tr>
   );
 };
 
-export default connect(null, { updateItemSelected, setModalComponent })(
+export default connect(null, { updateItemSelected, addItemOnCurrentBill })(
   ClerkItem
 );

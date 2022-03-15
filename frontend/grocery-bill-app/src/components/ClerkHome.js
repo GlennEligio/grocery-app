@@ -1,24 +1,30 @@
 import React from "react";
 import { connect } from "react-redux";
-import BillSection from "./BillSection";
-import ItemSection from "./ItemSection";
-import CalculatorSection from "./CalculatorSection";
-import Modal from "./modal/Modal";
-import Toolbar from "./Toolbar";
+import BillSection from "./ClerkBillSection";
+import ClerkCalculatorSection from "./ClerkCalculatorSection";
+import ClerkItemSection from "./ClerkItemSection";
+import * as Modals from "./modal";
+import NavBar from "./NavBar";
 
 const ClerkHome = ({ modalName }) => {
   return (
-    <>
-      <div className="clerk-home">
-        <Modal modal={modalName} />
-        <BillSection />
-        <div className="item-calculator-section">
-          <ItemSection />
-          {/* <CalculatorSection /> */}
+    <main>
+      <div className="container-lg py-5 vh-100">
+        <div className="row h-100">
+          <BillSection />
+          {/** Clerk Item and Calculator Section */}
+          <div className="col-6 h-100 col-lg-6 col-xl-7 pb-5">
+            <ClerkItemSection />
+            <ClerkCalculatorSection />
+          </div>
         </div>
       </div>
-      <Toolbar />
-    </>
+      <NavBar page="clerk" />
+      <div>
+        <Modals.CheckoutBillModal />
+        <Modals.OnHoldBillModal />
+      </div>
+    </main>
   );
 };
 

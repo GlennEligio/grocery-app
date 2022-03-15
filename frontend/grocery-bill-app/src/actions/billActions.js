@@ -3,7 +3,6 @@ import {
   CREATE_BILL_SUCCESS,
   CREATE_BILL_FAILED,
   RESET_BILL_STATES,
-  UPDATE_CURRENT_BILL,
   CHANGE_CURRENT_BILL,
   ADD_ON_HOLD_BILL,
   RESET_CURRENT_BILL,
@@ -12,6 +11,9 @@ import {
   FETCH_BILLS_FAILED,
   FETCH_BILLS_SUCCESS,
   UPDATE_BILL_SELECTED,
+  ADD_ITEM_ON_CURRENT_BILL,
+  RESET_BILL_LIST,
+  UPDATE_ITEM_IN_CURRENT_BILL,
 } from "../actions/types";
 
 export const createBillBegin = () => (dispatch) => {
@@ -24,6 +26,25 @@ export const createBillSuccess = () => (dispatch) => {
 
 export const createBillFail = () => (dispatch) => {
   dispatch({ type: CREATE_BILL_FAILED });
+};
+
+export const fetchBillsBegin = () => (dispatch) => {
+  dispatch({
+    type: FETCH_BILLS_BEGIN,
+  });
+};
+
+export const fetchBillsSuccess = (bills) => (dispatch) => {
+  dispatch({
+    type: FETCH_BILLS_SUCCESS,
+    payload: bills,
+  });
+};
+
+export const fetchBillsFailed = () => (dispatch) => {
+  dispatch({
+    type: FETCH_BILLS_FAILED,
+  });
 };
 
 export const fetchBills = (jwt) => (dispatch) => {
@@ -76,13 +97,17 @@ export const addOnHoldBill = (id) => (dispatch) => {
   });
 };
 
-export const updateCurrentBill = (items, clerk) => (dispatch) => {
+export const addItemOnCurrentBill = (item) => (dispatch) => {
   dispatch({
-    type: UPDATE_CURRENT_BILL,
-    payload: {
-      items: items,
-      clerk: clerk,
-    },
+    type: ADD_ITEM_ON_CURRENT_BILL,
+    payload: item,
+  });
+};
+
+export const updateItemOnCurrentBill = (item) => (dispatch) => {
+  dispatch({
+    type: UPDATE_ITEM_IN_CURRENT_BILL,
+    payload: item,
   });
 };
 
@@ -93,19 +118,22 @@ export const updateCurrentBillType = (type) => (dispatch) => {
   });
 };
 
-export const changeCurrentBill = (currentBill, onHoldBills) => (dispatch) => {
+export const changeCurrentBill = (bill) => (dispatch) => {
   dispatch({
     type: CHANGE_CURRENT_BILL,
-    payload: {
-      currentBill: currentBill,
-      onHoldBills: onHoldBills,
-    },
+    payload: bill,
   });
 };
 
 export const resetCurrentBill = () => (dispatch) => {
   dispatch({
     type: RESET_CURRENT_BILL,
+  });
+};
+
+export const resetBillList = () => (dispatch) => {
+  dispatch({
+    type: RESET_BILL_LIST,
   });
 };
 

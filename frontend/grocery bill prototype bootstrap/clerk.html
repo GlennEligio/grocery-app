@@ -20,133 +20,6 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <!-- Hold Bill Modal -->
-    <div
-      class="modal fade"
-      id="holdBillModal"
-      tabindex="-1"
-      aria-labelledby="holdBillModal"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="holdBillModalLabel">Bill Details</h5>
-            <button
-              type="button"
-              class="btn btn-outline-dark"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            >
-              <i class="bi bi-x-lg"></i>
-            </button>
-          </div>
-          <div class="modal-body">
-            <form action="" novalidate class="needs-validation">
-              <div class="form-floating">
-                <input
-                  type="text"
-                  id="holdBillId"
-                  name="holdBillId"
-                  placeholder=""
-                  required
-                  class="form-control"
-                />
-                <label for="holdBillId">Hold Bill Id</label>
-                <div class="invalid-feedback text-center">Required.</div>
-              </div>
-              <div class="mt-4 hstack justify-content-end">
-                <button class="btn btn-dark" data-bs-dismiss="modal">
-                  Close
-                </button>
-                <button type="submit" class="btn btn-primary ms-3">
-                  <i class="bi bi-hourglass"></i>
-                  <strong>Hold</strong>
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- Checkout Bill Modal -->
-    <div
-      class="modal fade"
-      id="checkoutBillModal"
-      tabindex="-1"
-      aria-labelledby="checkoutBillModal"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="checkoutBillModalLabel">
-              Bill Details
-            </h5>
-            <button
-              type="button"
-              class="btn btn-outline-dark"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            >
-              <i class="bi bi-x-lg"></i>
-            </button>
-          </div>
-          <div class="modal-body">
-            <div class="hstack align-items-center justify-content-center">
-              <div class="spinner-border" role="status">
-                <span class="visually-hidden">Checking out...</span>
-              </div>
-              <strong class="ms-2">Checking out...</strong>
-            </div>
-            <div
-              class="hstack align-items-center justify-content-center text-danger"
-            >
-              <i class="bi bi-x-circle-fill fs-3"></i>
-              <strong class="ms-2">Something went wrong....</strong>
-            </div>
-            <p class="lead">Bill type: Regular</p>
-            <table class="table table-sm table-striped text-centered">
-              <thead>
-                <tr>
-                  <th scope="col">Id</th>
-                  <th scope="col">Name</th>
-                  <th scope="col">Qty</th>
-                  <th scope="col">Each</th>
-                  <th scope="col">Discount %</th>
-                  <th scope="col">Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <th scope="row">1212</th>
-                  <td>Item name 1</td>
-                  <td>23</td>
-                  <td>$1</td>
-                  <td>24%</td>
-                  <td>$4</td>
-                </tr>
-                <tr>
-                  <th scope="row">1212</th>
-                  <td>Item name 1</td>
-                  <td>23</td>
-                  <td>$1</td>
-                  <td>24%</td>
-                  <td>$4</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="modal-footer">
-            <button class="btn btn-dark" data-bs-dismiss="modal">Close</button>
-            <button class="btn btn-primary">
-              <i class="bi bi-clipboard-check"></i>
-              <strong class="ms-2">Checkout</strong>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
     <!-- Main Content -->
     <main>
       <div class="container-lg py-5 vh-100">
@@ -626,6 +499,138 @@
         </div>
       </nav>
     </footer>
+    <!-- Clerk Modals -->
+    <div>
+      <!-- Hold Bill Modal -->
+      <div
+        class="modal fade"
+        id="holdBillModal"
+        tabindex="-1"
+        aria-labelledby="holdBillModal"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="holdBillModalLabel">Bill Details</h5>
+              <button
+                type="button"
+                class="btn btn-outline-dark"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              >
+                <i class="bi bi-x-lg"></i>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form action="" novalidate class="needs-validation">
+                <div class="form-floating">
+                  <input
+                    type="text"
+                    id="holdBillId"
+                    name="holdBillId"
+                    placeholder=""
+                    required
+                    class="form-control"
+                  />
+                  <label for="holdBillId">Hold Bill Id</label>
+                  <div class="invalid-feedback text-center">Required.</div>
+                </div>
+                <div class="mt-4 hstack justify-content-end">
+                  <button class="btn btn-dark" data-bs-dismiss="modal">
+                    Close
+                  </button>
+                  <button type="submit" class="btn btn-primary ms-3">
+                    <i class="bi bi-hourglass"></i>
+                    <strong>Hold</strong>
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Checkout Bill Modal -->
+      <div
+        class="modal fade"
+        id="checkoutBillModal"
+        tabindex="-1"
+        aria-labelledby="checkoutBillModal"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="checkoutBillModalLabel">
+                Bill Details
+              </h5>
+              <button
+                type="button"
+                class="btn btn-outline-dark"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              >
+                <i class="bi bi-x-lg"></i>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="hstack align-items-center justify-content-center">
+                <div class="spinner-border" role="status">
+                  <span class="visually-hidden">Checking out...</span>
+                </div>
+                <strong class="ms-2">Checking out...</strong>
+              </div>
+              <div
+                class="hstack align-items-center justify-content-center text-danger"
+              >
+                <i class="bi bi-x-circle-fill fs-3"></i>
+                <strong class="ms-2">Something went wrong....</strong>
+              </div>
+              <p class="lead">Bill type: Regular</p>
+              <table class="table table-sm table-striped text-centered">
+                <thead>
+                  <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Qty</th>
+                    <th scope="col">Each</th>
+                    <th scope="col">Discount %</th>
+                    <th scope="col">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">1212</th>
+                    <td>Item name 1</td>
+                    <td>23</td>
+                    <td>$1</td>
+                    <td>24%</td>
+                    <td>$4</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">1212</th>
+                    <td>Item name 1</td>
+                    <td>23</td>
+                    <td>$1</td>
+                    <td>24%</td>
+                    <td>$4</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-dark" data-bs-dismiss="modal">
+                Close
+              </button>
+              <button class="btn btn-primary">
+                <i class="bi bi-clipboard-check"></i>
+                <strong class="ms-2">Checkout</strong>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- Script for Form validation -->
     <script>
       // Example starter JavaScript for disabling form submissions if there are invalid fields

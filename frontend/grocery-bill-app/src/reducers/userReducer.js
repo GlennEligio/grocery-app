@@ -11,9 +11,7 @@ import {
   EDIT_USER_BEGIN,
   EDIT_USER_SUCCESS,
   EDIT_USER_FAILED,
-  DELETE_USER_BEGIN,
-  DELETE_USER_SUCCESS,
-  DELETE_USER_FAILED,
+  RESET_USER_LIST,
 } from "../actions/types";
 
 const initialState = {
@@ -76,14 +74,12 @@ const userReducer = function (state = initialState, action) {
         ...state,
         loading: true,
         error: false,
-        status: false,
       };
     case EDIT_USER_SUCCESS:
       return {
         ...state,
         loading: false,
         error: false,
-        status: true,
         users: [],
       };
     case EDIT_USER_FAILED:
@@ -91,39 +87,16 @@ const userReducer = function (state = initialState, action) {
         ...state,
         loading: false,
         error: true,
-        status: false,
-      };
-    case DELETE_USER_BEGIN:
-      return {
-        ...state,
-        loading: true,
-        error: false,
-        status: false,
-      };
-    case DELETE_USER_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        error: false,
-        status: true,
-        users: [],
-      };
-    case DELETE_USER_FAILED:
-      return {
-        ...state,
-        loading: false,
-        error: true,
-        status: false,
       };
     case UPDATE_USER_SELECTED:
       return {
         ...state,
         userSelected: action.payload,
       };
-    case UPDATE_USER:
+    case RESET_USER_LIST:
       return {
         ...state,
-        user: action.payload,
+        users: [],
       };
     case RESET_USER_STATES:
       return {

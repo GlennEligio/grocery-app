@@ -4,103 +4,25 @@ import {
   FETCH_ITEMS_FAILED,
   UPDATE_ITEM_SELECTED,
   RESET_ITEM_STATES,
-  EDIT_ITEM_BEGIN,
-  EDIT_ITEM_SUCCESS,
-  EDIT_ITEM_FAILED,
-  DELETE_ITEM_BEGIN,
-  DELETE_ITEM_FAILED,
-  DELETE_ITEM_SUCCESS,
+  RESET_ITEM_LIST,
 } from "../actions/types";
 
-export const fetchItems = (jwt) => (dispatch) => {
+export const fetchItemsBegin = () => (dispatch) => {
   dispatch({
     type: FETCH_ITEMS_BEGIN,
   });
-  fetch("http://localhost:8080/api/v1/items", {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${jwt}`,
-    },
-  })
-    .then((res) => {
-      switch (res.status) {
-        case 200:
-          return res.json();
-        default:
-          return null;
-      }
-    })
-    .then((data) => {
-      switch (data) {
-        case null:
-          dispatch({
-            type: FETCH_ITEMS_FAILED,
-          });
-          break;
-        default:
-          dispatch({
-            type: FETCH_ITEMS_SUCCESS,
-            payload: data,
-          });
-          break;
-      }
-    })
-    .catch(() => {
-      dispatch({
-        type: FETCH_ITEMS_FAILED,
-      });
-    });
 };
 
-export const editItemInServer = (item, jwt) => (dispatch) => {
+export const fetchItemsSuccess = (items) => (dispatch) => {
   dispatch({
-    type: EDIT_ITEM_BEGIN,
-  });
-  fetch("http://localhost:8080/api/v1/items", {
-    method: "PUT",
-    headers: {
-      Authorization: `Bearer ${jwt}`,
-      "Content-type": "application/json",
-    },
-    body: JSON.stringify(item),
-  }).then((res) => {
-    switch (res.status) {
-      case 200:
-        dispatch({
-          type: EDIT_ITEM_SUCCESS,
-        });
-        break;
-      default:
-        dispatch({
-          type: EDIT_ITEM_FAILED,
-        });
-        break;
-    }
+    type: FETCH_ITEMS_SUCCESS,
+    payload: items,
   });
 };
 
-export const deleteItemInServer = (id, jwt) => (dispatch) => {
+export const fetchItemsFailed = () => (dispatch) => {
   dispatch({
-    type: DELETE_ITEM_BEGIN,
-  });
-  fetch(`http://localhost:8080/api/v1/items/${id}`, {
-    method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${jwt}`,
-    },
-  }).then((res) => {
-    switch (res.status) {
-      case 200:
-        dispatch({
-          type: DELETE_ITEM_SUCCESS,
-        });
-        break;
-      default:
-        dispatch({
-          type: DELETE_ITEM_FAILED,
-        });
-        break;
-    }
+    type: FETCH_ITEMS_FAILED,
   });
 };
 
@@ -108,6 +30,12 @@ export const updateItemSelected = (item) => (dispatch) => {
   dispatch({
     type: UPDATE_ITEM_SELECTED,
     payload: item,
+  });
+};
+
+export const resetItemList = () => (dispatch) => {
+  dispatch({
+    type: RESET_ITEM_LIST,
   });
 };
 

@@ -7,7 +7,7 @@ import storage from "redux-persist/lib/storage";
 const initialState = {};
 
 const persistConfig = {
-  key: "persist-key",
+  key: "groceryBillApp",
   storage,
 };
 

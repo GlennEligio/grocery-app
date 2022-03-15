@@ -13,6 +13,8 @@ import org.springframework.http.server.reactive.ServerHttpResponseDecorator;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.Objects;
+
 @Component
 public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> {
 
@@ -49,9 +51,13 @@ public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> 
                     .retrieve().bodyToMono(UserDto.class)
                     .map(userDto -> {
                         log.info("Authentication success! " + "Username " + userDto.getUsername() + " access " + exchange.getRequest().getPath());
-                        if(!exchange.getRequest().getMethod().toString().equals("GET") && userDto.getRole().contains("ROLE_CLERK")){
-                            log.info("Clerks sent non GET request");
-                            throw new RuntimeException("Clerks can only send GET request");
+                        if(!Objects.equals(exchange.getRequest().getMethod(), HttpMethod.GET)
+                                && userDto.getRole().contains("ROLE_CLERK")){
+                            if(!Objects.equals(exchange.getRequest().getMethod(), HttpMethod.POST)
+                                    && !exchange.getRequest().getPath().toString().equals("/api/v1/bills")){
+                                log.info("Clerks sent non GET request");
+                                throw new RuntimeException("Clerks can only send GET request");
+                            }
                         }
                         exchange.getRequest()
                                 .mutate()

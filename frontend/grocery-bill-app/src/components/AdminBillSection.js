@@ -1,74 +1,124 @@
-import React, { useEffect, useState } from "react";
-import { FaTimesCircle, FaSpinner } from "react-icons/fa";
-import { MdRefresh } from "react-icons/md";
+import React, { useCallback, useEffect, useState } from "react";
 import AdminBill from "./AdminBill";
 import { connect } from "react-redux";
-import { fetchBills } from "../actions/billActions";
-import { setModalComponent } from "../actions/componentActions";
+import {
+  fetchBillsBegin,
+  fetchBillsSuccess,
+  fetchBillsFailed,
+} from "../actions/billActions";
 
-const AdminBillSection = ({ billHistory, loading, error, jwt, fetchBills }) => {
+const AdminBillSection = ({
+  billHistory,
+  loading,
+  error,
+  user,
+  fetchBillsBegin,
+  fetchBillsSuccess,
+  fetchBillsFailed,
+}) => {
   useEffect(() => {
-    fetchBills(jwt);
-  }, [billHistory.length]);
+    fetchBills();
+  }, [billHistory.length, user]);
+
+  const fetchBills = useCallback(() => {
+    fetchBillsBegin();
+    fetch("http://localhost:8080/api/v1/bills/summary", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${user.jwt}`,
+      },
+    })
+      .then((res) => {
+        switch (res.status) {
+          case 200:
+            return res.json();
+          default:
+            return null;
+        }
+      })
+      .then((data) => {
+        switch (data) {
+          case null:
+            fetchBillsFailed();
+            break;
+          default:
+            fetchBillsSuccess(data);
+            break;
+        }
+      })
+      .catch(() => fetchBillsFailed());
+  }, [billHistory.length, user]);
 
   const [query, setQuery] = useState("");
 
   return (
-    <div className="admin-home-bills">
-      <div className="search-bar">
+    <div
+      className="col tab-pane fade show"
+      id="pills-adminBill"
+      role="tabpanel"
+      aria-labelledby="pills-adminBill-tab"
+    >
+      <div className="input-group">
         <input
           type="text"
+          id="query"
+          name="query"
           value={query}
-          placeholder="Search bill here"
           onChange={(e) => setQuery(e.target.value)}
+          className="form-control"
         />
-        <FaTimesCircle className="interactable" onClick={() => setQuery("")} />
-        <MdRefresh className="interactable" onClick={() => fetchBills(jwt)} />
+        <button className="btn btn-outline-secondary">
+          <i className="bi bi-search"></i>
+        </button>
+        <button onClick={() => fetchBills()} className="btn btn-outline-dark">
+          <i className="bi bi-arrow-clockwise"></i>
+        </button>
       </div>
-      <div className="table header">
-        {loading && (
-          <div className="form-control-loading">
-            <div>
-              <FaSpinner className="loading-logo" />
-            </div>
-            <label>Retrieving Bill History</label>
+      {loading && (
+        <div className="hstack align-items-center justify-content-center">
+          <div className="spinner-border" role="status">
+            <span className="visually-hidden">Fetching bills...</span>
           </div>
-        )}
-        {error && (
-          <div className="form-control-error">
-            <FaTimesCircle />
-            <label>Something went wrong.</label>
-          </div>
-        )}
-        {!error && !loading && (
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Id</th>
-                <th>Item count</th>
-                <th>Clerk</th>
-                <th>Date</th>
-                <th>Type</th>
-                <th>Total</th>
-              </tr>
-            </thead>
-          </table>
-        )}
-      </div>
-      <div className="table body">
-        {!error && !loading && (
-          <table className="table">
-            <tbody>
-              {billHistory.length > 0 &&
-                billHistory
-                  .filter((bill) => bill.id.toString().includes(query))
-                  .map((bill, index) => {
-                    return <AdminBill key={index} bill={bill} />;
-                  })}
-            </tbody>
-          </table>
-        )}
-      </div>
+          <strong className="ms-2">Fetching bills...</strong>
+        </div>
+      )}
+      {error && (
+        <div className="hstack align-items-center justify-content-center text-danger">
+          <i className="bi bi-x-circle-fill fs-3"></i>
+          <strong className="ms-2">Something went wrong....</strong>
+        </div>
+      )}
+      <table className="table table-sm table-hover mt-3 text-center border-radius-2 border-collapse w-100">
+        <thead className="table-dark">
+          <tr>
+            <th scope="col" className="w-20">
+              Id
+            </th>
+            <th scope="col" className="w-10">
+              Item count
+            </th>
+            <th scope="col" className="w-20">
+              Clerk
+            </th>
+            <th scope="col">Date</th>
+            <th scope="col" className="w-10">
+              Type
+            </th>
+            <th scope="col" className="w-10">
+              Total
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {billHistory.length > 0 &&
+            billHistory
+              .filter((bill) => bill.id.toString().includes(query.toString()))
+              .sort()
+              .map((bill, index) => {
+                return <AdminBill key={index} bill={bill} />;
+              })}
+        </tbody>
+      </table>
     </div>
   );
 };
@@ -77,9 +127,11 @@ const mapStateToProps = (state) => ({
   billHistory: state.bill.billHistory,
   error: state.items.error,
   loading: state.items.loading,
-  jwt: state.auth.jwt,
+  user: state.auth.user,
 });
 
-export default connect(mapStateToProps, { fetchBills, setModalComponent })(
-  AdminBillSection
-);
+export default connect(mapStateToProps, {
+  fetchBillsBegin,
+  fetchBillsSuccess,
+  fetchBillsFailed,
+})(AdminBillSection);

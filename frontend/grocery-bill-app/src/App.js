@@ -12,17 +12,13 @@ function App() {
 
   return (
     <Router>
-      <div className="app">
-        <div className="viewContainer">
-          <Routes>
-            <Route path="/" element={<Components.Home />} />
-            <Route path="/login" element={<Components.Login />} />
-            <Route path="/register" element={<Components.Register />} />
-            <Route path="/clerk" element={<Components.ClerkHome />} />
-            <Route path="/admin" element={<Components.AdminHome />} />
-          </Routes>
-        </div>
-      </div>
+      <Routes>
+        <Route path="/" element={<Components.Home />} />
+        <Route path="/login" element={<Components.Login />} />
+        <Route path="/register" element={<Components.Register />} />
+        <Route path="/clerk" element={<Components.ClerkHome />} />
+        <Route path="/admin" element={<Components.AdminHome />} />
+      </Routes>
     </Router>
   );
 }

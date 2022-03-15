@@ -65,7 +65,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	}
 
 	public boolean updateUser(User user) {
-		log.info("Updating user " + user);
+		log.info("Updating user in Service" + user);
 		Optional<User> op = repository.findById(user.getId());
 		
 		if(op.isPresent()) {
@@ -75,6 +75,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 			oldUser.setPassword(passwordEncoder.encode(user.getPassword()));
 			oldUser.setActive(user.isActive());
 			oldUser.setRoles(user.getRoles());
+			repository.save(oldUser);
 			return true;
 		}
 		throw new AppException("No User exist to update", HttpStatus.NOT_FOUND);
