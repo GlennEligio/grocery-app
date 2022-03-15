@@ -18,7 +18,7 @@ const AdminBillSection = ({
 }) => {
   useEffect(() => {
     fetchBills();
-  }, [billHistory.length, user]);
+  }, []);
 
   const fetchBills = useCallback(() => {
     fetchBillsBegin();

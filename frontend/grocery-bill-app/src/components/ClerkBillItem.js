@@ -3,12 +3,6 @@ import { connect } from "react-redux";
 import { updateItemOnCurrentBill } from "../actions/billActions";
 
 const ClerkBillItem = ({ billItem, updateItemOnCurrentBill }) => {
-  const [amount, setAmount] = useState(billItem.amount);
-
-  useEffect(() => {
-    updateItemOnCurrentBill({ ...billItem, amount: parseInt(amount) });
-  }, [amount, billItem, updateItemOnCurrentBill]);
-
   return (
     <li className="list-group-item">
       <div className="row gx-0">
@@ -21,7 +15,10 @@ const ClerkBillItem = ({ billItem, updateItemOnCurrentBill }) => {
           <div className="input-group">
             <button
               onClick={() => {
-                setAmount(parseInt(amount) === 0 ? 0 : parseInt(amount) - 1);
+                updateItemOnCurrentBill({
+                  ...billItem,
+                  amount: parseInt(billItem.amount - 1),
+                });
               }}
               className="btn btn-outline-danger"
             >
@@ -29,15 +26,23 @@ const ClerkBillItem = ({ billItem, updateItemOnCurrentBill }) => {
             </button>
             <input
               type="text"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              value={billItem.amount}
+              onChange={(e) => {
+                updateItemOnCurrentBill({
+                  ...billItem,
+                  amount: parseInt(e.target.value),
+                });
+              }}
               className="form-control"
               aria-label="Amount (to the nearest dollar)"
               required
             />
             <button
               onClick={() => {
-                setAmount(parseInt(amount) + 1);
+                updateItemOnCurrentBill({
+                  ...billItem,
+                  amount: parseInt(billItem.amount + 1),
+                });
               }}
               className="btn btn-outline-primary"
             >

@@ -1,6 +1,5 @@
 import React from "react";
 import { connect } from "react-redux";
-import { updateItemSelected } from "../actions/itemActions";
 import { addItemOnCurrentBill } from "../actions/billActions";
 
 const ClerkItem = ({ item, addItemOnCurrentBill }) => {
@@ -25,6 +24,4 @@ const ClerkItem = ({ item, addItemOnCurrentBill }) => {
   );
 };
 
-export default connect(null, { updateItemSelected, addItemOnCurrentBill })(
-  ClerkItem
-);
+export default connect(null, { addItemOnCurrentBill })(ClerkItem);
