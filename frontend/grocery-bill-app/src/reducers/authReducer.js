@@ -6,8 +6,11 @@ import {
 } from "../actions/types";
 
 const initialState = {
-  jwt: "",
-  role: "",
+  user: {
+    username: "",
+    jwt: "",
+    role: "",
+  },
   loading: false,
   error: false,
   isLoggedIn: false,
@@ -24,8 +27,11 @@ const authReducer = function (state = initialState, action) {
     case FETCH_JWT_SUCCESS:
       return {
         ...state,
-        jwt: action.payload.jwt,
-        role: action.payload.role,
+        user: {
+          username: action.payload.username,
+          jwt: action.payload.jwt,
+          role: action.payload.role,
+        },
         loading: false,
         error: false,
         isLoggedIn: true,
@@ -39,8 +45,11 @@ const authReducer = function (state = initialState, action) {
     case RESET_AUTH_STATES:
       return {
         ...state,
-        jwt: "",
-        role: "",
+        user: {
+          username: "",
+          jwt: "",
+          role: "",
+        },
         loading: false,
         error: false,
         isLoggedIn: false,

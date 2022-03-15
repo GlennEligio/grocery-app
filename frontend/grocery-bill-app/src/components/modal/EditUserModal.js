@@ -1,138 +1,254 @@
-import React from "react";
-import { useState } from "react";
+import React, { useEffect } from "react";
+import { useState, useRef } from "react";
 import { connect } from "react-redux";
-import { FaSpinner } from "react-icons/fa";
-import { editUserInServer } from "../../actions/userActions";
+import {
+  editUserBegin,
+  editUserSuccess,
+  editUserFailed,
+} from "../../actions/userActions";
 
 const EditUserModal = ({
   userSelected,
   error,
   loading,
-  jwt,
-  editUserInServer,
+  user,
+  editUserBegin,
+  editUserFailed,
+  editUserSuccess,
 }) => {
   const [name, setName] = useState("");
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [active, setActive] = useState(false);
   const [roles, setRoles] = useState("ROLE_CLERK");
+  const [status, setStatus] = useState(false);
+  const form = useRef();
+
+  useEffect(() => {
+    setName(userSelected.name);
+    setUserName(userSelected.username);
+    setPassword("");
+    setRoles(userSelected.roles);
+    setActive(userSelected.active);
+  }, [userSelected]);
 
   const onSubmit = (e) => {
+    setStatus(false);
     e.preventDefault();
 
-    if (!username || !password || !roles) {
-      alert("Please fill up all information");
-      return;
-    }
+    if (!form.current.checkValidity()) {
+      e.stopPropagation();
+      form.current.classList.add("was-validated");
+    } else {
+      const userToEdit = {
+        id: userSelected.id,
+        name: name,
+        username: username,
+        password: password,
+        active: active,
+        roles: roles,
+      };
 
-    const user = {
-      id: userSelected.id,
-      name: name,
-      username: username,
-      password: password,
-      active: active,
-      roles: roles,
-    };
+      editUserBegin();
 
-    editUserInServer(user, jwt);
+      console.log(JSON.stringify(userToEdit));
 
-    if (!loading && !error) {
-      document.getElementById("modal-id").style.display = "none";
+      fetch("http://localhost:8080/api/v1/users", {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${user.jwt}`,
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify(userToEdit),
+      })
+        .then((res) => {
+          switch (res.status) {
+            case 200:
+              editUserSuccess();
+              form.current.classList.remove("was-validated");
+              setStatus(true);
+              break;
+            default:
+              editUserFailed();
+              form.current.classList.add("was-validated");
+              break;
+          }
+        })
+        .catch(() => {
+          editUserFailed();
+          form.current.classList.add("was-validated");
+        });
     }
   };
 
   return (
-    <>
-      <div className="modal-title">
-        <h3>Edit User</h3>
-      </div>
-      <div className="modal-body">
-        <form className="form" onSubmit={onSubmit}>
-          {loading && (
-            <div className="form-control-loading">
-              <div>
-                <FaSpinner className="loading-logo" />
-              </div>
-              <label>Updating user</label>
-            </div>
-          )}
-          {error && (
-            <div className="form-control-error">
-              <label>Error updating user</label>
-            </div>
-          )}
-          <div className="form-control">
-            <label>Name: </label>
-            <input
-              type="text"
-              name="name"
-              autoComplete="off"
-              value={name}
-              onChange={(e) => {
-                setName(e.target.value);
-              }}
-            />
-          </div>
-          <div className="form-control">
-            <label>Username: </label>
-            <input
-              type="text"
-              name="username"
-              autoComplete="off"
-              value={username}
-              onChange={(e) => {
-                setUserName(e.target.value);
-              }}
-            />
-          </div>
-          <div className="form-control">
-            <label>Password: </label>
-            <input
-              type="password"
-              name="password"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-              }}
-            />
-          </div>
-          <div className="form-control-checkbox">
-            <label>Active?: </label>
-            <input
-              type="checkbox"
-              name="active"
-              value={active}
-              onChange={(e) => {
-                setActive(e.currentTarget.checked);
-              }}
-            />
-          </div>
-          <div className="form-control">
-            <label>Role: </label>
-            <select
-              name="roles"
-              value={roles}
-              onChange={(e) => setRoles(e.target.value)}
+    <div
+      className="modal fade"
+      id="editUserModal"
+      tabIndex="-1"
+      aria-labelledby="editUserModal"
+      aria-hidden="true"
+    >
+      <div className="modal-dialog modal-dialog-centered">
+        <div className="modal-content">
+          <div className="modal-header">
+            <h5 className="modal-title" id="editUserModalLabel">
+              Edit User
+            </h5>
+            <button
+              type="button"
+              className="btn btn-outline-dark"
+              data-bs-dismiss="modal"
+              onClick={() => setStatus(false)}
+              aria-label="Close"
             >
-              <option value="ROLE_CLERK">Clerk</option>
-              <option value="ROLE_ADMIN">Admin</option>
-            </select>
+              <i className="bi bi-x-lg"></i>
+            </button>
           </div>
-          <div className="form-control-button">
-            <button className="btn">Update</button>
+          <div className="modal-body">
+            <div className="mb-2">
+              {loading && (
+                <div className="hstack align-items-center justify-content-center">
+                  <div className="spinner-border" role="status">
+                    <span className="visually-hidden">Editing user...</span>
+                  </div>
+                  <strong className="ms-2">Editing user...</strong>
+                </div>
+              )}
+              {error && (
+                <div className="hstack align-items-center justify-content-center text-danger">
+                  <i className="bi bi-x-circle-fill fs-3"></i>
+                  <strong className="ms-2">Something went wrong....</strong>
+                </div>
+              )}
+              {status && (
+                <div className="hstack align-items-center justify-content-center text-success">
+                  <i className="bi bi-check-circle-fill fs-3"></i>
+                  <strong className="ms-2">Edit User Success</strong>
+                </div>
+              )}
+            </div>
+            <form
+              ref={form}
+              onSubmit={onSubmit}
+              noValidate
+              className="needs-validation"
+            >
+              <div className="form-floating mb-3">
+                <input
+                  type="text"
+                  id="addUserName"
+                  name="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder=""
+                  className="form-control"
+                  required
+                />
+                <label htmlFor="addUserName">Name</label>
+                <div className="invalid-feedback">Please enter a name.</div>
+              </div>
+              <div className="form-floating mb-3">
+                <input
+                  type="text"
+                  id="addUserUsername"
+                  name="username"
+                  value={username}
+                  onChange={(e) => setUserName(e.target.value)}
+                  placeholder=""
+                  className="form-control"
+                  required
+                />
+                <label htmlFor="addUserUsername">Username</label>
+                <div className="invalid-feedback">Please enter a username.</div>
+              </div>
+              <div className="form-floating mb-3">
+                <input
+                  type="password"
+                  id="addUserPassword"
+                  name="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder=""
+                  className="form-control"
+                  required
+                />
+                <label htmlFor="addUserPassword">Password</label>
+                <div className="invalid-feedback">Please enter a password.</div>
+              </div>
+              <div className="row mb-3">
+                <div className="col">
+                  <div className="form-floating">
+                    <select
+                      className="form-select"
+                      id="addUserRole"
+                      value={roles}
+                      onChange={(e) => setRoles(e.target.value)}
+                      aria-label="Select User Role"
+                      required
+                    >
+                      <option value="ROLE_CLERK">Clerk</option>
+                      {user.role === "ROLE_SADMIN" && (
+                        <option value="ROLE_ADMIN">Admin</option>
+                      )}
+                    </select>
+                    <label htmlFor="floatingSelect">Role</label>
+                    <div className="invalid-feedback">
+                      Please select the role.
+                    </div>
+                  </div>
+                </div>
+                <div className="col hstack align-items-center justify-content-center">
+                  <div className="form-check form-switch hstack align-items-center">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      value={active}
+                      onChange={(e) => setActive(e.currentTarget.checked)}
+                      role="switch"
+                      id="activeSwitch"
+                    />
+                    <label
+                      className="form-check-label fs-4 ms-2"
+                      htmlFor="activeSwitch"
+                    >
+                      Active?
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div className="hstack justify-content-end">
+                <button
+                  type="button"
+                  className="btn btn-dark"
+                  data-bs-dismiss="modal"
+                  onClick={() => setStatus(false)}
+                >
+                  Close
+                </button>
+                <button type="submit" className="btn btn-primary ms-2">
+                  <i className="bi bi-pencil-square"></i>
+                  <strong className="ms-1">Edit</strong>
+                </button>
+              </div>
+            </form>
           </div>
-        </form>
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 
 const mapStateToProps = (state) => ({
+  user: state.auth.user,
   userSelected: state.user.userSelected,
   error: state.user.error,
   loading: state.user.loading,
   status: state.user.status,
-  jwt: state.auth.jwt,
 });
 
-export default connect(mapStateToProps, { editUserInServer })(EditUserModal);
+export default connect(mapStateToProps, {
+  editUserBegin,
+  editUserFailed,
+  editUserSuccess,
+})(EditUserModal);

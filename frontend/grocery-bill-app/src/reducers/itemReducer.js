@@ -10,6 +10,7 @@ import {
   DELETE_ITEM_BEGIN,
   DELETE_ITEM_SUCCESS,
   DELETE_ITEM_FAILED,
+  RESET_ITEM_LIST,
 } from "../actions/types";
 
 const initialState = {
@@ -82,6 +83,11 @@ const itemReducer = function (state = initialState, action) {
       return {
         ...state,
         itemSelected: action.payload,
+      };
+    case RESET_ITEM_LIST:
+      return {
+        ...state,
+        items: [],
       };
     case RESET_ITEM_STATES:
       return {

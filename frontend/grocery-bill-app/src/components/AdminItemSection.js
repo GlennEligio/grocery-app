@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { FaTimesCircle, FaPlus, FaSpinner } from "react-icons/fa";
-import { MdRefresh } from "react-icons/md";
 import { connect } from "react-redux";
-import { fetchItems } from "../actions/itemActions";
+import {
+  fetchItemsBegin,
+  fetchItemsSuccess,
+  fetchItemsFailed,
+  resetItemList,
+} from "../actions/itemActions";
 import { setModalComponent } from "../actions/componentActions";
 import AdminItem from "./AdminItem";
 
@@ -10,81 +13,120 @@ const AdminItemSection = ({
   items,
   loading,
   error,
-  jwt,
-  fetchItems,
-  setModalComponent,
+  user,
+  fetchItemsBegin,
+  fetchItemsSuccess,
+  fetchItemsFailed,
+  resetItemList,
 }) => {
-  useEffect(() => {
-    fetchItems(jwt);
-  }, [items.length]);
-
   const [query, setQuery] = useState("");
 
+  useEffect(() => {
+    fetchItemsBegin();
+    fetch("http://localhost:8080/api/v1/items", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${user.jwt}`,
+      },
+    })
+      .then((res) => {
+        switch (res.status) {
+          case 200:
+            return res.json();
+          default:
+            return null;
+        }
+      })
+      .then((data) => {
+        switch (data) {
+          case null:
+            fetchItemsFailed();
+            break;
+          default:
+            fetchItemsSuccess(data);
+            break;
+        }
+      })
+      .catch(() => {
+        fetchItemsFailed();
+      });
+  }, [items.length]);
+
   return (
-    <div className="admin-home-items">
-      <div className="search-bar">
+    <div
+      className="col tab-pane fade show"
+      id="pills-adminItem"
+      role="tabpanel"
+      aria-labelledby="pills-adminItem-tab"
+    >
+      <div className="input-group">
         <input
           type="text"
+          id="query"
+          name="query"
           value={query}
-          placeholder={"Search item here"}
           onChange={(e) => setQuery(e.target.value)}
+          className="form-control"
         />
-        <FaTimesCircle className="interactable" onClick={() => setQuery("")} />
-        <FaPlus
-          className="interactable"
-          onClick={() => {
-            setModalComponent("add-item-modal");
-            document.getElementById("modal-id").style.display = "flex";
-          }}
-        />
-        <MdRefresh className="interactable" onClick={() => fetchItems(jwt)} />
+        <button className="btn btn-outline-secondary">
+          <i className="bi bi-search"></i>
+        </button>
+        <button className="btn btn-outline-primary">
+          <i
+            className="bi bi-plus-lg"
+            data-bs-toggle="modal"
+            data-bs-target="#addItemModal"
+          ></i>
+        </button>
+        <button
+          className="btn btn-outline-dark"
+          onClick={() => resetItemList()}
+        >
+          <i className="bi bi-arrow-clockwise"></i>
+        </button>
       </div>
-      <div className="table header">
+      <div className="mt-3">
         {loading && (
-          <div className="form-control-loading">
-            <div>
-              <FaSpinner className="loading-logo" />
+          <div className="hstack align-items-center justify-content-center">
+            <div className="spinner-border" role="status">
+              <span className="visually-hidden">Fetching items...</span>
             </div>
-            <label>Retrieving Item List</label>
+            <strong className="ms-2">Fetching items...</strong>
           </div>
         )}
         {error && (
-          <div className="form-control-error">
-            <FaTimesCircle />
-            <label>Something went wrong.</label>
+          <div className="hstack align-items-center justify-content-center text-danger">
+            <i className="bi bi-x-circle-fill fs-3"></i>
+            <strong className="ms-2">Something went wrong....</strong>
           </div>
         )}
-        {!error && !loading && (
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Discounted?</th>
-                <th>Discount %</th>
-                <th>Price</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-          </table>
-        )}
       </div>
-      <div className="table body">
-        {!error && !loading && (
-          <table className="table">
-            <tbody>
-              {items.length > 0 &&
-                items
-                  .filter((item) =>
-                    item.name.toLowerCase().includes(query.toLowerCase())
-                  )
-                  .map((item, index) => {
-                    return <AdminItem key={index} item={item} />;
-                  })}
-            </tbody>
-          </table>
-        )}
-      </div>
+      <table className="table table-sm table-hover mt-3 text-center border-radius-2 border-collapse w-100">
+        <thead className="table-dark">
+          <tr>
+            <th scope="col" className="w-20">
+              Id
+            </th>
+            <th scope="col" className="w-20">
+              Name
+            </th>
+            <th scope="col">Discount %</th>
+            <th scope="col">Discounted?</th>
+            <th scope="col" className="w-20">
+              Price
+            </th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {items
+            .filter((item) => item.id.toString().includes(query.toString()))
+            .sort()
+            .map((item, index) => {
+              return <AdminItem key={index} item={item} />;
+            })}
+        </tbody>
+      </table>
     </div>
   );
 };
@@ -93,9 +135,12 @@ const mapStateToProps = (state) => ({
   items: state.items.items,
   error: state.items.error,
   loading: state.items.loading,
-  jwt: state.auth.jwt,
+  user: state.auth.user,
 });
 
-export default connect(mapStateToProps, { fetchItems, setModalComponent })(
-  AdminItemSection
-);
+export default connect(mapStateToProps, {
+  fetchItemsBegin,
+  fetchItemsSuccess,
+  fetchItemsFailed,
+  resetItemList,
+})(AdminItemSection);

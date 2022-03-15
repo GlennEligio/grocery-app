@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { FaTimesCircle, FaSpinner } from "react-icons/fa";
 import { connect } from "react-redux";
 import billConverter from "../util/billConverter";
 
-const BillDetailsModal = ({ jwt, billSelected }) => {
+const BillDetailsModal = ({ user, billSelected }) => {
   const [bill, setBill] = useState({});
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -12,7 +11,7 @@ const BillDetailsModal = ({ jwt, billSelected }) => {
     fetch(`http://localhost:8080/api/v1/bills/${billSelected.id}`, {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${jwt}`,
+        Authorization: `Bearer ${user.jwt}`,
       },
     })
       .then((res) => {
@@ -36,57 +35,81 @@ const BillDetailsModal = ({ jwt, billSelected }) => {
             break;
         }
       })
-      .catch((error) => {
+      .catch(() => {
         setError(true);
         setLoading(false);
       });
   }, [billSelected]);
 
   return (
-    <>
-      <div className="modal-title">
-        <h3>Bill Details</h3>
-      </div>
-      <div className="modal-body">
-        <form className="form">
-          {loading && (
-            <div className="form-control-loading">
-              <div>
-                <FaSpinner className="loading-logo" />
+    <div
+      className="modal fade"
+      id="billDetailsModal"
+      tabIndex="-1"
+      aria-labelledby="billDetailsModal"
+      aria-hidden="true"
+    >
+      <div className="modal-dialog modal-dialog-centered">
+        <div className="modal-content">
+          <div className="modal-header">
+            <h5 className="modal-title" id="billDetailsModalLabel">
+              Bill Details
+            </h5>
+            <button
+              type="button"
+              className="btn btn-outline-dark"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            >
+              <i className="bi bi-x-lg"></i>
+            </button>
+          </div>
+          <div className="modal-body">
+            {loading && (
+              <div className="d-flex align-items-center justify-content-center">
+                <div className="spinner-border" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+                <strong className="ms-2">Fetching Bill Details</strong>
               </div>
-              <label>Fetching Bill details...</label>
-            </div>
-          )}
-          {error && (
-            <div className="form-control-error">
-              <FaTimesCircle />
-              <label>Something went wrong. Please try again later</label>
-            </div>
-          )}
-          {/* <div className="form-control-prompt">
-            <label>Are you sure?</label>
-          </div> */}
-          <div className="form-control">
-            <table>
+            )}
+            {error && (
+              <div className="d-flex align-items-center justify-content-center text-danger">
+                <i className="bi bi-x-circle-fill fs-4"></i>
+                <strong className="ms-2">Something went wrong...</strong>
+              </div>
+            )}
+            <table className="table table-sm text-center">
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Qty</th>
-                  <th>Each</th>
-                  <th>Discount %</th>
-                  <th>Total</th>
+                  <th scope="col">Id</th>
+                  <th scope="col" className="w-20 text-truncate">
+                    Name
+                  </th>
+                  <th scope="col" className="w-10">
+                    Qty
+                  </th>
+                  <th scope="col" className="w-10">
+                    Each
+                  </th>
+                  <th scope="col" className="w-25">
+                    Discount
+                  </th>
+                  <th scope="col">Total</th>
                 </tr>
               </thead>
               <tbody>
-                {bill.itemList &&
+                {bill.itemList.length > 0 &&
                   bill.itemList.map((item, index) => {
                     return (
                       <tr key={index}>
+                        <th scope="row">{item.id}</th>
                         <td>{item.name}</td>
                         <td>{item.amount}</td>
-                        <td>{item.price}</td>
-                        <td>{item.discountPercentage}</td>
+                        <td>{`$${item.price}`}</td>
+                        <td>{`${item.discountPercentage * 100}%`}</td>
                         <td>
+                          $
                           {bill.type === "regular"
                             ? item.amount * item.price
                             : item.amount *
@@ -99,19 +122,14 @@ const BillDetailsModal = ({ jwt, billSelected }) => {
               </tbody>
             </table>
           </div>
-          <div className="form-control-prompt">
-            <button className="btn" type="submit">
-              Checkout
-            </button>
-          </div>
-        </form>
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 
 const mapStateToProps = (state) => ({
-  jwt: state.auth.jwt,
+  user: state.auth.user,
   billSelected: state.bill.billSelected,
 });
 

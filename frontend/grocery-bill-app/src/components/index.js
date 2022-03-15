@@ -1,8 +1,8 @@
 import Home from "./Home";
 import Login from "./Login";
 import ClerkHome from "./ClerkHome";
-import BillSection from "./BillSection";
-import ItemSection from "./ItemSection";
+import ClerkBillSection from "./ClerkBillSection";
+import ClerkItemSection from "./ClerkItemSection";
 import CalculatorSection from "./CalculatorSection";
 import Register from "./Register";
 import AdminHome from "./AdminHome";
@@ -12,8 +12,8 @@ export {
   Login,
   Register,
   ClerkHome,
-  BillSection,
-  ItemSection,
+  ClerkBillSection,
+  ClerkItemSection,
   CalculatorSection,
   AdminHome,
 };

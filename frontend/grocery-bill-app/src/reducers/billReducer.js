@@ -3,7 +3,6 @@ import {
   CREATE_BILL_FAILED,
   CREATE_BILL_SUCCESS,
   RESET_BILL_STATES,
-  UPDATE_CURRENT_BILL,
   CHANGE_CURRENT_BILL,
   RESET_CURRENT_BILL,
   ADD_ON_HOLD_BILL,
@@ -12,6 +11,9 @@ import {
   FETCH_BILLS_SUCCESS,
   FETCH_BILLS_FAILED,
   UPDATE_BILL_SELECTED,
+  ADD_ITEM_ON_CURRENT_BILL,
+  UPDATE_ITEM_IN_CURRENT_BILL,
+  RESET_BILL_LIST,
 } from "../actions/types";
 
 const initialState = {
@@ -19,14 +21,12 @@ const initialState = {
   onHoldBills: [],
   currentBill: {
     itemList: [],
-    shoppingClerk: {},
     id: "",
     type: "regular",
   },
   billSelected: {},
   loading: false,
   error: false,
-  status: false,
 };
 
 const billReducer = function (state = initialState, action) {
@@ -36,14 +36,12 @@ const billReducer = function (state = initialState, action) {
         ...state,
         loading: true,
         error: false,
-        status: false,
       };
     case FETCH_BILLS_SUCCESS: {
       return {
         ...state,
         loading: false,
         error: false,
-        status: true,
         billHistory: action.payload,
       };
     }
@@ -52,7 +50,6 @@ const billReducer = function (state = initialState, action) {
         ...state,
         loading: false,
         error: true,
-        status: false,
       };
     }
     case CREATE_BILL_BEGIN:
@@ -60,14 +57,12 @@ const billReducer = function (state = initialState, action) {
         ...state,
         loading: true,
         error: false,
-        status: false,
       };
     case CREATE_BILL_SUCCESS: {
       return {
         ...state,
         loading: false,
         error: false,
-        status: true,
         currentBill: {
           ...state.currentBill,
           itemList: [],
@@ -79,7 +74,6 @@ const billReducer = function (state = initialState, action) {
         ...state,
         loading: false,
         error: true,
-        status: false,
       };
     }
     case ADD_ON_HOLD_BILL:
@@ -96,13 +90,35 @@ const billReducer = function (state = initialState, action) {
           type: "regular",
         },
       };
-    case UPDATE_CURRENT_BILL:
+    case ADD_ITEM_ON_CURRENT_BILL:
+      var isInCurrentBill = false;
+      state.currentBill.itemList.forEach((item) => {
+        if (item.id === action.payload.id) {
+          isInCurrentBill = true;
+        }
+      });
+      if (!isInCurrentBill) {
+        return {
+          ...state,
+          currentBill: {
+            ...state.currentBill,
+            itemList: [...state.currentBill.itemList, action.payload],
+          },
+        };
+      } else {
+        return state;
+      }
+    case UPDATE_ITEM_IN_CURRENT_BILL:
       return {
         ...state,
         currentBill: {
           ...state.currentBill,
-          itemList: action.payload.items,
-          shoppingClerk: action.payload.clerk,
+          itemList: state.currentBill.itemList.map((item) => {
+            if (item.id === action.payload.id) {
+              return action.payload;
+            }
+            return item;
+          }),
         },
       };
     case UPDATE_CURRENT_BILL_TYPE:
@@ -119,10 +135,13 @@ const billReducer = function (state = initialState, action) {
         billSelected: action.payload,
       };
     case CHANGE_CURRENT_BILL:
+      const newOnHoldBill = state.onHoldBills.filter(
+        (bill) => bill.id !== action.payload.id
+      );
       return {
         ...state,
-        onHoldBills: action.payload.onHoldBills,
-        currentBill: action.payload.currentBill,
+        onHoldBills: newOnHoldBill,
+        currentBill: action.payload,
       };
     case RESET_CURRENT_BILL:
       return {
@@ -132,13 +151,17 @@ const billReducer = function (state = initialState, action) {
           itemList: [],
         },
       };
+    case RESET_BILL_LIST:
+      return {
+        ...state,
+        billHistory: [],
+      };
     case RESET_BILL_STATES:
       return {
         billHistory: [],
         onHoldBills: [],
         currentBill: {
           itemList: [],
-          shoppingClerk: {},
           id: "",
           type: "regular",
         },

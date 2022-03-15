@@ -1,43 +1,42 @@
 import React from "react";
-import { FaCheck, FaTimes, FaEdit, FaTrashAlt } from "react-icons/fa";
 import { connect } from "react-redux";
-import { updateItemSelected } from "../actions/itemActions";
+import { updateUserSelected } from "../actions/userActions";
 import { setModalComponent } from "../actions/componentActions";
 
-const AdminItem = ({ item, updateItemSelected }) => {
+const AdminUser = ({ user, updateUserSelected }) => {
   return (
     <tr>
-      <th scope="row">{item.id}</th>
+      <th scope="row">{user.id}</th>
       <td>
-        <div className="d-block text-truncate">{item.name}</div>
+        <div className="d-block text-truncate">{user.name}</div>
       </td>
-      <td>{`${item.discountPercentage * 100}%`}</td>
+      <td>{user.username}</td>
       <td>
-        {item.discounted ? (
+        {user.active ? (
           <i className="bi bi-check"></i>
         ) : (
-          <i class="bi bi-x"></i>
+          <i className="bi bi-x"></i>
         )}
       </td>
-      <td>{`$ ${item.price}`}</td>
+      <td>{user.roles}</td>
       <td>
         <div className="row">
           <div className="col text-end">
             <i
               style={{ cursor: "pointer" }}
-              onClick={() => updateItemSelected(item)}
+              onClick={() => updateUserSelected(user)}
               className="bi bi-pencil-square text-success"
               data-bs-toggle="modal"
-              data-bs-target="#editItemModal"
+              data-bs-target="#editUserModal"
             ></i>
           </div>
           <div className="col text-start">
             <i
               style={{ cursor: "pointer" }}
-              onClick={() => updateItemSelected(item)}
+              onClick={() => updateUserSelected(user)}
               className="bi bi-trash text-danger"
               data-bs-toggle="modal"
-              data-bs-target="#deleteItemModal"
+              data-bs-target="#deleteUserModal"
             ></i>
           </div>
         </div>
@@ -46,4 +45,6 @@ const AdminItem = ({ item, updateItemSelected }) => {
   );
 };
 
-export default connect(null, { updateItemSelected })(AdminItem);
+export default connect(null, { updateUserSelected, setModalComponent })(
+  AdminUser
+);
