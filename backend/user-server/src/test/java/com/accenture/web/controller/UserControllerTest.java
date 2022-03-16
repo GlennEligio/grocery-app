@@ -7,16 +7,18 @@ import com.accenture.web.dtos.AuthenticationRequest;
 import com.accenture.web.dtos.AuthenticationResponse;
 import com.accenture.web.domain.MyUserDetails;
 import com.accenture.web.domain.User;
+import com.accenture.web.exception.AppException;
 import com.accenture.web.repository.UserRepository;
 import com.accenture.web.service.UserServiceImpl;
 import com.accenture.web.util.JwtUtil;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.*;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -326,5 +328,32 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validUser)))
                 .andExpect(MockMvcResultMatchers.status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("Validate a Valid JWT")
+    public void validateToken_withValidToken_returnOk() throws Exception{
+        // Arrange
+        String validJwt = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyMCIsImV4cCI6IjIwMjItMDMtMTZUMDE6MjY6MTAuNDY2WiIsImlhdCI6IjE2Nzg5MzAwMjIifQ.cPdCjq8xI37rttfSVi-DShV3utl6U8g_bVowAhzJpIU";
+        AuthenticationResponse resp = new AuthenticationResponse("user0", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyMCIsImV4cCI6IjIwMjItMDMtMTZUMDE6MjY6MTAuNDY2WiIsImlhdCI6IjE2Nzg5MzAwMjIifQ.cPdCjq8xI37rttfSVi-DShV3utl6U8g_bVowAhzJpIU" , "ROLE_CLERK");
+        when(service.validateToken(validJwt)).thenReturn(resp);
+
+        // Assert
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users/validateToken?token="+validJwt))
+                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(resp)))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    @DisplayName("Validate an invalid JWT")
+    public void validateToken_withInvalidToken_returnNotFound() throws Exception{
+        // Arrange
+        String validJwt = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyMCIsImV4cCI6IjIwMjItMDMtMTZUMDE6MjY6MTAuNDY2WiIsImlhdCI6IjE2Nzg5MzAwMjIifQ.cPdCjq8xI37rttfSVi-DShV3utl6U8g_bVowAhzJpIU";
+        AuthenticationResponse resp = new AuthenticationResponse("user0", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyMCIsImV4cCI6IjIwMjItMDMtMTZUMDE6MjY6MTAuNDY2WiIsImlhdCI6IjE2Nzg5MzAwMjIifQ.cPdCjq8xI37rttfSVi-DShV3utl6U8g_bVowAhzJpIU" , "ROLE_CLERK");
+        when(service.validateToken(validJwt)).thenThrow(new AppException("Jwt validation failed, Username in claims not found", HttpStatus.NOT_FOUND));
+
+        // Assert
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users/validateToken?token="+validJwt))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 }

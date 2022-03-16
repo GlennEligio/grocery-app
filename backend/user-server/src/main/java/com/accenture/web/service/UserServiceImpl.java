@@ -114,6 +114,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 			return response;
 		}
 
-		throw new RuntimeException("Jwt validation failed, Username in claims not found");
+		throw new AppException("Jwt validation failed, Username in claims not found", HttpStatus.NOT_FOUND);
 	}
 }

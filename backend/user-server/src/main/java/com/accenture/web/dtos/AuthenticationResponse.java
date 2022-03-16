@@ -8,6 +8,9 @@ public class AuthenticationResponse {
 	private String jwt;
 	private String role;
 
+	public AuthenticationResponse() {
+	}
+
 	public AuthenticationResponse(String username, String jwt, String role) {
 		this.username = username;
 		this.jwt = jwt;
