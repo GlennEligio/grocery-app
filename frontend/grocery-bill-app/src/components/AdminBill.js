@@ -11,7 +11,7 @@ const AdminBill = ({ bill, updateBillSelected }) => {
     >
       <th scope="row">{bill.id}</th>
       <td>{bill.itemCount}</td>
-      <td>{bill.shoppingClerk.name}</td>
+      <td>{bill.shoppingClerk.username}</td>
       <td>{bill.dateCreated}</td>
       <td>{bill.type === "regular" ? "Regular" : "Discounted"}</td>
       <td>{`$${bill.totalBill.toFixed(2)}`}</td>

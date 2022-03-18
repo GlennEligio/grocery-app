@@ -3,7 +3,7 @@ package com.accenture.web.service;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.accenture.web.dtos.AuthenticationResponse;
-import com.accenture.web.domain.MyUserDetails;
+import com.accenture.web.config.MyUserDetails;
 import com.accenture.web.domain.User;
 import com.accenture.web.exception.AppException;
 import com.accenture.web.repository.UserRepository;

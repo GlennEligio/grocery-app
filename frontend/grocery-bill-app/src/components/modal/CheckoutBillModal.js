@@ -5,6 +5,7 @@ import {
   createBillSuccess,
   createBillFail,
 } from "../../actions/billActions";
+import BillService from "../../api/BillService";
 
 const CheckoutBillModal = ({
   user,
@@ -42,14 +43,7 @@ const CheckoutBillModal = ({
 
     createBillBegin();
 
-    fetch("http://localhost:8080/api/v1/bills", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${user.jwt}`,
-        "Content-type": "application/json",
-      },
-      body: JSON.stringify(bill),
-    })
+    BillService.createBill(user.jwt, bill)
       .then((res) => {
         switch (res.status) {
           case 201:

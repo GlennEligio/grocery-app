@@ -1,12 +1,22 @@
 package com.accenture.web.service;
 
 import com.accenture.web.domain.GroceryBill;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface GroceryBillService {
 
     List<GroceryBill> getAllGroceryBills();
+
+    Page<GroceryBill> findBillsWithPaging(Pageable pageable);
+
+    Page<GroceryBill> findBillsWithPagingAndSorting(Pageable pageable);
+
+    Page<GroceryBill> findBillsWithIdPagingAndSorting(String id, Pageable pageable);
+
+    Page<GroceryBill> findBillsWithShoppingClerkUsernamePagingAndSorting(String username, Pageable pageable);
 
     GroceryBill getGroceryBill(Integer id);
 

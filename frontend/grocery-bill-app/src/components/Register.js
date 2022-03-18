@@ -8,6 +8,7 @@ import {
 } from "../actions/userActions";
 import { resetAuthState } from "../actions/authActions";
 import { resetUserState } from "../actions/userActions";
+import UserService from "../api/UserService";
 
 const Register = ({
   user,
@@ -54,13 +55,7 @@ const Register = ({
 
       registerUserBegin();
 
-      fetch("http://localhost:8080/api/v1/users/register", {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify(user),
-      }).then((res) => {
+      UserService.register(user).then((res) => {
         switch (res.status) {
           case 200:
             registerUserSuccess();

@@ -2,10 +2,7 @@ package com.accenture.web.domain;
 
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -17,7 +14,8 @@ public class ShoppingClerk {
 	private int id;
 
 	@NotBlank(message = "Name must be defined")
-	private String name;
+	@Column(name = "user_username")
+	private String username;
 
 	@OneToMany(mappedBy = "shoppingClerk", cascade = { CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH,
 			CascadeType.DETACH })
@@ -28,26 +26,26 @@ public class ShoppingClerk {
 		super();
 	}
 
-	public ShoppingClerk(String name) {
+	public ShoppingClerk(String username) {
 		super();
-		this.name = name;
+		this.username = username;
 	}
 
-	public ShoppingClerk(int id, String name) {
+	public ShoppingClerk(int id, String username) {
 		this.id = id;
-		this.name = name;
+		this.username = username;
 	}
 
 	public int getId() {
 		return id;
 	}
 
-	public String getName() {
-		return name;
+	public String getUsername() {
+		return username;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 	public List<GroceryBill> getGroceryBill() {
@@ -62,7 +60,7 @@ public class ShoppingClerk {
 	public String toString() {
 		return "ShoppingClerk{" +
 				"id=" + id +
-				", name='" + name + '\'' +
+				", name='" + username + '\'' +
 				'}';
 	}
 }

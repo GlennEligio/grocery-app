@@ -8,6 +8,7 @@ import {
 } from "../actions/authActions";
 import { resetAuthState } from "../actions/authActions";
 import { resetUserState } from "../actions/userActions";
+import UserService from "../api/UserService";
 
 const Login = ({
   user,
@@ -53,13 +54,7 @@ const Login = ({
 
       fetchJwtBegin();
 
-      fetch("http://localhost:8080/api/v1/users/login", {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify(user),
-      })
+      UserService.login(user)
         .then((res) => {
           switch (res.status) {
             case 200:

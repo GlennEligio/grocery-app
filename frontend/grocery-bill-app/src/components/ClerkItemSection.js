@@ -6,6 +6,7 @@ import {
 } from "../actions/itemActions";
 import { setModalComponent } from "../actions/componentActions";
 import { connect } from "react-redux";
+import ItemService from "../api/ItemService";
 import ClerkItem from "./ClerkItem";
 
 const ClerkItemSection = ({
@@ -19,12 +20,7 @@ const ClerkItemSection = ({
 
   useEffect(() => {
     fetchItemsBegin();
-    fetch("http://localhost:8080/api/v1/items", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${user.jwt}`,
-      },
-    })
+    ItemService.fetchItems(user.jwt)
       .then((res) => {
         switch (res.status) {
           case 200:

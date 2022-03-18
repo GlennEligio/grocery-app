@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.accenture.web.dtos.AuthenticationRequest;
 import com.accenture.web.dtos.AuthenticationResponse;
-import com.accenture.web.domain.MyUserDetails;
+import com.accenture.web.config.MyUserDetails;
 import com.accenture.web.domain.User;
 import com.accenture.web.exception.AppException;
 import com.accenture.web.repository.UserRepository;
@@ -14,7 +14,6 @@ import com.accenture.web.util.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.*;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;

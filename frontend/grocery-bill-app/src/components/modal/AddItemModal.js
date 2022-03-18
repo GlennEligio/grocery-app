@@ -2,8 +2,9 @@ import React from "react";
 import { useState, useRef } from "react";
 import { connect } from "react-redux";
 import { resetItemList } from "../../actions/itemActions";
+import ItemService from "../../api/ItemService";
 
-const AddItemModal = ({ user, resetItemList }) => {
+const AddItemModal = ({ user, items, resetItemList }) => {
   const [name, setName] = useState("");
   const [price, setPrice] = useState(0);
   const [discounted, setDiscounted] = useState(false);
@@ -13,10 +14,14 @@ const AddItemModal = ({ user, resetItemList }) => {
   const [status, setStatus] = useState(false);
   const form = useRef();
 
-  const onSubmit = (e) => {
-    setStatus(false);
+  useState(() => {
     setLoading(false);
     setError(false);
+    setStatus(false);
+  }, [items]);
+
+  const onSubmit = (e) => {
+    setLoading(false);
 
     e.preventDefault();
 
@@ -33,14 +38,7 @@ const AddItemModal = ({ user, resetItemList }) => {
         discountPercentage: discountPercentage / 100,
       };
 
-      fetch("http://localhost:8080/api/v1/items", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${user.jwt}`,
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify(item),
-      })
+      ItemService.addItem(user.jwt, item)
         .then((res) => {
           switch (res.status) {
             case 201:
@@ -88,26 +86,29 @@ const AddItemModal = ({ user, resetItemList }) => {
             </button>
           </div>
           <div className="modal-body">
-            {loading && (
-              <div className="hstack align-items-center justify-content-center">
-                <div className="spinner-border" role="status">
-                  <span className="visually-hidden">Adding item...</span>
+            <div className="mb-2">
+              {" "}
+              {loading && (
+                <div className="hstack align-items-center justify-content-center">
+                  <div className="spinner-border" role="status">
+                    <span className="visually-hidden">Adding item...</span>
+                  </div>
+                  <strong className="ms-2">Adding item...</strong>
                 </div>
-                <strong className="ms-2">Adding item...</strong>
-              </div>
-            )}
-            {error && (
-              <div className="hstack align-items-center justify-content-center text-danger">
-                <i className="bi bi-x-circle-fill fs-3"></i>
-                <strong className="ms-2">Something went wrong....</strong>
-              </div>
-            )}
-            {status && (
-              <div className="hstack align-items-center justify-content-center text-success">
-                <i className="bi bi-check-circle-fill fs-3"></i>
-                <strong className="ms-2">Add User Success</strong>
-              </div>
-            )}
+              )}
+              {error && (
+                <div className="hstack align-items-center justify-content-center text-danger">
+                  <i className="bi bi-x-circle-fill fs-3"></i>
+                  <strong className="ms-2">Something went wrong....</strong>
+                </div>
+              )}
+              {status && (
+                <div className="hstack align-items-center justify-content-center text-success">
+                  <i className="bi bi-check-circle-fill fs-3"></i>
+                  <strong className="ms-2">Add Item Success</strong>
+                </div>
+              )}
+            </div>
             <form
               ref={form}
               onSubmit={onSubmit}
@@ -202,6 +203,7 @@ const AddItemModal = ({ user, resetItemList }) => {
 
 const mapStateToProps = (state) => ({
   user: state.auth.user,
+  items: state.items.items,
 });
 
 export default connect(mapStateToProps, { resetItemList })(AddItemModal);

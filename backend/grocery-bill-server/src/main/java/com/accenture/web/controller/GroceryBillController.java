@@ -9,6 +9,10 @@ import com.accenture.web.dto.BillSummaryDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -51,6 +55,47 @@ public class GroceryBillController {
 			return ResponseEntity.ok(service.getAllGroceryBills());
 		}
 		return ResponseEntity.notFound().build();
+	}
+
+	@GetMapping(value = "/bills", params = {"page", "size"})
+	public ResponseEntity<Page<BillSummaryDto>> getBillsWithPaging(@RequestParam("page") int page,
+																@RequestParam("size") int size){
+		log.info("Fetching grocery bills in page " + page + " of size " + size);
+		Page<GroceryBill> billPage = service.findBillsWithPaging(PageRequest.of(page-1, size));
+		Page<BillSummaryDto> billSummaryPage = billPage.map(BillSummaryDto::new);
+		return ResponseEntity.ok(billSummaryPage);
+	}
+
+	@GetMapping(value = "/bills", params = {"page", "size", "field", "sort"})
+	public ResponseEntity<Page<BillSummaryDto>> getBillsWithPagingAndSorting(@RequestParam("page") int page,
+																   @RequestParam("size") int size,
+																   @RequestParam("field") String field,
+																   @RequestParam("sort") String direction){
+		log.info("Fetching grocery bills in page " + page + " of size " + size + ", sorted by " + field + " in " + direction + " order");
+		Page<BillSummaryDto> billPage = service.findBillsWithPagingAndSorting(PageRequest.of(page-1, size, Sort.Direction.fromString(direction), field)).map(BillSummaryDto::new);
+		return ResponseEntity.ok(billPage);
+	}
+
+	@GetMapping(value = "/bills", params = {"id_query", "page", "size", "field", "sort"})
+	public ResponseEntity<Page<BillSummaryDto>> getBillsWithIdQueryPagingAndSorting(@RequestParam("id_query") String idQuery,
+																					@RequestParam("page") int page,
+																					@RequestParam("size") int size,
+																					@RequestParam("field") String field,
+																					@RequestParam("sort") String direction){
+		log.info("Fetching bills with id " + idQuery + " in page " + page + " of size " + size + ", sorted by " + field + " in " + direction + "order");
+		Page<BillSummaryDto> billSummaryPage = service.findBillsWithIdPagingAndSorting(idQuery, PageRequest.of(page-1, size, Sort.Direction.fromString(direction), field)).map(BillSummaryDto::new);
+		return ResponseEntity.ok(billSummaryPage);
+	}
+
+	@GetMapping(value = "/bills", params = {"username_query", "page", "size", "field", "sort"})
+	public ResponseEntity<Page<BillSummaryDto>> getBillsWithUsernameQueryPagingAndSorting(@RequestParam("username_query") String usernameQuery,
+																					@RequestParam("page") int page,
+																					@RequestParam("size") int size,
+																					@RequestParam("field") String field,
+																					@RequestParam("sort") String direction){
+		log.info("Fetching bills with username " + usernameQuery + " in page " + page + " of size " + size + ", sorted by " + field + " in " + direction + "order");
+		Page<BillSummaryDto> billSummaryPage = service.findBillsWithShoppingClerkUsernamePagingAndSorting(usernameQuery, PageRequest.of(page-1, size, Sort.Direction.fromString(direction), field)).map(BillSummaryDto::new);
+		return ResponseEntity.ok(billSummaryPage);
 	}
 
 	@GetMapping("/bills/summary")

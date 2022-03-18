@@ -9,6 +9,9 @@ import javax.ws.rs.HeaderParam;
 
 import com.accenture.web.exception.AppException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -97,6 +100,52 @@ public class UserController {
 			return ResponseEntity.ok(service.getAllUsers());
 		}
 		return ResponseEntity.notFound().build();
+	}
+
+	@GetMapping(value = "/users", params = {"page", "size"})
+	public ResponseEntity<Page<User>> getUsersWithPaging(@RequestParam("page") int page,
+														 @RequestParam("size") int size){
+		log.info("Fetching users in page " + page + " with size " + size);
+		return ResponseEntity.ok(service.getUsersWithPaging(PageRequest.of(page-1, size)));
+	}
+
+	@GetMapping(value = "/users", params = {"page", "size", "sort", "field"})
+	public ResponseEntity<Page<User>> getUsersWithPagingAndSorting(@RequestParam("page") int page,
+																   @RequestParam("size") int size,
+																   @RequestParam("sort") String direction,
+																   @RequestParam("field") String field){
+		log.info("Fetching users in page " + page + " with size " + size + ", sorted by " + field + " in " + direction + " order");
+		return ResponseEntity.ok(service.getUsersWithPagingAndSorting(PageRequest.of(page-1, size, Sort.Direction.fromString(direction), field)));
+	}
+
+	@GetMapping(value = "/users", params = {"id_query","page", "size", "sort", "field"})
+	public ResponseEntity<Page<User>> getUserWithIdPagingAndSorting(@RequestParam("id_query") String idQuery,
+																	@RequestParam("page") int page,
+																	@RequestParam("size") int size,
+																	@RequestParam("sort") String direction,
+																	@RequestParam("field") String field){
+		log.info("Fetching users with id containing  " + idQuery + " in page " + page + " with size " + size + ", sorted by " + field + " in " + direction + " order");
+		return ResponseEntity.ok(service.getUserWithIdPagingAndSorting(idQuery, PageRequest.of(page-1, size, Sort.Direction.fromString(direction), field)));
+	}
+
+	@GetMapping(value = "/users", params = {"name_query","page", "size", "sort", "field"})
+	public ResponseEntity<Page<User>> getUserWithNamePagingAndSorting(@RequestParam("name_query") String nameQuery,
+																	@RequestParam("page") int page,
+																	@RequestParam("size") int size,
+																	@RequestParam("sort") String direction,
+																	@RequestParam("field") String field){
+		log.info("Fetching users with name containing  " + nameQuery + " in page " + page + " with size " + size + ", sorted by " + field + " in " + direction + " order");
+		return ResponseEntity.ok(service.getUserWithNamePagingAndSorting(nameQuery, PageRequest.of(page-1, size, Sort.Direction.fromString(direction), field)));
+	}
+
+	@GetMapping(value = "/users", params = {"username_query","page", "size", "sort", "field"})
+	public ResponseEntity<Page<User>> getUserWithUsernamePagingAndSorting(@RequestParam("username_query") String usernameQuery,
+																	@RequestParam("page") int page,
+																	@RequestParam("size") int size,
+																	@RequestParam("sort") String direction,
+																	@RequestParam("field") String field){
+		log.info("Fetching users with username containing " + usernameQuery + " in page " + page + " with size " + size + ", sorted by " + field + " in " + direction + " order");
+		return ResponseEntity.ok(service.getUserWithUsernamePagingAndSorting(usernameQuery, PageRequest.of(page-1, size, Sort.Direction.fromString(direction), field)));
 	}
 
 	@GetMapping("/users/{id}")
