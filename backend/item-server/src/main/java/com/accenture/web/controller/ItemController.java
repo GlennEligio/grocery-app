@@ -7,6 +7,10 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +36,46 @@ public class ItemController {
 			return ResponseEntity.ok(service.getAllItems());
 		}
 		return ResponseEntity.notFound().build();
+	}
+
+	@GetMapping(value = "/items", params = {"page", "size"})
+	public ResponseEntity<Page<Item>> getItemWithPaging(@RequestParam("page") int page,
+														@RequestParam("size") int size){
+		log.info("Fetching items with page "+page+" and size of "+size);
+		return ResponseEntity.ok(service.findItemsWithPaging(PageRequest.of(page-1, size)));
+	}
+
+	@GetMapping(value = "/items", params = {"page", "size", "field", "sort"})
+	public ResponseEntity<Page<Item>> getItemWithPaging(@RequestParam("page") int page,
+														@RequestParam("size") int size,
+														@RequestParam("field") String field,
+														@RequestParam("sort") String direction){
+		log.info("Fetching items with page of " + page + " and size of " + size + ", sorted by " + field + " in " + direction + " order");
+		return ResponseEntity.ok(service.findItemsWithPagingAndSorting(PageRequest.of(page-1, size, Sort.Direction.fromString(direction), field)));
+	}
+
+	@GetMapping(value = "/items", params={"name_query", "page", "size", "field", "sort"})
+	public ResponseEntity<Page<Item>> getItemWithNameQueryPagingAndSorting(@RequestParam("name_query") String nameQuery,
+																	   @RequestParam("page") int page,
+																	   @RequestParam("size") int size,
+																	   @RequestParam("field") String field,
+																	   @RequestParam("sort") String direction){
+		log.info("Fetching items with page with name containing" + nameQuery + "of " + page + " and size of " + size + ", sorted by " + field + " in " + direction + " order");
+
+		Pageable pageable = PageRequest.of(page-1, size, Sort.Direction.fromString(direction), field);
+		return ResponseEntity.ok(service.findByNameWithPagingAndSorting(nameQuery, pageable));
+	}
+
+	@GetMapping(value = "/items", params={"id_query", "page", "size", "field", "sort"})
+	public ResponseEntity<Page<Item>> getItemWithIdQueryPagingAndSorting(@RequestParam("id_query") String idQuery,
+																		   @RequestParam("page") int page,
+																		   @RequestParam("size") int size,
+																		   @RequestParam("field") String field,
+																		   @RequestParam("sort") String direction){
+		log.info("Fetching items with page with id containing " + idQuery + " of page " + page + " and size of " + size + ", sorted by " + field + " in " + direction + " order");
+
+		Pageable pageable = PageRequest.of(page-1, size, Sort.Direction.fromString(direction), field);
+		return ResponseEntity.ok(service.findByIdWithPagingAndSorting(idQuery, pageable));
 	}
 	
 	@GetMapping("/items/{id}")

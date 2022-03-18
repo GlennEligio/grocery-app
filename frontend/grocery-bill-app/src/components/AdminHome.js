@@ -10,7 +10,7 @@ const AdminHome = () => {
     <>
       {/** Main Content */}
       <main>
-        <div className="container vh-100 pb-5">
+        <div className="container vh-100 overflow-hidden">
           {/** Nav tabs admin section */}
           <div className="row mt-1">
             <div className="col">
@@ -65,7 +65,7 @@ const AdminHome = () => {
             </div>
           </div>
           {/** Tab contents for Admin nav tab */}
-          <div className="row h-100 tab-content" role="pills-adminTabContent">
+          <div className="row h-80 tab-content" role="pills-adminTabContent">
             {/** User table */}
             <AdminUserSection />
             {/** Item table */}

@@ -1,30 +1,24 @@
 import React, { useEffect } from "react";
 import { useState, useRef } from "react";
 import { connect } from "react-redux";
-import {
-  editUserBegin,
-  editUserSuccess,
-  editUserFailed,
-} from "../../actions/userActions";
+import { resetUserList } from "../../actions/userActions";
+import UserService from "../../api/UserService";
 
-const EditUserModal = ({
-  userSelected,
-  error,
-  loading,
-  user,
-  editUserBegin,
-  editUserFailed,
-  editUserSuccess,
-}) => {
+const EditUserModal = ({ userSelected, user, resetUserList }) => {
   const [name, setName] = useState("");
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [active, setActive] = useState(false);
   const [roles, setRoles] = useState("ROLE_CLERK");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
   const [status, setStatus] = useState(false);
   const form = useRef();
 
   useEffect(() => {
+    setLoading(false);
+    setError(false);
+    setStatus(false);
     if (userSelected === null) {
       setName(userSelected.name);
       setUserName(userSelected.username);
@@ -36,6 +30,8 @@ const EditUserModal = ({
 
   const onSubmit = (e) => {
     setStatus(false);
+    setError(false);
+    setLoading(false);
     e.preventDefault();
 
     if (!form.current.checkValidity()) {
@@ -51,33 +47,27 @@ const EditUserModal = ({
         roles: roles,
       };
 
-      editUserBegin();
+      setLoading(true);
 
-      console.log(JSON.stringify(userToEdit));
-
-      fetch("http://localhost:8080/api/v1/users", {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${user.jwt}`,
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify(userToEdit),
-      })
+      UserService.editUser(user.jwt, userToEdit)
         .then((res) => {
           switch (res.status) {
             case 200:
-              editUserSuccess();
-              form.current.classList.remove("was-validated");
+              setLoading(false);
               setStatus(true);
+              form.current.classList.remove("was-validated");
+              resetUserList();
               break;
             default:
-              editUserFailed();
+              setLoading(false);
+              setError(true);
               form.current.classList.add("was-validated");
               break;
           }
         })
         .catch(() => {
-          editUserFailed();
+          setLoading(false);
+          setError(true);
           form.current.classList.add("was-validated");
         });
     }
@@ -244,13 +234,8 @@ const EditUserModal = ({
 const mapStateToProps = (state) => ({
   user: state.auth.user,
   userSelected: state.user.userSelected,
-  error: state.user.error,
-  loading: state.user.loading,
-  status: state.user.status,
 });
 
 export default connect(mapStateToProps, {
-  editUserBegin,
-  editUserFailed,
-  editUserSuccess,
+  resetUserList,
 })(EditUserModal);

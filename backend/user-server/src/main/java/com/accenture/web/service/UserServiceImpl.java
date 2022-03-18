@@ -1,11 +1,12 @@
 package com.accenture.web.service;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.accenture.web.dtos.AuthenticationResponse;
-import com.accenture.web.domain.MyUserDetails;
+import com.accenture.web.config.MyUserDetails;
 import com.accenture.web.exception.AppException;
 import com.accenture.web.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
@@ -14,6 +15,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -42,6 +47,49 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 		log.info("Fetching users from repository");
 		List<User> users = (List<User>) repository.findAll();
 		return users.stream().filter((user) -> !user.getRoles().contains("ROLE_SADMIN")).collect(Collectors.toList());
+	}
+
+	public Page<User> getUsersWithPaging(Pageable pageable){
+		Page<User> userPage = repository.findAll(pageable);
+		if(pageable.getPageNumber() > userPage.getTotalPages()){
+			throw new AppException("Page requested is out of bounds", HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
+		}
+		return userPage;
+	}
+
+	public Page<User> getUsersWithPagingAndSorting(Pageable pageable){
+		Page<User> userPage = repository.findAll(pageable);
+		if(pageable.getPageNumber() > userPage.getTotalPages()){
+			throw new AppException("Page requested is out of bounds", HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
+		}
+		return userPage;
+	}
+
+	@Override
+	public Page<User> getUserWithIdPagingAndSorting(String id, Pageable pageable) {
+		Page<User> userPage = repository.findByIdQuery(id, pageable);
+		if(pageable.getPageNumber() > userPage.getTotalPages()){
+			throw new AppException("Page requested is out of bounds", HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
+		}
+		return userPage;
+	}
+
+	@Override
+	public Page<User> getUserWithNamePagingAndSorting(String name, Pageable pageable) {
+		Page<User> userPage = repository.findByNameContainingIgnoreCase(name, pageable);
+		if(pageable.getPageNumber() > userPage.getTotalPages()){
+			throw new AppException("Page requested is out of bounds", HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
+		}
+		return userPage;
+	}
+
+	@Override
+	public Page<User> getUserWithUsernamePagingAndSorting(String username, Pageable pageable) {
+		Page<User> userPage = repository.findByUsernameContainingIgnoreCase(username, pageable);
+		if(pageable.getPageNumber() > userPage.getTotalPages()){
+			throw new AppException("Page requested is out of bounds", HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
+		}
+		return userPage;
 	}
 	
 	public User getUser(Integer id) {

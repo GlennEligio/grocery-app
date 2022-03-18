@@ -1,36 +1,34 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState, useRef } from "react";
 import { connect } from "react-redux";
-import {
-  createUserBegin,
-  createUserSuccess,
-  createUserFailed,
-} from "../../actions/userActions";
+import UserService from "../../api/UserService";
 
-const AddUserModal = ({
-  user,
-  role,
-  error,
-  loading,
-  createUserBegin,
-  createUserSuccess,
-  createUserFailed,
-}) => {
+const AddUserModal = ({ user, users, role }) => {
   const [name, setName] = useState("");
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [roles, setRoles] = useState("ROLE_CLERK");
   const [active, setActive] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
   const [status, setStatus] = useState(false);
   const form = useRef();
 
+  useEffect(() => {
+    setLoading(false);
+    setError(false);
+    setStatus(false);
+  }, [users.length]);
+
   const onSubmit = (e) => {
+    setLoading(false);
     e.preventDefault();
 
     if (!form.current.checkValidity()) {
       e.stopPropagation();
       form.current.classList.add("was-validated");
     } else {
+      setLoading(true);
       const userToCreate = {
         name: name,
         username: username,
@@ -39,29 +37,24 @@ const AddUserModal = ({
         active: active,
       };
 
-      createUserBegin();
-
-      fetch("http://localhost:8080/api/v1/users", {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-          Authorization: `Bearer ${user.jwt}`,
-        },
-        body: JSON.stringify(userToCreate),
-      })
+      UserService.createUser(user.jwt, userToCreate)
         .then((res) => {
           switch (res.status) {
             case 201:
-              createUserSuccess();
               form.current.classList.remove("was-validated");
+              setLoading(false);
               setStatus(true);
               break;
             default:
-              createUserFailed();
+              setLoading(false);
+              setError(true);
               form.current.classList.add("was-validated");
           }
         })
-        .catch(() => createUserFailed());
+        .catch(() => {
+          setLoading(false);
+          setError(true);
+        });
     }
   };
 
@@ -226,12 +219,7 @@ const AddUserModal = ({
 const mapStateToProps = (state) => ({
   user: state.auth.user,
   role: state.auth.role,
-  error: state.user.error,
-  loading: state.user.loading,
+  users: state.user.users,
 });
 
-export default connect(mapStateToProps, {
-  createUserBegin,
-  createUserSuccess,
-  createUserFailed,
-})(AddUserModal);
+export default connect(mapStateToProps, {})(AddUserModal);

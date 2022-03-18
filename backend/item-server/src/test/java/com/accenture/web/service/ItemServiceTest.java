@@ -52,6 +52,8 @@ class ItemServiceTest {
         assertEquals(itemsResult, items);
     }
 
+    // TODO: Create test cases for find methods with paging and sorting
+
     @Test
     @DisplayName("Get Item with Valid Id")
     public void getItem_withValidId_returnItem(){

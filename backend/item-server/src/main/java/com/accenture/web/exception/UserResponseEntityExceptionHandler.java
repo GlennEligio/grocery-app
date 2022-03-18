@@ -17,7 +17,7 @@ public class UserResponseEntityExceptionHandler extends ResponseEntityExceptionH
 	@ExceptionHandler(value = Exception.class)
 	public ResponseEntity<Object> handleAllException(Exception ex, WebRequest request) {
 
-		ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), 
+		ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(),
 				ex.getMessage(),
 				request.getDescription(false));
 

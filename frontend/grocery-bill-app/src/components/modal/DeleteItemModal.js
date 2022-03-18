@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { resetItemList } from "../../actions/itemActions";
+import ItemService from "../../api/ItemService";
 
 const DeleteItemModal = ({ itemSelected, user, resetItemList }) => {
   const [loading, setLoading] = useState(false);
@@ -16,12 +17,7 @@ const DeleteItemModal = ({ itemSelected, user, resetItemList }) => {
   const deleteItem = () => {
     setLoading(true);
 
-    fetch(`http://localhost:8080/api/v1/items/${itemSelected.id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${user.jwt}`,
-      },
-    })
+    ItemService.deleteItem(user.jwt, itemSelected.id)
       .then((res) => {
         switch (res.status) {
           case 200:

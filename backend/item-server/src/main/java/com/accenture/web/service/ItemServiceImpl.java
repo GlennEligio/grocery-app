@@ -1,6 +1,7 @@
 package com.accenture.web.service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.accenture.web.exception.AppException;
@@ -8,8 +9,11 @@ import com.accenture.web.repository.ItemRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import com.accenture.web.domain.Item;
@@ -21,6 +25,41 @@ public class ItemServiceImpl implements ItemService{
     ItemRepository repository;
 
 	private static final Logger log = LoggerFactory.getLogger(ItemServiceImpl.class);
+
+	@Override
+	public Page<Item> findByNameWithPagingAndSorting(String name, Pageable pageable) {
+		// page - 1 since paging starts at 0th index
+		Page<Item> itemPage = repository.findByNameContainingIgnoreCase(name, pageable);
+		if(pageable.getPageNumber() > itemPage.getTotalPages()){
+			throw new AppException("Page request out of bound", HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
+		}
+		return itemPage;
+	}
+
+	@Override
+	public Page<Item> findByIdWithPagingAndSorting(String id, Pageable pageable) {
+		Page<Item> itemPage = repository.findByIdContaining(id, pageable);
+		if(pageable.getPageNumber() > itemPage.getTotalPages()){
+			throw new AppException("Page request out of bound", HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
+		}
+		return itemPage;
+	}
+
+	public Page<Item> findItemsWithPaging(Pageable pageable){
+		Page<Item> itemPage = repository.findAll(pageable);
+		if(pageable.getPageNumber() > itemPage.getTotalPages()){
+			throw new AppException("Page request out of bound", HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
+		}
+		return itemPage;
+	}
+
+	public Page<Item> findItemsWithPagingAndSorting(Pageable pageable){
+		Page<Item> itemPage = repository.findAll(pageable);
+		if(pageable.getPageNumber() > itemPage.getTotalPages()){
+			throw new AppException("Page request out of bound", HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
+		}
+		return itemPage;
+	}
 
 	public List<Item> getAllItems() {
 		log.info("Fetching items from database");

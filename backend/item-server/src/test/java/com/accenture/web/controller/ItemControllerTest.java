@@ -58,6 +58,8 @@ public class ItemControllerTest {
                 .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(items)));
     }
 
+    // TODO: Create test case for GET endpoints with paging and sorting
+
     @Test
     @DisplayName("Get Existing item")
     public void getItem_withValidId_returnOk() throws Exception {

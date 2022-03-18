@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import { connect } from "react-redux";
-import billConverter from "../util/billConverter";
+import billConverter from "../../util/billConverter";
 
 const BillDetailsModal = ({ user, billSelected }) => {
   const [bill, setBill] = useState(null);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (billSelected.id === -1) {
       return;
     }

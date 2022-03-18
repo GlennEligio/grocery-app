@@ -20,7 +20,7 @@ const AdminUser = ({ user, updateUserSelected }) => {
       </td>
       <td>{user.roles}</td>
       <td>
-        <div className="row">
+        <div className="row gx-2">
           <div className="col text-end">
             <i
               style={{ cursor: "pointer" }}
@@ -30,7 +30,7 @@ const AdminUser = ({ user, updateUserSelected }) => {
               data-bs-target="#editUserModal"
             ></i>
           </div>
-          <div className="col text-start">
+          <div className="col text-start ms-2">
             <i
               style={{ cursor: "pointer" }}
               onClick={() => updateUserSelected(user)}

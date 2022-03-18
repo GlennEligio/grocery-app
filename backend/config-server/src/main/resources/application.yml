@@ -14,8 +14,3 @@ eureka:
 
 server:
   port: 8010
-
-# Logging
-logging:
-  level:
-    web: TRACE

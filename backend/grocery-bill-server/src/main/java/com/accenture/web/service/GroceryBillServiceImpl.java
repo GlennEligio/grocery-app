@@ -14,6 +14,10 @@ import com.accenture.web.repository.ShoppingClerkRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +43,38 @@ public class GroceryBillServiceImpl implements GroceryBillService{
 		return (List<GroceryBill>) billRepo.findAll();
 	}
 
+	public Page<GroceryBill> findBillsWithPaging(Pageable pageable){
+		Page<GroceryBill> billPage = billRepo.findAll(pageable);
+		if(pageable.getPageNumber() > billPage.getTotalPages()){
+			throw new AppException("Page request out of bound", HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
+		}
+		return billPage;
+	}
+
+	public Page<GroceryBill> findBillsWithPagingAndSorting(Pageable pageable){
+		Page<GroceryBill> billPage = billRepo.findAll(pageable);
+		if(pageable.getPageNumber() > billPage.getTotalPages()){
+			throw new AppException("Page request out of bound", HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
+		}
+		return billPage;
+	}
+
+	public Page<GroceryBill> findBillsWithIdPagingAndSorting(String id, Pageable pageable) {
+		Page<GroceryBill> billPage = billRepo.findByIdContaining(id, pageable);
+		if(pageable.getPageNumber() > billPage.getTotalPages()){
+			throw new AppException("Page request out of bound", HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
+		}
+		return billPage;
+	}
+
+	public Page<GroceryBill> findBillsWithShoppingClerkUsernamePagingAndSorting(String username, Pageable pageable) {
+		Page<GroceryBill> billPage = billRepo.findByShoppingClerkUsername(username, pageable);
+		if(pageable.getPageNumber() > billPage.getTotalPages()){
+			throw new AppException("Page request out of bound", HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
+		}
+		return billPage;
+	}
+
 	public GroceryBill getGroceryBill(Integer id) {
 		Optional<GroceryBill> billOp = billRepo.findById(id);
 		if(billOp.isPresent()){
@@ -53,7 +89,7 @@ public class GroceryBillServiceImpl implements GroceryBillService{
 		Optional<ShoppingClerk> clerkOp = clerkRepo.findById(groceryBill.getShoppingClerk().getId());
 		if (clerkOp.isPresent()) {
 			ShoppingClerk clerkDb = clerkOp.get();
-			clerkDb.setName(groceryBill.getShoppingClerk().getName());
+			clerkDb.setUsername(groceryBill.getShoppingClerk().getUsername());
 			groceryBill.setShoppingClerk(clerkDb);
 		}
 
@@ -93,7 +129,7 @@ public class GroceryBillServiceImpl implements GroceryBillService{
 			Optional<ShoppingClerk> clerkOp = clerkRepo.findById(oldGroceryBill.getShoppingClerk().getId());
 			if (clerkOp.isPresent()) {
 				ShoppingClerk clerkDb = clerkOp.get();
-				clerkDb.setName(groceryBill.getShoppingClerk().getName());
+				clerkDb.setUsername(groceryBill.getShoppingClerk().getUsername());
 				oldGroceryBill.setShoppingClerk(clerkDb);
 			}
 			

@@ -19,7 +19,7 @@ const AdminItem = ({ item, updateItemSelected }) => {
       </td>
       <td>{`$ ${item.price}`}</td>
       <td>
-        <div className="row">
+        <div className="row gx-2">
           <div className="col text-end">
             <i
               style={{ cursor: "pointer" }}
@@ -29,7 +29,7 @@ const AdminItem = ({ item, updateItemSelected }) => {
               data-bs-target="#editItemModal"
             ></i>
           </div>
-          <div className="col text-start">
+          <div className="col text-start ms-1">
             <i
               style={{ cursor: "pointer" }}
               onClick={() => updateItemSelected(item)}

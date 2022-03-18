@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useState, useRef } from "react";
 import { connect } from "react-redux";
 import { resetItemList } from "../../actions/itemActions";
+import ItemService from "../../api/ItemService";
 
 const EditItemModal = ({ itemSelected, user, resetItemList }) => {
   const [name, setName] = useState("");
@@ -39,14 +40,7 @@ const EditItemModal = ({ itemSelected, user, resetItemList }) => {
         discountPercentage: discountPercentage / 100,
       };
 
-      fetch("http://localhost:8080/api/v1/items", {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${user.jwt}`,
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify(item),
-      })
+      ItemService.editItem(user.jwt, item)
         .then((res) => {
           switch (res.status) {
             case 200:

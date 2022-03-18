@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { connect } from "react-redux";
 import {
   fetchItemsBegin,
@@ -7,6 +7,8 @@ import {
   resetItemList,
 } from "../actions/itemActions";
 import AdminItem from "./AdminItem";
+import ItemService from "../api/ItemService";
+import Pagination from "./Pagination";
 
 const AdminItemSection = ({
   items,
@@ -16,18 +18,25 @@ const AdminItemSection = ({
   fetchItemsBegin,
   fetchItemsSuccess,
   fetchItemsFailed,
-  resetItemList,
 }) => {
-  const [query, setQuery] = useState("");
-
-  useEffect(() => {
+  const [queryType, setQueryType] = useState("id_query");
+  const [queryValue, setQueryValue] = useState("");
+  const [sort, setSort] = useState("asc");
+  const [field, setField] = useState("id");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
+  const fetchItems = useCallback((queryType, queryValue) => {
     fetchItemsBegin();
-    fetch("http://localhost:8080/api/v1/items", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${user.jwt}`,
-      },
-    })
+    ItemService.fetchItemsWithQueryPagingSorting(
+      user.jwt,
+      queryType,
+      queryValue,
+      currentPage,
+      pageSize,
+      sort,
+      field
+    )
       .then((res) => {
         switch (res.status) {
           case 200:
@@ -42,32 +51,67 @@ const AdminItemSection = ({
             fetchItemsFailed();
             break;
           default:
-            fetchItemsSuccess(data);
+            setCurrentPage(data.number + 1);
+            setTotalPages(data.totalPages);
+            fetchItemsSuccess(data.content);
             break;
         }
       })
       .catch(() => {
         fetchItemsFailed();
       });
-  }, [items.length, user.jwt]);
+  });
+
+  useEffect(() => {
+    fetchItems(queryType, queryValue);
+  }, [user.jwt, currentPage, sort, field]);
 
   return (
     <div
-      className="col tab-pane fade show"
+      className="col tab-pane fade show h-100"
       id="pills-adminItem"
       role="tabpanel"
       aria-labelledby="pills-adminItem-tab"
     >
       <div className="input-group">
+        <button
+          className="btn btn-outline-primary dropdown-toggle"
+          type="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          {queryType === "id_query" ? "ID" : "Name"}:
+        </button>
+        <ul className="dropdown-menu">
+          <li>
+            <a
+              className="dropdown-item"
+              onClick={() => setQueryType("id_query")}
+            >
+              ID
+            </a>
+          </li>
+          <li>
+            <a
+              className="dropdown-item"
+              onClick={() => setQueryType("name_query")}
+            >
+              Name
+            </a>
+          </li>
+        </ul>
         <input
           type="text"
           id="query"
           name="query"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          value={queryValue}
+          onChange={(e) => setQueryValue(e.target.value)}
           className="form-control"
         />
-        <button className="btn btn-outline-secondary">
+        <button
+          onClick={() => fetchItems(queryType, queryValue)}
+          className="btn btn-outline-secondary"
+        >
           <i className="bi bi-search"></i>
         </button>
         <button className="btn btn-outline-primary">
@@ -78,8 +122,16 @@ const AdminItemSection = ({
           ></i>
         </button>
         <button
+          onClick={() => {
+            if (queryValue !== "") setQueryValue("");
+            if (currentPage !== 1) setCurrentPage(1);
+            if (pageSize !== 20) setPageSize(20);
+            if (queryType !== "id_query") setQueryType("id_query");
+            if (sort !== "asc") setSort("asc");
+            if (field !== "id") setField("id");
+            fetchItems("id_query", "");
+          }}
           className="btn btn-outline-dark"
-          onClick={() => resetItemList()}
         >
           <i className="bi bi-arrow-clockwise"></i>
         </button>
@@ -100,32 +152,156 @@ const AdminItemSection = ({
           </div>
         )}
       </div>
-      <table className="table table-sm table-hover mt-3 text-center border-radius-2 border-collapse w-100">
-        <thead className="table-dark">
-          <tr>
-            <th scope="col" className="w-20">
-              Id
-            </th>
-            <th scope="col" className="w-20">
-              Name
-            </th>
-            <th scope="col">Discount %</th>
-            <th scope="col">Discounted?</th>
-            <th scope="col" className="w-20">
-              Price
-            </th>
-            <th scope="col">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {items
-            .filter((item) => item.id.toString().includes(query.toString()))
-            .sort()
-            .map((item, index) => {
-              return <AdminItem key={index} item={item} />;
-            })}
-        </tbody>
-      </table>
+      {!loading && !error && (
+        <div className="d-flex flex-column h-100 justify-content-between">
+          <div className="overflow-auto">
+            <table className="table table-sm table-hover text-center">
+              <thead className="table-dark">
+                <tr>
+                  <th
+                    onClick={() => {
+                      if (field !== "id") {
+                        setField("id");
+                        setSort("asc");
+                        return;
+                      } else {
+                        if (sort === "asc") setSort("desc");
+                        if (sort === "desc") setSort("asc");
+                      }
+                    }}
+                    scope="col"
+                    className="w-20"
+                  >
+                    <span className="me-2">Id</span>
+                    {field === "id" && (
+                      <span>
+                        {sort === "asc" ? (
+                          <i className="bi bi-caret-up-fill"></i>
+                        ) : (
+                          <i className="bi bi-caret-down-fill"></i>
+                        )}
+                      </span>
+                    )}
+                  </th>
+                  <th
+                    onClick={() => {
+                      if (field !== "name") {
+                        setField("name");
+                        setSort("asc");
+                        return;
+                      } else {
+                        if (sort === "asc") setSort("desc");
+                        if (sort === "desc") setSort("asc");
+                      }
+                    }}
+                    scope="col"
+                    className="w-20"
+                  >
+                    <span className="me-2">Name</span>
+                    {field === "name" && (
+                      <span>
+                        {sort === "asc" ? (
+                          <i className="bi bi-caret-up-fill"></i>
+                        ) : (
+                          <i className="bi bi-caret-down-fill"></i>
+                        )}
+                      </span>
+                    )}
+                  </th>
+                  <th
+                    onClick={() => {
+                      if (field !== "discountPercentage") {
+                        setField("discountPercentage");
+                        setSort("asc");
+                        return;
+                      } else {
+                        if (sort === "asc") setSort("desc");
+                        if (sort === "desc") setSort("asc");
+                      }
+                    }}
+                    scope="col"
+                  >
+                    <span className="me-2">Discount %</span>
+                    {field === "discountPercentage" && (
+                      <span>
+                        {sort === "asc" ? (
+                          <i className="bi bi-caret-up-fill"></i>
+                        ) : (
+                          <i className="bi bi-caret-down-fill"></i>
+                        )}
+                      </span>
+                    )}
+                  </th>
+                  <th
+                    onClick={() => {
+                      if (field !== "discounted") {
+                        setField("discounted");
+                        setSort("asc");
+                        return;
+                      } else {
+                        if (sort === "asc") setSort("desc");
+                        if (sort === "desc") setSort("asc");
+                      }
+                    }}
+                    scope="col"
+                  >
+                    <span className="me-2">Discounted?</span>
+                    {field === "discounted" && (
+                      <span>
+                        {sort === "asc" ? (
+                          <i className="bi bi-caret-up-fill"></i>
+                        ) : (
+                          <i className="bi bi-caret-down-fill"></i>
+                        )}
+                      </span>
+                    )}
+                  </th>
+                  <th
+                    onClick={() => {
+                      if (field !== "price") {
+                        setField("price");
+                        setSort("asc");
+                        return;
+                      } else {
+                        if (sort === "asc") setSort("desc");
+                        if (sort === "desc") setSort("asc");
+                      }
+                    }}
+                    scope="col"
+                    className="w-20"
+                  >
+                    <span className="me-2">Price</span>
+                    {field === "price" && (
+                      <span>
+                        {sort === "asc" ? (
+                          <i className="bi bi-caret-up-fill"></i>
+                        ) : (
+                          <i className="bi bi-caret-down-fill"></i>
+                        )}
+                      </span>
+                    )}
+                  </th>
+                  <th scope="col">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {items.map((item, index) => {
+                  return <AdminItem key={index} item={item} />;
+                })}
+              </tbody>
+            </table>
+          </div>
+          <div className="flex-shrink-1">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              pageSize={pageSize}
+              setCurrentPage={setCurrentPage}
+              setPageSize={setPageSize}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
