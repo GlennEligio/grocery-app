@@ -103,4 +103,27 @@ public class ItemServiceImpl implements ItemService{
 		}
 		throw new AppException("No Item found to be deleted", HttpStatus.NOT_FOUND);
 	}
+
+	@Override
+	public int addOrUpdateItem(List<Item> items, boolean overwrite) {
+		int itemsAffected = 0;
+		for (Item item: items) {
+			Optional<Item> itemOp = repository.findById(item.getId());
+			if(itemOp.isEmpty()){
+				repository.save(item);
+				itemsAffected++;
+			}else{
+				if(overwrite){
+					Item updatedItem = itemOp.get();
+					updatedItem.setName(item.getName());
+					updatedItem.setDiscounted(item.isDiscounted());
+					updatedItem.setPrice(item.getPrice());
+					updatedItem.setDiscountPercentage(item.getDiscountPercentage());
+					repository.save(updatedItem);
+					itemsAffected++;
+				}
+			}
+		}
+		return itemsAffected;
+	}
 }

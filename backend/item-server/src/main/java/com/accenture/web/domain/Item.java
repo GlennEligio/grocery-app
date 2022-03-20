@@ -18,7 +18,7 @@ public class Item {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	private Integer id;
 
 	@NotEmpty(message = "Name must not be empty")
 	private String name;
@@ -45,7 +45,7 @@ public class Item {
 		this.discountPercentage = discountPercentage;
 	}
 
-	public Item(int id, String name, double price, boolean discounted, double discountPercentage) {
+	public Item(Integer id, String name, double price, boolean discounted, double discountPercentage) {
 		this.id = id;
 		this.name = name;
 		this.price = price;
@@ -53,8 +53,12 @@ public class Item {
 		this.discountPercentage = discountPercentage;
 	}
 
-	public int getId() {
+	public Integer getId() {
 		return id;
+	}
+
+	public void setId(Integer id){
+		this.id = id;
 	}
 
 	public String getName() {
