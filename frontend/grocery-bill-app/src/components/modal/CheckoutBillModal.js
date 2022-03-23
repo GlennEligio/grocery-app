@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { connect } from "react-redux";
 import {
   createBillBegin,
@@ -17,6 +17,15 @@ const CheckoutBillModal = ({
   createBillFail,
 }) => {
   const [status, setStatus] = useState(false);
+  const modal = useRef();
+
+  useEffect(() => {
+    if (modal.current !== undefined) {
+      modal.current.addEventListener("hidden.bs.modal", function () {
+        setStatus(false);
+      });
+    }
+  }, [modal]);
   const checkout = () => {
     if (currentBill.itemList.length === 0) {
       alert("Current bill doesn't contain any item");
@@ -70,6 +79,7 @@ const CheckoutBillModal = ({
 
   return (
     <div
+      ref={modal}
       className="modal fade"
       id="checkoutBillModal"
       tabIndex="-1"

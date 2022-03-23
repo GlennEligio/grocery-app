@@ -7,15 +7,21 @@ import DeleteUserModal from "./DeleteUserModal";
 import EditItemModal from "./EditItemModal";
 import EditUserModal from "./EditUserModal";
 import OnHoldBillModal from "./OnHoldBillModal";
+import UploadUserModal from "./UploadUserModal";
+import UploadItemModal from "./UploadItemModal";
+import UploadBillModal from "./UploadBillModal";
 
 export {
   AddItemModal,
+  DeleteItemModal,
+  EditItemModal,
+  UploadItemModal,
   AddUserModal,
+  EditUserModal,
+  DeleteUserModal,
+  UploadUserModal,
   BillDetailsModal,
   CheckoutBillModal,
-  DeleteItemModal,
-  DeleteUserModal,
-  EditItemModal,
-  EditUserModal,
   OnHoldBillModal,
+  UploadBillModal,
 };

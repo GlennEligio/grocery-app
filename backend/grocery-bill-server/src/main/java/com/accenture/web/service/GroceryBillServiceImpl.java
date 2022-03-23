@@ -75,6 +75,24 @@ public class GroceryBillServiceImpl implements GroceryBillService{
 		return billPage;
 	}
 
+	@Override
+	public int addOrUpdateBills(List<GroceryBill> bills, boolean overwrite) {
+		int billsAffected = 0;
+		for (GroceryBill bill: bills) {
+			Optional<GroceryBill> itemOp = billRepo.findById(bill.getId());
+			if(itemOp.isEmpty()){
+				addGroceryBill(bill);
+				billsAffected++;
+			}else{
+				if(overwrite){
+					updateGroceryBill(bill);
+					billsAffected++;
+				}
+			}
+		}
+		return billsAffected;
+	}
+
 	public GroceryBill getGroceryBill(Integer id) {
 		Optional<GroceryBill> billOp = billRepo.findById(id);
 		if(billOp.isPresent()){
@@ -85,6 +103,10 @@ public class GroceryBillServiceImpl implements GroceryBillService{
 
 	@Transactional
 	public GroceryBill addGroceryBill(GroceryBill groceryBill) {
+		log.info("Adding bill: {}", groceryBill);
+		// To set the value of totalBill
+		groceryBill.getTotalBill();
+
 		// Check if Shopping Clerk already exist in database
 		Optional<ShoppingClerk> clerkOp = clerkRepo.findById(groceryBill.getShoppingClerk().getId());
 		if (clerkOp.isPresent()) {

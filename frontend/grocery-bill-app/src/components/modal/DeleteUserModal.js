@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { connect } from "react-redux";
 import { resetUserList } from "../../actions/userActions";
 
@@ -6,12 +6,17 @@ const DeleteUserModal = ({ userSelected, user, resetUserList }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [status, setStatus] = useState(false);
+  const modal = useRef();
 
   useEffect(() => {
-    setLoading(false);
-    setError(false);
-    setStatus(false);
-  }, [userSelected]);
+    if (modal.current !== undefined) {
+      modal.current.addEventListener("hidden.bs.modal", function () {
+        setLoading(false);
+        setError(false);
+        setStatus(false);
+      });
+    }
+  }, [userSelected, modal]);
 
   const deleteUser = () => {
     setLoading(false);
@@ -39,6 +44,7 @@ const DeleteUserModal = ({ userSelected, user, resetUserList }) => {
 
   return (
     <div
+      ref={modal}
       className="modal fade"
       id="deleteUserModal"
       tabIndex="-1"

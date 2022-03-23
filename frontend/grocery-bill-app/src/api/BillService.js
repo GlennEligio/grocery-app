@@ -30,6 +30,34 @@ const fetchBillsWithQueryPagingSorting = async (
   });
 };
 
+const upload = async (jwt, formData) => {
+  return await fetch("http://localhost:8080/api/v1/bills/upload", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+    },
+    body: formData,
+  });
+};
+
+const download = async (jwt) => {
+  return await fetch("http://localhost:8080/api/v1/bills/download", {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+    },
+  });
+};
+
+const downloadTemplate = async (jwt) => {
+  return await fetch("http://localhost:8080/api/v1/bills/download/template", {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+    },
+  });
+};
+
 const createBill = async (jwt, bill) => {
   return await fetch("http://localhost:8080/api/v1/bills", {
     method: "POST",
@@ -45,4 +73,7 @@ export default {
   fetchBills,
   createBill,
   fetchBillsWithQueryPagingSorting,
+  upload,
+  download,
+  downloadTemplate,
 };

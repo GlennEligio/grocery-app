@@ -2,10 +2,7 @@ package com.accenture.web.domain;
 
 import java.util.Objects;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
@@ -18,9 +15,10 @@ public class Item {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	private Integer id;
 
 	@NotEmpty(message = "Name must not be empty")
+	@Column(unique = true)
 	private String name;
 
 	@Min(message = "Price must be defined", value = 0)
@@ -45,7 +43,7 @@ public class Item {
 		this.discountPercentage = discountPercentage;
 	}
 
-	public Item(int id, String name, double price, boolean discounted, double discountPercentage) {
+	public Item(Integer id, String name, double price, boolean discounted, double discountPercentage) {
 		this.id = id;
 		this.name = name;
 		this.price = price;
@@ -53,8 +51,12 @@ public class Item {
 		this.discountPercentage = discountPercentage;
 	}
 
-	public int getId() {
+	public Integer getId() {
 		return id;
+	}
+
+	public void setId(Integer id){
+		this.id = id;
 	}
 
 	public String getName() {

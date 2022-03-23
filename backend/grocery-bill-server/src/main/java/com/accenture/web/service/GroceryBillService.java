@@ -18,6 +18,8 @@ public interface GroceryBillService {
 
     Page<GroceryBill> findBillsWithShoppingClerkUsernamePagingAndSorting(String username, Pageable pageable);
 
+    int addOrUpdateBills(List<GroceryBill> bills, boolean overwrite);
+
     GroceryBill getGroceryBill(Integer id);
 
     GroceryBill addGroceryBill(GroceryBill groceryBill);

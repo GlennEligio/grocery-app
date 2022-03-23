@@ -30,6 +30,34 @@ const fetchUsersWithQueryPagingSorting = async (
   });
 };
 
+const upload = async (jwt, formData) => {
+  return await fetch("http://localhost:8080/api/v1/users/upload", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+    },
+    body: formData,
+  });
+};
+
+const download = async (jwt) => {
+  return await fetch("http://localhost:8080/api/v1/users/download", {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+    },
+  });
+};
+
+const downloadTemplate = async (jwt) => {
+  return await fetch("http://localhost:8080/api/v1/users/download/template", {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+    },
+  });
+};
+
 const register = async (user) => {
   return await fetch("http://localhost:8080/api/v1/users/register", {
     method: "POST",
@@ -79,4 +107,7 @@ export default {
   login,
   editUser,
   createUser,
+  download,
+  downloadTemplate,
+  upload,
 };

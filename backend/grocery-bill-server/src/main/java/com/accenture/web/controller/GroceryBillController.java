@@ -1,11 +1,27 @@
 package com.accenture.web.controller;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import com.accenture.web.client.ItemFeignClient;
+import com.accenture.web.domain.DiscountedBill;
+import com.accenture.web.domain.Item;
+import com.accenture.web.domain.ShoppingClerk;
 import com.accenture.web.dto.BillSummaryDto;
+import com.accenture.web.exception.AppException;
+import com.accenture.web.service.ExcelFileService;
+import com.accenture.web.service.ExcelFileServiceImpl;
+import org.apache.commons.io.IOUtils;
+import org.apache.xmlbeans.impl.common.IOUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,43 +35,22 @@ import org.springframework.web.bind.annotation.*;
 
 import com.accenture.web.domain.GroceryBill;
 import com.accenture.web.service.GroceryBillServiceImpl;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1")
 public class GroceryBillController {
 
 	@Autowired
+	private ItemFeignClient itemFeignClient;
+
+	@Autowired
 	private GroceryBillServiceImpl service;
+
+	@Autowired
+	private ExcelFileService excelFileService;
 	
 	private static final Logger log = LoggerFactory.getLogger(GroceryBillController.class);
-
-	@PostMapping("/bills")
-	public ResponseEntity<? extends GroceryBill> createNewGroceryBill(@Valid @RequestBody GroceryBill groceryBill) {
-		log.info("Creating Grocery Bill " + groceryBill);
-		if(groceryBill != null) {
-			// To set the value of totalBill
-			groceryBill.getTotalBill();
-			log.info("Total bill: " + groceryBill.getTotalBill());
-			GroceryBill billDb = service.addGroceryBill(groceryBill);
-			log.info("billDb: {}", billDb);
-			if(billDb != null) {
-				log.info("Grocery bill added: " + billDb);
-				return new ResponseEntity<>(billDb, HttpStatus.CREATED);
-			}
-		}
-		return ResponseEntity.notFound().build();
-	}
-
-	@GetMapping("/bills")
-	public ResponseEntity<List<GroceryBill>> getAllGroceryBills() {
-		log.info("Fetching all grocery bills");
-		List<GroceryBill> groceryBills = service.getAllGroceryBills();
-		if (groceryBills != null) {
-			log.info("Fetch success");
-			return ResponseEntity.ok(service.getAllGroceryBills());
-		}
-		return ResponseEntity.notFound().build();
-	}
 
 	@GetMapping(value = "/bills", params = {"page", "size"})
 	public ResponseEntity<Page<BillSummaryDto>> getBillsWithPaging(@RequestParam("page") int page,
@@ -106,6 +101,82 @@ public class GroceryBillController {
 			log.info("Fetch success");
 			List<BillSummaryDto> billSummaryDtoList = groceryBills.stream().map(BillSummaryDto::new).collect(Collectors.toList());
 			return ResponseEntity.ok(billSummaryDtoList);
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+	@GetMapping("/bills/download")
+	public void download(HttpServletResponse response) throws IOException {
+		log.info("Downloading Grocery bill excel file");
+		response.setContentType("application/octet-stream");
+		response.setHeader("Content-Disposition", "attachment; filename=bills.xlsx");
+		ByteArrayInputStream stream = excelFileService.billListToExcelFile(service.getAllGroceryBills());
+		IOUtils.copy(stream, response.getOutputStream());
+	}
+
+	@GetMapping("/bills/download/template")
+	public void downloadTemplate(HttpServletResponse response) throws IOException {
+		log.info("Downloading Grocery bill excel file");
+		response.setContentType("application/octet-stream");
+		response.setHeader("Content-Disposition", "attachment; filename=bills-template.xlsx");
+		// Dummy Bill list
+		List<GroceryBill> billsDummy = new ArrayList<>();
+		List<Item> itemsDummy = new ArrayList<>();
+		Item item = new Item(0, "Dummy item1", 50, true, 0.50);
+		Item item1 = new Item(1, "Dummy item2", 45, false, 0.45);
+		itemsDummy.add(item);
+		itemsDummy.add(item1);
+		ShoppingClerk clerk = new ShoppingClerk(0, "Dummy Clerk");
+		GroceryBill billDummy = new DiscountedBill(clerk, itemsDummy, LocalDateTime.now());
+		billDummy.getTotalBill();
+		billDummy.setId(0);
+		billsDummy.add(billDummy);
+
+		ByteArrayInputStream stream = excelFileService.billListToExcelFile(billsDummy);
+		IOUtils.copy(stream, response.getOutputStream());
+	}
+
+	@PostMapping("/bills/upload")
+	public ResponseEntity<?> upload(@RequestParam("file") MultipartFile excelFile,
+									@RequestParam("overwrite") Boolean overwrite){
+		log.info("Preparing Excel for Bill Database update");
+		if(!Objects.equals(excelFile.getContentType(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")){
+			throw new AppException("Can only upload .xlsx files", HttpStatus.BAD_REQUEST);
+		}
+		ResponseEntity<List<Item>> response = itemFeignClient.getItems();
+		if(response.getStatusCode().isError()) {
+			throw new AppException("Populate the item database first", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		List<GroceryBill> bills = excelFileService.excelFileToBillList(excelFile, response.getBody());
+		int billsAffected = service.addOrUpdateBills(bills, overwrite);
+		if(billsAffected > 0){
+			return ResponseEntity.ok().header("bills-affected", String.valueOf(billsAffected)).build();
+		}else {
+			return ResponseEntity.noContent().build();
+		}
+	}
+
+	@GetMapping("/bills")
+	public ResponseEntity<List<GroceryBill>> getAllGroceryBills() {
+		log.info("Fetching all grocery bills");
+		List<GroceryBill> groceryBills = service.getAllGroceryBills();
+		if (groceryBills != null) {
+			log.info("Fetch success");
+			return ResponseEntity.ok(service.getAllGroceryBills());
+		}
+		return ResponseEntity.notFound().build();
+	}
+
+	@PostMapping("/bills")
+	public ResponseEntity<? extends GroceryBill> createNewGroceryBill(@Valid @RequestBody GroceryBill groceryBill) {
+		log.info("Creating Grocery Bill " + groceryBill);
+		if(groceryBill != null) {
+			GroceryBill billDb = service.addGroceryBill(groceryBill);
+			log.info("billDb: {}", billDb);
+			if(billDb != null) {
+				log.info("Grocery bill added: " + billDb);
+				return new ResponseEntity<>(billDb, HttpStatus.CREATED);
+			}
 		}
 		return ResponseEntity.notFound().build();
 	}
