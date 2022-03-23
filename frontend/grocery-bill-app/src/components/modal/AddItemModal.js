@@ -13,12 +13,21 @@ const AddItemModal = ({ user, items, resetItemList }) => {
   const [error, setError] = useState(false);
   const [status, setStatus] = useState(false);
   const form = useRef();
+  const modal = useRef();
 
   useState(() => {
     setLoading(false);
     setError(false);
     setStatus(false);
-  }, [items]);
+    if (modal.current !== undefined) {
+      modal.current.addEventListener("hidden.bs.modal", function (e) {
+        setLoading(false);
+        setError(false);
+        setStatus(false);
+        form.current.classList.remove("was-validated");
+      });
+    }
+  }, [items, modal]);
 
   const onSubmit = (e) => {
     setLoading(false);
@@ -64,6 +73,7 @@ const AddItemModal = ({ user, items, resetItemList }) => {
 
   return (
     <div
+      ref={modal}
       className="modal fade"
       id="addItemModal"
       tabIndex="-1"

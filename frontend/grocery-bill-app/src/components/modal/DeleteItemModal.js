@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { connect } from "react-redux";
 import { resetItemList } from "../../actions/itemActions";
 import ItemService from "../../api/ItemService";
@@ -7,12 +7,17 @@ const DeleteItemModal = ({ itemSelected, user, resetItemList }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [status, setStatus] = useState(false);
+  const modal = useRef();
 
   useEffect(() => {
-    setLoading(false);
-    setError(false);
-    setStatus(false);
-  }, [itemSelected]);
+    if (modal.current !== undefined) {
+      modal.current.addEventListener("hidden.bs.modal", function () {
+        setLoading(false);
+        setError(false);
+        setStatus(false);
+      });
+    }
+  }, [itemSelected, modal]);
 
   const deleteItem = () => {
     setLoading(true);
@@ -39,6 +44,7 @@ const DeleteItemModal = ({ itemSelected, user, resetItemList }) => {
 
   return (
     <div
+      ref={modal}
       className="modal fade"
       id="deleteItemModal"
       tabIndex="-1"

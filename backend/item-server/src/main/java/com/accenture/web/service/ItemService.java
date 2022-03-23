@@ -25,5 +25,5 @@ public interface ItemService {
 
     boolean deleteItem(Integer id);
 
-    int addOrUpdateItem(List<Item> items, boolean overwrite);
+    int addOrUpdateItems(List<Item> items, boolean overwrite);
 }

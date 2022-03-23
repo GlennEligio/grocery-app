@@ -76,7 +76,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
 	@Override
 	public Page<User> getUserWithNamePagingAndSorting(String name, Pageable pageable) {
-		Page<User> userPage = repository.findByNameContainingIgnoreCase(name, pageable);
+		Page<User> userPage = repository.findByName(name, pageable);
 		if(pageable.getPageNumber() > userPage.getTotalPages()){
 			throw new AppException("Page requested is out of bounds", HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
 		}
@@ -85,13 +85,37 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
 	@Override
 	public Page<User> getUserWithUsernamePagingAndSorting(String username, Pageable pageable) {
-		Page<User> userPage = repository.findByUsernameContainingIgnoreCase(username, pageable);
+		Page<User> userPage = repository.findByUsername(username, pageable);
 		if(pageable.getPageNumber() > userPage.getTotalPages()){
 			throw new AppException("Page requested is out of bounds", HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
 		}
 		return userPage;
 	}
-	
+
+	@Override
+	public int addOrUpdateUsers(List<User> users, boolean overwrite) {
+		int usersAffected = 0;
+		for (User user: users) {
+			Optional<User> userOp = repository.findById(user.getId());
+			if(userOp.isEmpty()){
+				repository.save(user);
+				usersAffected++;
+			}else{
+				if(overwrite){
+					User updatedUser = userOp.get();
+					updatedUser.setName(user.getName());
+					updatedUser.setUsername(user.getUsername());
+					updatedUser.setPassword(user.getPassword());
+					updatedUser.setActive(user.isActive());
+					updatedUser.setRoles(user.getRoles());
+					repository.save(updatedUser);
+					usersAffected++;
+				}
+			}
+		}
+		return usersAffected;
+	}
+
 	public User getUser(Integer id) {
 		log.info("Fetching a user with id: " + id);
 		Optional<User> userOp = repository.findById(id);

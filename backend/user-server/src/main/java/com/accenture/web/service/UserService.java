@@ -15,6 +15,7 @@ public interface UserService {
     Page<User> getUserWithIdPagingAndSorting(String id, Pageable pageable);
     Page<User> getUserWithNamePagingAndSorting(String name, Pageable pageable);
     Page<User> getUserWithUsernamePagingAndSorting(String username, Pageable pageable);
+    int addOrUpdateUsers(List<User> users, boolean overwrite);
     User getUser(Integer id);
     User addUser(User user);
     boolean updateUser(User user);

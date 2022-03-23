@@ -9,6 +9,7 @@ import {
 import AdminItem from "./AdminItem";
 import ItemService from "../api/ItemService";
 import Pagination from "./Pagination";
+import fileDownload from "js-file-download";
 
 const AdminItemSection = ({
   items,
@@ -75,7 +76,7 @@ const AdminItemSection = ({
     >
       <div className="input-group">
         <button
-          className="btn btn-outline-primary dropdown-toggle"
+          className="btn btn-primary dropdown-toggle"
           type="button"
           data-bs-toggle="dropdown"
           aria-expanded="false"
@@ -110,16 +111,34 @@ const AdminItemSection = ({
         />
         <button
           onClick={() => fetchItems(queryType, queryValue)}
-          className="btn btn-outline-secondary"
+          className="btn btn-secondary"
         >
           <i className="bi bi-search"></i>
         </button>
-        <button className="btn btn-outline-primary">
+        <button className="btn btn-primary">
           <i
             className="bi bi-plus-lg"
             data-bs-toggle="modal"
             data-bs-target="#addItemModal"
           ></i>
+        </button>
+        <button
+          onClick={() =>
+            ItemService.download(user.jwt)
+              .then((res) => res.blob())
+              .then((data) => fileDownload(data, "items.xlsx"))
+              .catch((error) => console.log(error))
+          }
+          className="btn btn-success"
+        >
+          <i className="bi bi-download"></i>
+        </button>
+        <button
+          className="btn btn-danger"
+          data-bs-toggle="modal"
+          data-bs-target="#uploadItemModal"
+        >
+          <i className="bi bi-upload"></i>
         </button>
         <button
           onClick={() => {
@@ -131,7 +150,7 @@ const AdminItemSection = ({
             if (field !== "id") setField("id");
             fetchItems("id_query", "");
           }}
-          className="btn btn-outline-dark"
+          className="btn btn-dark"
         >
           <i className="bi bi-arrow-clockwise"></i>
         </button>

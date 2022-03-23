@@ -9,6 +9,7 @@ import { setModalComponent } from "../actions/componentActions";
 import AdminUser from "./AdminUser";
 import UserService from "../api/UserService";
 import Pagination from "./Pagination";
+import fileDownload from "js-file-download";
 
 const AdminUserSection = ({
   user,
@@ -61,7 +62,7 @@ const AdminUserSection = ({
       .catch(() => {
         fetchUsersFailed();
       });
-  });
+  }, []);
 
   useEffect(() => {
     fetchUsers(queryType, queryValue);
@@ -76,7 +77,7 @@ const AdminUserSection = ({
     >
       <div className="input-group">
         <button
-          className="btn btn-outline-primary dropdown-toggle"
+          className="btn btn-primary dropdown-toggle"
           type="button"
           data-bs-toggle="dropdown"
           aria-expanded="false"
@@ -121,16 +122,34 @@ const AdminUserSection = ({
         />
         <button
           onClick={() => fetchUsers(queryType, queryValue)}
-          className="btn btn-outline-secondary"
+          className="btn btn-secondary"
         >
           <i className="bi bi-search"></i>
         </button>
         <button
-          className="btn btn-outline-primary"
+          className="btn btn-primary"
           data-bs-toggle="modal"
           data-bs-target="#addUserModal"
         >
           <i className="bi bi-plus-lg"></i>
+        </button>
+        <button
+          onClick={() =>
+            UserService.download(user.jwt)
+              .then((res) => res.blob())
+              .then((data) => fileDownload(data, "users.xlsx"))
+              .catch((error) => console.log(error))
+          }
+          className="btn btn-success"
+        >
+          <i className="bi bi-download"></i>
+        </button>
+        <button
+          className="btn btn-danger"
+          data-bs-toggle="modal"
+          data-bs-target="#uploadUserModal"
+        >
+          <i className="bi bi-upload"></i>
         </button>
         <button
           onClick={() => {
@@ -142,7 +161,7 @@ const AdminUserSection = ({
             if (field !== "id") setField("id");
             fetchUsers("id_query", "");
           }}
-          className="btn btn-outline-dark"
+          className="btn btn-dark"
         >
           <i className="bi bi-arrow-clockwise"></i>
         </button>

@@ -2,11 +2,14 @@ package com.accenture.web.controller;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import com.accenture.web.exception.AppException;
 import com.accenture.web.service.ExcelFileService;
 import org.apache.commons.compress.utils.IOUtils;
 import org.slf4j.Logger;
@@ -25,7 +28,7 @@ import com.accenture.web.service.ItemServiceImpl;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api/v1/items")
+@RequestMapping("/api/v1")
 public class ItemController {
 
 	@Autowired
@@ -33,10 +36,10 @@ public class ItemController {
 
 	@Autowired
 	private ItemServiceImpl service;
-	
+
 	private static final Logger log = LoggerFactory.getLogger(ItemController.class);
-	
-	@GetMapping("/")
+
+	@GetMapping("/items")
 	public ResponseEntity<List<Item>> getAllItems(){
 		log.info("Fetching items");
 		List<Item> items = service.getAllItems();
@@ -47,14 +50,14 @@ public class ItemController {
 		return ResponseEntity.notFound().build();
 	}
 
-	@GetMapping(value = "/", params = {"page", "size"})
+	@GetMapping(value = "/items", params = {"page", "size"})
 	public ResponseEntity<Page<Item>> getItemWithPaging(@RequestParam("page") int page,
 														@RequestParam("size") int size){
 		log.info("Fetching items with page "+page+" and size of "+size);
 		return ResponseEntity.ok(service.findItemsWithPaging(PageRequest.of(page-1, size)));
 	}
 
-	@GetMapping(value = "/", params = {"page", "size", "field", "sort"})
+	@GetMapping(value = "/items", params = {"page", "size", "field", "sort"})
 	public ResponseEntity<Page<Item>> getItemWithPaging(@RequestParam("page") int page,
 														@RequestParam("size") int size,
 														@RequestParam("field") String field,
@@ -63,7 +66,7 @@ public class ItemController {
 		return ResponseEntity.ok(service.findItemsWithPagingAndSorting(PageRequest.of(page-1, size, Sort.Direction.fromString(direction), field)));
 	}
 
-	@GetMapping(value = "/", params={"name_query", "page", "size", "field", "sort"})
+	@GetMapping(value = "/items", params={"name_query", "page", "size", "field", "sort"})
 	public ResponseEntity<Page<Item>> getItemWithNameQueryPagingAndSorting(@RequestParam("name_query") String nameQuery,
 																	   @RequestParam("page") int page,
 																	   @RequestParam("size") int size,
@@ -75,7 +78,7 @@ public class ItemController {
 		return ResponseEntity.ok(service.findByNameWithPagingAndSorting(nameQuery, pageable));
 	}
 
-	@GetMapping(value = "/", params={"id_query", "page", "size", "field", "sort"})
+	@GetMapping(value = "/items", params={"id_query", "page", "size", "field", "sort"})
 	public ResponseEntity<Page<Item>> getItemWithIdQueryPagingAndSorting(@RequestParam("id_query") String idQuery,
 																		   @RequestParam("page") int page,
 																		   @RequestParam("size") int size,
@@ -87,11 +90,14 @@ public class ItemController {
 		return ResponseEntity.ok(service.findByIdWithPagingAndSorting(idQuery, pageable));
 	}
 
-	@PostMapping("/upload")
+	@PostMapping("/items/upload")
 	public ResponseEntity<?> upload(@RequestParam("file")MultipartFile excelFile, @RequestParam("overwrite") Boolean overwrite){
 		log.info("Preparing Excel for Item Database update");
+		if(!Objects.equals(excelFile.getContentType(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")){
+			throw new AppException("Can only upload .xlsx files", HttpStatus.BAD_REQUEST);
+		}
 		List<Item> items = excelFileService.excelFileToItemList(excelFile);
-		int itemsAffected = service.addOrUpdateItem(items, overwrite);
+		int itemsAffected = service.addOrUpdateItems(items, overwrite);
 		if(itemsAffected > 0){
 			log.info("Successfully updated item database using the excel file");
 			return ResponseEntity.ok().header("Item affected", String.valueOf(itemsAffected)).build();
@@ -100,7 +106,7 @@ public class ItemController {
 		return ResponseEntity.notFound().build();
 	}
 
-	@GetMapping("/download")
+	@GetMapping("/items/download")
 	public void download(HttpServletResponse response) throws IOException {
 		log.info("Preparing Item list for Download");
 		response.setContentType("application/octet-stream");
@@ -108,8 +114,21 @@ public class ItemController {
 		ByteArrayInputStream stream = excelFileService.itemListToExcelFile(service.getAllItems());
 		IOUtils.copy(stream, response.getOutputStream());
 	}
-	
-	@GetMapping("/{id}")
+
+	@GetMapping("/items/download/template")
+	public void downloadTemplate(HttpServletResponse response) throws IOException {
+		log.info("Preparing Item list for Download");
+		response.setContentType("application/octet-stream");
+		response.setHeader("Content-Disposition", "attachment; filename=items.xlsx");
+		// Creating Dummy Item list
+		List<Item> dummyItems = new ArrayList<>();
+		dummyItems.add(new Item(0, "Dummy item name", 45, false, 0.06));
+		dummyItems.add(new Item(1, "Dummy item name1", 50, true, 0.50));
+		ByteArrayInputStream stream = excelFileService.itemListToExcelFile(dummyItems);
+		IOUtils.copy(stream, response.getOutputStream());
+	}
+
+	@GetMapping("/items/{id}")
 	public ResponseEntity<Item> getItem(@PathVariable("id") Integer id){
 		log.info("Fetching item with id: " + id);
 		Item item = service.getItem(id);
@@ -119,20 +138,20 @@ public class ItemController {
 		}
 		return ResponseEntity.notFound().build();
 	}
-	
-	@PostMapping(value = "/", consumes = "application/json")
+
+	@PostMapping(value = "/items", consumes = "application/json")
 	public ResponseEntity<Item> createItem(@Valid @RequestBody Item item){
 		log.info("Adding " + item);
 		Item itemDb = service.addItem(item);
-		
-		if(itemDb != null) { 
+
+		if(itemDb != null) {
 			log.info("Add success");
 			return new ResponseEntity<>(itemDb, HttpStatus.CREATED);
 		}
 		return ResponseEntity.notFound().build();
 	}
-	
-	@DeleteMapping("/{id}")
+
+	@DeleteMapping("/items/{id}")
 	public ResponseEntity<?> deleteItem(@PathVariable("id") Integer id){
 		log.info("Deleting item with id: " + id);
 		boolean success = service.deleteItem(id);
@@ -141,8 +160,8 @@ public class ItemController {
 		}
 		return ResponseEntity.notFound().build();
 	}
-	
-	@PutMapping(value="/", consumes = "application/json")
+
+	@PutMapping(value="/items", consumes = "application/json")
 	public ResponseEntity<?> updateItem(@Valid @RequestBody Item item){
 		log.info("Updating item with " + item);
 		Item itemUpdated = service.updateItem(item);

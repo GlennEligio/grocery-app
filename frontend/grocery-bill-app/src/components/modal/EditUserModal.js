@@ -14,19 +14,25 @@ const EditUserModal = ({ userSelected, user, resetUserList }) => {
   const [error, setError] = useState(false);
   const [status, setStatus] = useState(false);
   const form = useRef();
+  const modal = useRef();
 
   useEffect(() => {
-    setLoading(false);
-    setError(false);
-    setStatus(false);
-    if (userSelected === null) {
+    if (userSelected.id !== undefined) {
       setName(userSelected.name);
       setUserName(userSelected.username);
       setPassword("");
       setRoles(userSelected.roles);
       setActive(userSelected.active);
     }
-  }, [userSelected]);
+    if (modal.current !== undefined) {
+      modal.current.addEventListener("hidden.bs.modal", function (e) {
+        setLoading(false);
+        setError(false);
+        setStatus(false);
+        form.current.classList.remove("was-validated");
+      });
+    }
+  }, [userSelected, modal]);
 
   const onSubmit = (e) => {
     setStatus(false);
@@ -75,6 +81,7 @@ const EditUserModal = ({ userSelected, user, resetUserList }) => {
 
   return (
     <div
+      ref={modal}
       className="modal fade"
       id="editUserModal"
       tabIndex="-1"
@@ -196,6 +203,7 @@ const EditUserModal = ({ userSelected, user, resetUserList }) => {
                       className="form-check-input"
                       type="checkbox"
                       value={active}
+                      checked={active}
                       onChange={(e) => setActive(e.currentTarget.checked)}
                       role="switch"
                       id="activeSwitch"

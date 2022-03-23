@@ -103,6 +103,16 @@
               >
                 <i class="bi bi-plus-lg"></i>
               </button>
+              <button class="btn btn-primary">
+                <i class="bi bi-box-arrow-down"></i>
+              </button>
+              <button
+                class="btn btn-success"
+                data-bs-toggle="modal"
+                data-bs-target="#uploadUserModal"
+              >
+                <i class="bi bi-box-arrow-up"></i>
+              </button>
               <button class="btn btn-outline-dark">
                 <i class="bi bi-arrow-clockwise"></i>
               </button>
@@ -902,6 +912,61 @@
                   </tr>
                 </tbody>
               </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Upload Modal -->
+      <div
+        class="modal fade"
+        id="uploadUserModal"
+        tabindex="-1"
+        aria-labelledby="uploadUserModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="uploadUserModalLabel">
+                Upload Users
+              </h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <div>
+                <ul class="list-unstyled">
+                  <li>
+                    1. Download the template file
+                    <a href="http://localhost:8030/api/v1/items/download"
+                      >here</a
+                    >
+                  </li>
+                  <li>2. Don't leave blank rows or columns</li>
+                </ul>
+              </div>
+              <form action="#">
+                <div class="input-group">
+                  <input
+                    type="file"
+                    class="form-control"
+                    id="inputGroupFile04"
+                    aria-describedby="inputGroupFileAddon04"
+                    aria-label="Upload"
+                  />
+                  <button
+                    class="btn btn-success"
+                    type="submit"
+                    id="inputGroupFileAddon04"
+                  >
+                    Upload
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </div>

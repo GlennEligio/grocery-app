@@ -9,6 +9,7 @@ import {
 } from "../actions/billActions";
 import BillService from "../api/BillService";
 import Pagination from "./Pagination";
+import fileDownload from "js-file-download";
 
 const AdminBillSection = ({
   billHistory,
@@ -74,7 +75,7 @@ const AdminBillSection = ({
     >
       <div className="input-group">
         <button
-          className="btn btn-outline-primary dropdown-toggle"
+          className="btn btn-primary dropdown-toggle"
           type="button"
           data-bs-toggle="dropdown"
           aria-expanded="false"
@@ -109,9 +110,27 @@ const AdminBillSection = ({
         />
         <button
           onClick={() => fetchBills(queryType, queryValue)}
-          className="btn btn-outline-secondary"
+          className="btn btn-secondary"
         >
           <i className="bi bi-search"></i>
+        </button>
+        <button
+          onClick={() =>
+            BillService.download(user.jwt)
+              .then((res) => res.blob())
+              .then((data) => fileDownload(data, "bills.xlsx"))
+              .catch((error) => console.log(error))
+          }
+          className="btn btn-success"
+        >
+          <i className="bi bi-download"></i>
+        </button>
+        <button
+          className="btn btn-danger"
+          data-bs-toggle="modal"
+          data-bs-target="#uploadBillModal"
+        >
+          <i className="bi bi-upload"></i>
         </button>
         <button
           onClick={() => {
@@ -123,7 +142,7 @@ const AdminBillSection = ({
             if (field !== "id") setField("id");
             fetchBills("id_query", "");
           }}
-          className="btn btn-outline-dark"
+          className="btn btn-dark"
         >
           <i className="bi bi-arrow-clockwise"></i>
         </button>

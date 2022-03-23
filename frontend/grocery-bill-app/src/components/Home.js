@@ -9,7 +9,7 @@ import { resetItemStates } from "../actions/itemActions";
 
 const Home = ({
   isLoggedIn,
-  role,
+  user,
   resetAuthState,
   resetUserState,
   resetBillStates,
@@ -20,9 +20,9 @@ const Home = ({
 
   useEffect(() => {
     if (isLoggedIn) {
-      if (role === "ROLE_CLERK") {
+      if (user.role === "ROLE_CLERK") {
         navigate("/clerk");
-      } else if (role === "ROLE_ADMIN") {
+      } else if (user.role === "ROLE_ADMIN" || user.role === "ROLE_SADMIN") {
         navigate("/admin");
       }
     } else {
@@ -79,7 +79,7 @@ const Home = ({
 
 const mapStateToProps = (state) => ({
   isLoggedIn: state.auth.isLoggedIn,
-  role: state.auth.role,
+  user: state.auth.user,
 });
 
 export default connect(mapStateToProps, {

@@ -47,6 +47,12 @@ public abstract class GroceryBill implements Serializable {
 		this.shoppingClerk = shoppingClerk;
 	}
 
+	public GroceryBill(ShoppingClerk shoppingClerk, List<Item> itemList, LocalDateTime dateCreated){
+		this.shoppingClerk = shoppingClerk;
+		this.itemList = itemList;
+		this.dateCreated = dateCreated;
+	}
+
 	public void addItem(Item item) {
 		if (item != null) {
 			itemList.add(item);

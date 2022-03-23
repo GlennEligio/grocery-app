@@ -105,7 +105,7 @@ public class ItemServiceImpl implements ItemService{
 	}
 
 	@Override
-	public int addOrUpdateItem(List<Item> items, boolean overwrite) {
+	public int addOrUpdateItems(List<Item> items, boolean overwrite) {
 		int itemsAffected = 0;
 		for (Item item: items) {
 			Optional<Item> itemOp = repository.findById(item.getId());

@@ -13,12 +13,21 @@ const AddUserModal = ({ user, users, role }) => {
   const [error, setError] = useState(false);
   const [status, setStatus] = useState(false);
   const form = useRef();
+  const modal = useRef();
 
   useEffect(() => {
     setLoading(false);
     setError(false);
     setStatus(false);
-  }, [users.length]);
+    if (modal.current !== undefined) {
+      modal.current.addEventListener("hidden.bs.modal", function (e) {
+        setLoading(false);
+        setError(false);
+        setStatus(false);
+        form.current.classList.remove("was-validated");
+      });
+    }
+  }, [users.length, modal]);
 
   const onSubmit = (e) => {
     setLoading(false);
@@ -54,12 +63,14 @@ const AddUserModal = ({ user, users, role }) => {
         .catch(() => {
           setLoading(false);
           setError(true);
+          form.current.classList.add("was-validated");
         });
     }
   };
 
   return (
     <div
+      ref={modal}
       className="modal fade"
       id="addUserModal"
       tabIndex="-1"

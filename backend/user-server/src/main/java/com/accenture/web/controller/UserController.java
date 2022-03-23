@@ -1,18 +1,24 @@
 package com.accenture.web.controller;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
-import javax.annotation.security.RolesAllowed;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import javax.ws.rs.HeaderParam;
 
 import com.accenture.web.exception.AppException;
+import com.accenture.web.service.ExcelFileService;
+import org.apache.commons.compress.utils.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.GrantedAuthority;
@@ -30,12 +36,16 @@ import com.accenture.web.dtos.AuthenticationResponse;
 import com.accenture.web.domain.User;
 import com.accenture.web.service.UserServiceImpl;
 import com.accenture.web.util.JwtUtil;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1")
 public class UserController {
 
 	private static final Logger log = LoggerFactory.getLogger(UserController.class);
+
+	@Autowired
+	private ExcelFileService excelFileService;
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
@@ -146,6 +156,42 @@ public class UserController {
 																	@RequestParam("field") String field){
 		log.info("Fetching users with username containing " + usernameQuery + " in page " + page + " with size " + size + ", sorted by " + field + " in " + direction + " order");
 		return ResponseEntity.ok(service.getUserWithUsernamePagingAndSorting(usernameQuery, PageRequest.of(page-1, size, Sort.Direction.fromString(direction), field)));
+	}
+
+	@PostMapping("/users/upload")
+	public ResponseEntity<?> upload(@RequestParam("file")MultipartFile excelFile, @RequestParam("overwrite") Boolean overwrite){
+		log.info("Preparing Excel for User Database update");
+		if(!Objects.equals(excelFile.getContentType(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")){
+			throw new AppException("Can only upload .xlsx files", HttpStatus.BAD_REQUEST);
+		}
+		List<User> users = excelFileService.excelFileToUserList(excelFile);
+		int usersAffected = service.addOrUpdateUsers(users, overwrite);
+		log.info("Users affected: {}", usersAffected);
+		return ResponseEntity.ok().header("users-affected", String.valueOf(usersAffected)).build();
+
+	}
+
+	@GetMapping(value = "/users/download")
+	public void download(HttpServletResponse response) throws IOException {
+		log.info("Preparing User list for Download");
+		response.setContentType("application/octet-stream");
+		response.setHeader("Content-Disposition", "attachment; filename=users.xlsx");
+		ByteArrayInputStream stream = excelFileService.userListToExcelFile(service.getAllUsers());
+		IOUtils.copy(stream, response.getOutputStream());
+	}
+
+	@GetMapping(value = "/users/download/template")
+	public void downloadTemplate(HttpServletResponse response) throws IOException {
+		log.info("Preparing User Dummy list for Download");
+		response.setContentType("application/octet-stream");
+		response.setHeader("Content-Disposition", "attachment; filename=user-template.xlsx");
+		// Create dummy data
+		List<User> userDummy = new ArrayList<>();
+		userDummy.add(new User(1, "Dummy name", "Dummy username", "Dummy password", true, "ROLE_USER"));
+		userDummy.add(new User(2, "Dummy name2", "Dummy username2", "Dummy password2", false, "ROLE_ADMIN"));
+		ByteArrayInputStream stream = excelFileService.userListToExcelFile(userDummy);
+		IOUtils.copy(stream, response.getOutputStream());
+		response.getOutputStream().flush();
 	}
 
 	@GetMapping("/users/{id}")

@@ -13,12 +13,24 @@ const EditItemModal = ({ itemSelected, user, resetItemList }) => {
   const [error, setError] = useState(false);
   const [status, setStatus] = useState(false);
   const form = useRef();
+  const modal = useRef();
 
   useEffect(() => {
-    setLoading(false);
-    setError(false);
-    setStatus(false);
-  }, [itemSelected]);
+    if (itemSelected.id !== undefined) {
+      setName(itemSelected.name);
+      setPrice(itemSelected.price);
+      setDiscountPercentage(itemSelected.discountPercentage * 100);
+      setDiscounted(itemSelected.discounted);
+    }
+    if (modal.current !== undefined) {
+      modal.current.addEventListener("hidden.bs.modal", function (e) {
+        setLoading(false);
+        setError(false);
+        setStatus(false);
+        form.current.classList.remove("was-validated");
+      });
+    }
+  }, [itemSelected, modal]);
 
   const onSubmit = (e) => {
     setError(false);
@@ -66,6 +78,7 @@ const EditItemModal = ({ itemSelected, user, resetItemList }) => {
 
   return (
     <div
+      ref={modal}
       className="modal fade"
       id="editItemModal"
       tabIndex="-1"
@@ -171,6 +184,7 @@ const EditItemModal = ({ itemSelected, user, resetItemList }) => {
                   <input
                     type="checkbox"
                     name="discounted"
+                    checked={discounted}
                     value={discounted}
                     onChange={(e) => setDiscounted(e.currentTarget.checked)}
                     id="addItemDiscounted"

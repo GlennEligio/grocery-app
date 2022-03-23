@@ -1,11 +1,25 @@
-import React from "react";
+import React, { useEffect } from "react";
 import AdminBillSection from "./AdminBillSection";
 import AdminItemSection from "./AdminItemSection";
 import AdminUserSection from "./AdminUserSection";
 import * as Modals from "./modal";
 import NavBar from "./NavBar";
+import { connect } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
-const AdminHome = () => {
+const AdminHome = ({ user, isLoggedIn }) => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      if (user.role === "ROLE_CLERK") {
+        navigate("/unauthorized");
+      }
+    } else {
+      navigate("/unauthorized");
+    }
+  }, [user, isLoggedIn, navigate]);
+
   return (
     <>
       {/** Main Content */}
@@ -80,13 +94,21 @@ const AdminHome = () => {
         <Modals.AddItemModal />
         <Modals.EditItemModal />
         <Modals.DeleteItemModal />
+        <Modals.UploadItemModal />
         <Modals.AddUserModal />
         <Modals.EditUserModal />
         <Modals.DeleteUserModal />
+        <Modals.UploadUserModal />
         <Modals.BillDetailsModal />
+        <Modals.UploadBillModal />
       </div>
     </>
   );
 };
 
-export default AdminHome;
+const mapStateToProps = (state) => ({
+  user: state.auth.user,
+  isLoggedIn: state.auth.isLoggedIn,
+});
+
+export default connect(mapStateToProps, {})(AdminHome);

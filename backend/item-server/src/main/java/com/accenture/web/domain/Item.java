@@ -2,10 +2,7 @@ package com.accenture.web.domain;
 
 import java.util.Objects;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
@@ -21,6 +18,7 @@ public class Item {
 	private Integer id;
 
 	@NotEmpty(message = "Name must not be empty")
+	@Column(unique = true)
 	private String name;
 
 	@Min(message = "Price must be defined", value = 0)

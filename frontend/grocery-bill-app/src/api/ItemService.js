@@ -30,6 +30,34 @@ const fetchItemsWithQueryPagingSorting = async (
   });
 };
 
+const upload = async (jwt, formData) => {
+  return await fetch("http://localhost:8080/api/v1/items/upload", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+    },
+    body: formData,
+  });
+};
+
+const download = async (jwt) => {
+  return await fetch("http://localhost:8080/api/v1/items/download", {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+    },
+  });
+};
+
+const downloadTemplate = async (jwt) => {
+  return await fetch("http://localhost:8080/api/v1/items/download/template", {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+    },
+  });
+};
+
 const addItem = async (jwt, item) => {
   return await fetch("http://localhost:8080/api/v1/items", {
     method: "POST",
@@ -67,4 +95,7 @@ export default {
   addItem,
   editItem,
   deleteItem,
+  upload,
+  download,
+  downloadTemplate,
 };
