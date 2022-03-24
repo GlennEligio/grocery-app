@@ -30,12 +30,14 @@ spring:
             Path=/api/v1/bills/**
           filters:
             - AuthFilter
+            - RoleFilter
         - id: service-item-id
           uri: lb://item-service
           predicates:
             Path=/api/v1/items/**
           filters:
             - AuthFilter
+            - RoleFilter
 
 management:
   endpoint:

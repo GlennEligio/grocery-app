@@ -4,6 +4,7 @@ import com.accenture.web.dtos.UserDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
+import org.springframework.cloud.gateway.filter.OrderedGatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -29,7 +30,7 @@ public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> 
 
     @Override
     public GatewayFilter apply(Config config) {
-        return ((exchange, chain) -> {
+        return new OrderedGatewayFilter((exchange, chain) -> {
             // Check if "Authorization" header is present
             if(!exchange.getRequest().getHeaders().containsKey(HttpHeaders.AUTHORIZATION)){
                 throw new RuntimeException("Missing Authorization header");
@@ -51,22 +52,12 @@ public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> 
                     .retrieve().bodyToMono(UserDto.class)
                     .map(userDto -> {
                         log.info("Authentication success! " + "Username " + userDto.getUsername() + " access " + exchange.getRequest().getPath());
-                        // Prevent Clerk roles to non-GET request
-                        if(!Objects.equals(exchange.getRequest().getMethod(), HttpMethod.GET)
-                                && userDto.getRole().contains("ROLE_CLERK")){
-                            // But for POST request at /api/v1/bills, let it pass through
-                            if(!Objects.equals(exchange.getRequest().getMethod(), HttpMethod.POST)
-                                    && !exchange.getRequest().getPath().toString().equals("/api/v1/bills")){
-                                log.info("Clerks sent non GET request");
-                                throw new RuntimeException("Clerks can only send GET request");
-                            }
-                        }
                         exchange.getRequest()
                                 .mutate()
                                 .header("X-auth-role", userDto.getRole());
                         return exchange;
                     }).flatMap(chain::filter);
-        });
+        }, 1);
     }
 
     public static class Config {
