@@ -12,6 +12,7 @@ import javax.validation.Valid;
 
 import com.accenture.web.exception.AppException;
 import com.accenture.web.service.ExcelFileService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.compress.utils.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -67,16 +68,26 @@ public class UserController {
 		}
 		if(passwordEncoder.matches(request.getPassword(), userDetails.getPassword())){
 			final String token = jwtUtil.generateToken(userDetails);
+			final String refreshToken = jwtUtil.generateRefreshToken(userDetails);
 			log.info("Authentication success with jwt: " + token);
-			return ResponseEntity.ok(new AuthenticationResponse(userDetails.getUsername(), token, userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(","))));
+			return ResponseEntity.ok(new AuthenticationResponse(userDetails.getUsername(), token, userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(",")), refreshToken));
 		}
 		throw new BadCredentialsException("Incorrect credentials");
 	}
 
 	@PostMapping("/users/validateToken")
-	public ResponseEntity<AuthenticationResponse> validateToken(@RequestParam String token) throws Exception {
+	public ResponseEntity<AuthenticationResponse> validateToken(@RequestParam("token") String token){
 		log.info("Authenticating with token {}", token);
 		return ResponseEntity.ok(service.validateToken(token));
+	}
+
+	@PostMapping("/users/refreshToken")
+	public ResponseEntity<?> refreshToken(@RequestParam("token") String token){
+		log.info("Authenticating with token {}", token);
+		String username = jwtUtil.extractUsername(token);
+		final UserDetails userDetails = service.loadUserByUsername(username);
+		final String jwt = jwtUtil.generateToken(userDetails);
+		return ResponseEntity.ok(new ObjectMapper().createObjectNode().put("jwt", jwt));
 	}
 
 	@PostMapping("/users/register")
@@ -102,9 +113,8 @@ public class UserController {
 		List<User> users = service.getAllUsers();
 		if (users != null) {
 			users = users.stream().map((user) -> {
-				User newUser = user;
-				newUser.setPassword(null);
-				return newUser;
+				user.setPassword(null);
+				return user;
 			}).collect(Collectors.toList());
 			log.info("Fetch success");
 			return ResponseEntity.ok(service.getAllUsers());

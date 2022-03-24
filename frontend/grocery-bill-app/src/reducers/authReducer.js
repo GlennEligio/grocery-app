@@ -2,6 +2,7 @@ import {
   FETCH_JWT_BEGIN,
   FETCH_JWT_SUCCESS,
   FETCH_JWT_FAILED,
+  UPDATE_JWT,
   RESET_AUTH_STATES,
 } from "../actions/types";
 
@@ -10,6 +11,7 @@ const initialState = {
     username: "",
     jwt: "",
     role: "",
+    refreshToken: "",
   },
   loading: false,
   error: false,
@@ -31,6 +33,7 @@ const authReducer = function (state = initialState, action) {
           username: action.payload.username,
           jwt: action.payload.jwt,
           role: action.payload.role,
+          refreshToken: action.payload.refreshToken,
         },
         loading: false,
         error: false,
@@ -42,6 +45,14 @@ const authReducer = function (state = initialState, action) {
         loading: false,
         error: true,
       };
+    case UPDATE_JWT:
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          refreshToken: action.payload,
+        },
+      };
     case RESET_AUTH_STATES:
       return {
         ...state,
@@ -49,6 +60,7 @@ const authReducer = function (state = initialState, action) {
           username: "",
           jwt: "",
           role: "",
+          refreshToken: "",
         },
         loading: false,
         error: false,
