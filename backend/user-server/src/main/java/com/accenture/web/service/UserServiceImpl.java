@@ -1,7 +1,6 @@
 package com.accenture.web.service;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -16,9 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -76,7 +73,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
 	@Override
 	public Page<User> getUserWithNamePagingAndSorting(String name, Pageable pageable) {
-		Page<User> userPage = repository.findByName(name, pageable);
+		Page<User> userPage = repository.findByNameQuery(name, pageable);
 		if(pageable.getPageNumber() > userPage.getTotalPages()){
 			throw new AppException("Page requested is out of bounds", HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
 		}

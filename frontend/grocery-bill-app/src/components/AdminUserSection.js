@@ -62,7 +62,7 @@ const AdminUserSection = ({
       .catch(() => {
         fetchUsersFailed();
       });
-  }, []);
+  });
 
   useEffect(() => {
     fetchUsers(queryType, queryValue);

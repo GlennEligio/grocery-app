@@ -71,14 +71,14 @@ public class GroceryBillController {
 		return ResponseEntity.ok(billPage);
 	}
 
-	@GetMapping(value = "/bills", params = {"id_query", "page", "size", "field", "sort"})
-	public ResponseEntity<Page<BillSummaryDto>> getBillsWithIdQueryPagingAndSorting(@RequestParam("id_query") String idQuery,
+	@GetMapping(value = "/bills", params = {"billId_query", "page", "size", "field", "sort"})
+	public ResponseEntity<Page<BillSummaryDto>> getBillsWithIdQueryPagingAndSorting(@RequestParam("billId_query") String billIdQuery,
 																					@RequestParam("page") int page,
 																					@RequestParam("size") int size,
 																					@RequestParam("field") String field,
 																					@RequestParam("sort") String direction){
-		log.info("Fetching bills with id " + idQuery + " in page " + page + " of size " + size + ", sorted by " + field + " in " + direction + "order");
-		Page<BillSummaryDto> billSummaryPage = service.findBillsWithIdPagingAndSorting(idQuery, PageRequest.of(page-1, size, Sort.Direction.fromString(direction), field)).map(BillSummaryDto::new);
+		log.info("Fetching bills with id " + billIdQuery + " in page " + page + " of size " + size + ", sorted by " + field + " in " + direction + "order");
+		Page<BillSummaryDto> billSummaryPage = service.findBillsWithIdPagingAndSorting(billIdQuery, PageRequest.of(page-1, size, Sort.Direction.fromString(direction), field)).map(BillSummaryDto::new);
 		return ResponseEntity.ok(billSummaryPage);
 	}
 
@@ -138,12 +138,13 @@ public class GroceryBillController {
 
 	@PostMapping("/bills/upload")
 	public ResponseEntity<?> upload(@RequestParam("file") MultipartFile excelFile,
-									@RequestParam("overwrite") Boolean overwrite){
+									@RequestParam("overwrite") Boolean overwrite,
+									@RequestHeader("X-auth-role") String role){
 		log.info("Preparing Excel for Bill Database update");
 		if(!Objects.equals(excelFile.getContentType(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")){
 			throw new AppException("Can only upload .xlsx files", HttpStatus.BAD_REQUEST);
 		}
-		ResponseEntity<List<Item>> response = itemFeignClient.getItems();
+		ResponseEntity<List<Item>> response = itemFeignClient.getItems(role);
 		if(response.getStatusCode().isError()) {
 			throw new AppException("Populate the item database first", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -170,15 +171,7 @@ public class GroceryBillController {
 	@PostMapping("/bills")
 	public ResponseEntity<? extends GroceryBill> createNewGroceryBill(@Valid @RequestBody GroceryBill groceryBill) {
 		log.info("Creating Grocery Bill " + groceryBill);
-		if(groceryBill != null) {
-			GroceryBill billDb = service.addGroceryBill(groceryBill);
-			log.info("billDb: {}", billDb);
-			if(billDb != null) {
-				log.info("Grocery bill added: " + billDb);
-				return new ResponseEntity<>(billDb, HttpStatus.CREATED);
-			}
-		}
-		return ResponseEntity.notFound().build();
+		return new ResponseEntity<>(service.addGroceryBill(groceryBill), HttpStatus.CREATED);
 	}
 
 	@GetMapping("/bills/{id}")

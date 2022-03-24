@@ -4,6 +4,7 @@ import com.accenture.web.domain.Item;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.List;
 
@@ -11,6 +12,6 @@ import java.util.List;
 public interface ItemFeignClient {
 
     @GetMapping("/api/v1/items/")
-    public ResponseEntity<List<Item>> getItems();
+    public ResponseEntity<List<Item>> getItems(@RequestHeader("X-auth-role") String role);
 
 }

@@ -131,8 +131,7 @@ public class UserController {
 	@GetMapping(value = "/users", params = {"id_query","page", "size", "sort", "field"})
 	public ResponseEntity<Page<User>> getUserWithIdPagingAndSorting(@RequestParam("id_query") String idQuery,
 																	@RequestParam("page") int page,
-																	@RequestParam("size") int size,
-																	@RequestParam("sort") String direction,
+																	@RequestParam("size") int size,																	@RequestParam("sort") String direction,
 																	@RequestParam("field") String field){
 		log.info("Fetching users with id containing  " + idQuery + " in page " + page + " with size " + size + ", sorted by " + field + " in " + direction + " order");
 		return ResponseEntity.ok(service.getUserWithIdPagingAndSorting(idQuery, PageRequest.of(page-1, size, Sort.Direction.fromString(direction), field)));
@@ -141,7 +140,7 @@ public class UserController {
 	@GetMapping(value = "/users", params = {"name_query","page", "size", "sort", "field"})
 	public ResponseEntity<Page<User>> getUserWithNamePagingAndSorting(@RequestParam("name_query") String nameQuery,
 																	@RequestParam("page") int page,
-																	@RequestParam("size") int size,
+																	  @RequestParam("size") int size,
 																	@RequestParam("sort") String direction,
 																	@RequestParam("field") String field){
 		log.info("Fetching users with name containing  " + nameQuery + " in page " + page + " with size " + size + ", sorted by " + field + " in " + direction + " order");
@@ -151,7 +150,7 @@ public class UserController {
 	@GetMapping(value = "/users", params = {"username_query","page", "size", "sort", "field"})
 	public ResponseEntity<Page<User>> getUserWithUsernamePagingAndSorting(@RequestParam("username_query") String usernameQuery,
 																	@RequestParam("page") int page,
-																	@RequestParam("size") int size,
+																		  @RequestParam("size") int size,
 																	@RequestParam("sort") String direction,
 																	@RequestParam("field") String field){
 		log.info("Fetching users with username containing " + usernameQuery + " in page " + page + " with size " + size + ", sorted by " + field + " in " + direction + " order");

@@ -3,9 +3,11 @@ package com.accenture.web.controller;
 import static org.mockito.Mockito.*;
 
 import com.accenture.web.domain.Item;
+import com.accenture.web.exception.AppException;
+import com.accenture.web.service.ExcelFileService;
+import com.accenture.web.service.ExcelFileServiceImpl;
 import com.accenture.web.service.ItemServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -29,6 +32,9 @@ public class ItemControllerTest {
 
     @MockBean
     private ItemServiceImpl service;
+
+    @MockBean
+    private ExcelFileServiceImpl excelFileService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -90,6 +96,7 @@ public class ItemControllerTest {
     public void addItem_withNewItem_returnCreated() throws Exception {
         // Arrange
         Item newItem = new Item("name0", 100, true, 0.5);
+        item.setDeleteFlag(false);
         when(service.addItem(newItem)).thenReturn(item);
 
         // Assert
@@ -97,7 +104,7 @@ public class ItemControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(newItem)))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(newItem)));
+                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(item)));
     }
 
     @Test
@@ -105,13 +112,13 @@ public class ItemControllerTest {
     public void addItem_withExistingItem_returnNotFound() throws Exception {
         // Arrange
         Item existingItem = new Item("name3", 103, true, 0.5);
-        when(service.addItem(existingItem)).thenReturn(null);
+        when(service.addItem(existingItem)).thenThrow(new AppException("Item with same name already exist", HttpStatus.BAD_REQUEST));
 
         // Assert
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/items")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(existingItem)))
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
     @Test

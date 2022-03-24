@@ -31,16 +31,19 @@ public class Item {
 	@Digits(fraction = 2, integer = 0, message = "Discount must be between 1 and 0")
 	private double discountPercentage;
 
+	private boolean deleteFlag;
+
 	public Item() {
 		super();
+		this.deleteFlag = false;
 	}
 
 	public Item(String name, double price, boolean discounted, double discountPercentage) {
-		super();
 		this.name = name;
 		this.price = price;
 		this.discounted = discounted;
 		this.discountPercentage = discountPercentage;
+		this.deleteFlag = false;
 	}
 
 	public Item(Integer id, String name, double price, boolean discounted, double discountPercentage) {
@@ -49,6 +52,7 @@ public class Item {
 		this.price = price;
 		this.discounted = discounted;
 		this.discountPercentage = discountPercentage;
+		this.deleteFlag = false;
 	}
 
 	public Integer getId() {
@@ -91,29 +95,36 @@ public class Item {
 		this.discountPercentage = discountPercentage;
 	}
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(discountPercentage, discounted, id, name, price);
+	public boolean isDeleteFlag() {
+		return deleteFlag;
+	}
+
+	public void setDeleteFlag(boolean deleteFlag) {
+		this.deleteFlag = deleteFlag;
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Item other = (Item) obj;
-		return Double.doubleToLongBits(discountPercentage) == Double.doubleToLongBits(other.discountPercentage)
-				&& discounted == other.discounted && id == other.id && Objects.equals(name, other.name)
-				&& Double.doubleToLongBits(price) == Double.doubleToLongBits(other.price);
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Item item = (Item) o;
+		return Double.compare(item.price, price) == 0 && discounted == item.discounted && Double.compare(item.discountPercentage, discountPercentage) == 0 && deleteFlag == item.deleteFlag && Objects.equals(id, item.id) && Objects.equals(name, item.name);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, name, price, discounted, discountPercentage, deleteFlag);
 	}
 
 	@Override
 	public String toString() {
-		return "Item [id=" + id + ", name=" + name + ", price=" + price + ", discounted=" + discounted
-				+ ", discountPercentage=" + discountPercentage + "]";
+		return "Item{" +
+				"id=" + id +
+				", name='" + name + '\'' +
+				", price=" + price +
+				", discounted=" + discounted +
+				", discountPercentage=" + discountPercentage +
+				", deleteFlag=" + deleteFlag +
+				'}';
 	}
-
 }

@@ -39,17 +39,6 @@ public class ItemController {
 
 	private static final Logger log = LoggerFactory.getLogger(ItemController.class);
 
-	@GetMapping("/items")
-	public ResponseEntity<List<Item>> getAllItems(){
-		log.info("Fetching items");
-		List<Item> items = service.getAllItems();
-		if(items != null) {
-			log.info("Fetch success");
-			return ResponseEntity.ok(service.getAllItems());
-		}
-		return ResponseEntity.notFound().build();
-	}
-
 	@GetMapping(value = "/items", params = {"page", "size"})
 	public ResponseEntity<Page<Item>> getItemWithPaging(@RequestParam("page") int page,
 														@RequestParam("size") int size){
@@ -128,6 +117,16 @@ public class ItemController {
 		IOUtils.copy(stream, response.getOutputStream());
 	}
 
+	// TODO: UPDATE TEST CASE
+	@GetMapping("/items")
+	public ResponseEntity<List<Item>> getAllItems(@RequestHeader("X-auth-role") String role){
+		log.info("Fetching items");
+		if(role.equals("ROLE_CLERK")){
+			return ResponseEntity.ok(service.getAllNotDeletedItems());
+		}
+		return ResponseEntity.ok(service.getAllItems());
+	}
+
 	@GetMapping("/items/{id}")
 	public ResponseEntity<Item> getItem(@PathVariable("id") Integer id){
 		log.info("Fetching item with id: " + id);
@@ -142,13 +141,7 @@ public class ItemController {
 	@PostMapping(value = "/items", consumes = "application/json")
 	public ResponseEntity<Item> createItem(@Valid @RequestBody Item item){
 		log.info("Adding " + item);
-		Item itemDb = service.addItem(item);
-
-		if(itemDb != null) {
-			log.info("Add success");
-			return new ResponseEntity<>(itemDb, HttpStatus.CREATED);
-		}
-		return ResponseEntity.notFound().build();
+		return ResponseEntity.ok(service.addItem(item));
 	}
 
 	@DeleteMapping("/items/{id}")

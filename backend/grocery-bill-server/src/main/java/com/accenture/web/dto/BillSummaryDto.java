@@ -10,6 +10,7 @@ import java.time.format.DateTimeFormatter;
 public class BillSummaryDto {
 
     private int id;
+    private String billId;
     private int itemCount;
     private ShoppingClerk shoppingClerk;
     private String type;
@@ -21,6 +22,7 @@ public class BillSummaryDto {
 
     public BillSummaryDto(GroceryBill bill) {
         this.type = bill.getClass().equals(DiscountedBill.class) ? "Discounted" : "Regular";
+        this.billId = bill.getBillId();
         this.id = bill.getId();
         this.itemCount = bill.getItemList().size();
         this.shoppingClerk = bill.getShoppingClerk();
@@ -74,5 +76,13 @@ public class BillSummaryDto {
 
     public void setDateCreated(String dateCreated) {
         this.dateCreated = dateCreated;
+    }
+
+    public String getBillId() {
+        return billId;
+    }
+
+    public void setBillId(String billId) {
+        this.billId = billId;
     }
 }

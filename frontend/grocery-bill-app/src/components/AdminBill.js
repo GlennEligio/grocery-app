@@ -9,11 +9,11 @@ const AdminBill = ({ bill, updateBillSelected }) => {
       data-bs-toggle="modal"
       data-bs-target="#billDetailsModal"
     >
-      <th scope="row">{bill.id}</th>
+      <th scope="row">{bill.billId}</th>
       <td>{bill.itemCount}</td>
       <td>{bill.shoppingClerk.username}</td>
       <td>{bill.dateCreated}</td>
-      <td>{bill.type === "regular" ? "Regular" : "Discounted"}</td>
+      <td>{bill.type === "Regular" ? "Regular" : "Discounted"}</td>
       <td>{`$${bill.totalBill.toFixed(2)}`}</td>
     </tr>
   );
