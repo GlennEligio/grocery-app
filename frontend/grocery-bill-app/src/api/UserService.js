@@ -78,7 +78,7 @@ const login = async (user) => {
   });
 };
 
-const validateToken = (jwt) => {
+const validateToken = async (jwt) => {
   return fetch(
     `http://localhost:8080/api/v1/users/validateToken?token=${jwt}`,
     {
@@ -87,10 +87,13 @@ const validateToken = (jwt) => {
   );
 };
 
-const refreshToken = (refreshToken) => {
-  return fetch(`http://localhost:8080/api/v1/users/refreshToken`, {
-    method: "POST",
-  });
+const refreshToken = async (refreshToken) => {
+  return fetch(
+    `http://localhost:8080/api/v1/users/refreshToken?token=${refreshToken}`,
+    {
+      method: "POST",
+    }
+  );
 };
 
 const editUser = async (jwt, userToEdit) => {

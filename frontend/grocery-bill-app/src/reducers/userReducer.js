@@ -68,25 +68,6 @@ const userReducer = function (state = initialState, action) {
         error: true,
         status: false,
       };
-    case EDIT_USER_BEGIN:
-      return {
-        ...state,
-        loading: true,
-        error: false,
-      };
-    case EDIT_USER_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        error: false,
-        users: [],
-      };
-    case EDIT_USER_FAILED:
-      return {
-        ...state,
-        loading: false,
-        error: true,
-      };
     case UPDATE_USER_SELECTED:
       return {
         ...state,
