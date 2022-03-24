@@ -104,8 +104,14 @@ public class GroceryBillServiceImpl implements GroceryBillService{
 	@Transactional
 	public GroceryBill addGroceryBill(GroceryBill groceryBill) {
 		log.info("Adding bill: {}", groceryBill);
-		// To set the value of totalBill
+		// Check if bill already exist
+		if(billRepo.findByBillId(groceryBill.getBillId()).size() > 0){
+			throw new AppException("Bill of same Bill Id already exist", HttpStatus.BAD_REQUEST);
+		}
+
+		// To set the value of totalBill and bill id
 		groceryBill.getTotalBill();
+		groceryBill.setBillId(String.valueOf(System.currentTimeMillis()));
 
 		// Check if Shopping Clerk already exist in database
 		Optional<ShoppingClerk> clerkOp = clerkRepo.findById(groceryBill.getShoppingClerk().getId());

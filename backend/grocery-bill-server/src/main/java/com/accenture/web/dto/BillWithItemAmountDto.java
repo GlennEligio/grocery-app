@@ -11,24 +11,26 @@ import java.util.Map;
 
 public class BillWithItemAmountDto {
     private final int id;
+    private final String billId;
     private final ShoppingClerk clerk;
     private final LocalDateTime dateCreated;
     private final String type;
     private final double totalBill;
-    private final Map<Integer, Integer> itemIdWithAmount;
+    private final Map<String, Integer> itemNameWithAmount;
 
     public BillWithItemAmountDto(GroceryBill bill){
         this.id = bill.getId();
+        this.billId = bill.getBillId();
         this.clerk = bill.getShoppingClerk();
         this.dateCreated = bill.getDateCreated();
         this.type = bill.getClass().equals(DiscountedBill.class) ? "discounted" : "regular";
         this.totalBill = bill.getTotalBill();
-        this.itemIdWithAmount = new HashMap<>();
+        this.itemNameWithAmount = new HashMap<>();
         for (Item item: bill.getItemList()) {
-            if(itemIdWithAmount.isEmpty() || !itemIdWithAmount.containsKey(item.getId())) {
-                itemIdWithAmount.put(item.getId(), 1);
+            if(itemNameWithAmount.isEmpty() || !itemNameWithAmount.containsKey(item.getName())) {
+                itemNameWithAmount.put(item.getName(), 1);
             }else {
-                itemIdWithAmount.put(item.getId(), itemIdWithAmount.get(item.getId()) + 1);
+                itemNameWithAmount.put(item.getName(), itemNameWithAmount.get(item.getName()) + 1);
             }
         }
     }
@@ -36,6 +38,8 @@ public class BillWithItemAmountDto {
     public int getId() {
         return id;
     }
+
+    public String getBillId() {return billId;}
 
     public ShoppingClerk getClerk() {
         return clerk;
@@ -53,7 +57,7 @@ public class BillWithItemAmountDto {
         return totalBill;
     }
 
-    public Map<Integer, Integer> getItemIdWithAmount() {
-        return itemIdWithAmount;
+    public Map<String, Integer> getItemNameWithAmount() {
+        return itemNameWithAmount;
     }
 }

@@ -34,6 +34,8 @@ public class User {
 
 	private String roles;
 
+	private boolean deleteFlag = false;
+
 	public User() {
 		super();
 	}
@@ -132,29 +134,37 @@ public class User {
 		this.roles = roles;
 	}
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(active, id, name, password, roles, username);
+	public boolean isDeleteFlag() {
+		return deleteFlag;
+	}
+
+	public void setDeleteFlag(boolean deleteFlag) {
+		this.deleteFlag = deleteFlag;
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		User other = (User) obj;
-		return active == other.active && id == other.id && Objects.equals(name, other.name)
-				&& Objects.equals(password, other.password) && Objects.equals(roles, other.roles)
-				&& Objects.equals(username, other.username);
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		User user = (User) o;
+		return id == user.id && active == user.active && deleteFlag == user.deleteFlag && name.equals(user.name) && username.equals(user.username) && password.equals(user.password) && roles.equals(user.roles);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, name, username, password, active, roles, deleteFlag);
 	}
 
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", name=" + name + ", username=" + username + ", password=" + password + ", active="
-				+ active + ", roles=" + roles + "]";
+		return "User{" +
+				"id=" + id +
+				", name='" + name + '\'' +
+				", username='" + username + '\'' +
+				", password='" + password + '\'' +
+				", active=" + active +
+				", roles='" + roles + '\'' +
+				", deleteFlag=" + deleteFlag +
+				'}';
 	}
-
 }

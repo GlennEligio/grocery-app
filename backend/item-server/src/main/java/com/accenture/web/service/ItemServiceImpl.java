@@ -29,7 +29,7 @@ public class ItemServiceImpl implements ItemService{
 	@Override
 	public Page<Item> findByNameWithPagingAndSorting(String name, Pageable pageable) {
 		// page - 1 since paging starts at 0th index
-		Page<Item> itemPage = repository.findByNameContainingIgnoreCase(name, pageable);
+		Page<Item> itemPage = repository.findByNameQuery(name, pageable);
 		if(pageable.getPageNumber() > itemPage.getTotalPages()){
 			throw new AppException("Page request out of bound", HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
 		}
@@ -38,7 +38,7 @@ public class ItemServiceImpl implements ItemService{
 
 	@Override
 	public Page<Item> findByIdWithPagingAndSorting(String id, Pageable pageable) {
-		Page<Item> itemPage = repository.findByIdContaining(id, pageable);
+		Page<Item> itemPage = repository.findByIdQuery(id, pageable);
 		if(pageable.getPageNumber() > itemPage.getTotalPages()){
 			throw new AppException("Page request out of bound", HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
 		}
@@ -66,6 +66,12 @@ public class ItemServiceImpl implements ItemService{
 		return (List<Item>) repository.findAll();
 	}
 
+	// For Clerk
+	public List<Item> getAllNotDeletedItems() {
+		log.info("Fetching only not deleted items from database");
+		return repository.findAllNotDeleted();
+	}
+
 	public Item getItem(Integer id) {
 		log.info("Fetching item with name " + id);
 		Optional<Item> itemOp = repository.findById(id);
@@ -77,6 +83,10 @@ public class ItemServiceImpl implements ItemService{
 
 	public Item addItem(Item item) {
 		log.info("Adding item in database " + item);
+		List<Item> items = repository.findByNameContainingIgnoreCase(item.getName());
+		if(items.size() > 0){
+			throw new AppException("Item with same name already exist", HttpStatus.BAD_REQUEST);
+		}
 		return repository.save(item);
 	}
 
@@ -98,7 +108,7 @@ public class ItemServiceImpl implements ItemService{
 		log.info("Deleting item in database with id: " + id);
 		Optional<Item> op = repository.findById(id);
 		if (op.isPresent()) {
-			repository.delete(op.get());
+			repository.softDelete(op.get().toString());
 			return true;
 		}
 		throw new AppException("No Item found to be deleted", HttpStatus.NOT_FOUND);

@@ -19,12 +19,11 @@ const AdminBillSection = ({
   fetchBillsBegin,
   fetchBillsSuccess,
   fetchBillsFailed,
-  resetBillList,
 }) => {
-  const [queryType, setQueryType] = useState("id_query");
+  const [queryType, setQueryType] = useState("billId_query");
   const [queryValue, setQueryValue] = useState("");
   const [sort, setSort] = useState("asc");
-  const [field, setField] = useState("id");
+  const [field, setField] = useState("billId");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(20);
@@ -80,15 +79,15 @@ const AdminBillSection = ({
           data-bs-toggle="dropdown"
           aria-expanded="false"
         >
-          {queryType === "id_query" ? "ID" : "Shopping Clerk"}:
+          {queryType === "billId_query" ? "Bill ID" : "Shopping Clerk"}:
         </button>
         <ul className="dropdown-menu">
           <li>
             <a
               className="dropdown-item"
-              onClick={() => setQueryType("id_query")}
+              onClick={() => setQueryType("billId_query")}
             >
-              ID
+              Bill ID
             </a>
           </li>
           <li>
@@ -137,10 +136,10 @@ const AdminBillSection = ({
             if (queryValue !== "") setQueryValue("");
             if (currentPage !== 1) setCurrentPage(1);
             if (pageSize !== 20) setPageSize(20);
-            if (queryType !== "id_query") setQueryType("id_query");
+            if (queryType !== "billId_query") setQueryType("billId_query");
             if (sort !== "asc") setSort("asc");
             if (field !== "id") setField("id");
-            fetchBills("id_query", "");
+            fetchBills("billId_query", "");
           }}
           className="btn btn-dark"
         >
@@ -171,8 +170,8 @@ const AdminBillSection = ({
                 <tr>
                   <th
                     onClick={() => {
-                      if (field !== "id") {
-                        setField("id");
+                      if (field !== "billId") {
+                        setField("billId");
                         setSort("asc");
                         return;
                       } else {
@@ -183,8 +182,8 @@ const AdminBillSection = ({
                     scope="col"
                     className="w-20"
                   >
-                    <span className="me-2">Id</span>
-                    {field === "id" && (
+                    <span className="me-2">Bill ID</span>
+                    {field === "billId" && (
                       <span>
                         {sort === "asc" ? (
                           <i className="bi bi-caret-up-fill"></i>

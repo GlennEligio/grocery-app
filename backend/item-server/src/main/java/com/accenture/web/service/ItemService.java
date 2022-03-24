@@ -17,6 +17,8 @@ public interface ItemService {
 
     List<Item> getAllItems();
 
+    List<Item> getAllNotDeletedItems();
+
     Item getItem(Integer id);
 
     Item addItem(Item item);

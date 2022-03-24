@@ -23,6 +23,9 @@ public abstract class GroceryBill implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
+	@Column(unique = true)
+	protected String billId;
+
 	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH,
 			CascadeType.DETACH })
 	@JoinTable(name = "groceryBill_item", joinColumns = @JoinColumn(name = "bill_id"), inverseJoinColumns = @JoinColumn(name = "item_name"))
@@ -95,6 +98,14 @@ public abstract class GroceryBill implements Serializable {
 
 	public void setDateCreated(LocalDateTime dateCreated) {
 		this.dateCreated = dateCreated;
+	}
+
+	public String getBillId() {
+		return billId;
+	}
+
+	public void setBillId(String billId) {
+		this.billId = billId;
 	}
 
 	@Override

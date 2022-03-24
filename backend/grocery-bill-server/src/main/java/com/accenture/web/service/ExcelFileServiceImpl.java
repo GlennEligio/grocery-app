@@ -44,36 +44,39 @@ public class ExcelFileServiceImpl implements ExcelFileService{
             cell.setCellValue("Id");
 
             cell = row.createCell(1);
-            cell.setCellValue("Shopping Clerk Username");
+            cell.setCellValue("Bill Id");
 
             cell = row.createCell(2);
-            cell.setCellValue("Total Bill");
+            cell.setCellValue("Shopping Clerk Username");
 
             cell = row.createCell(3);
-            cell.setCellValue("Date created");
+            cell.setCellValue("Total Bill");
 
             cell = row.createCell(4);
+            cell.setCellValue("Date created");
+
+            cell = row.createCell(5);
             cell.setCellValue("Bill Type");
 
             // Creating headers for item ids
             /*
-                1. Create Set of Item ids
-                2. Iterate through the Set of Item ids to create Map for Item id and their Column Position in a Row
+                1. Create Set of Item Names
+                2. Iterate through the Set of Item names to create Map for Item name and their Column Position in a Row
             */
-            Set<Integer> itemIds = new HashSet<>();
+            Set<String> itemNames = new HashSet<>();
             for (BillWithItemAmountDto bill: billWithItemAmountDtoList) {
-                itemIds.addAll(bill.getItemIdWithAmount().keySet());
+                itemNames.addAll(bill.getItemNameWithAmount().keySet());
             }
 
             // Sort Set of Item ids
-            List<Integer> itemIdsSorted = itemIds.stream().sorted(Integer::compare).collect(Collectors.toList());
+            List<String> itemNamesSorted = itemNames.stream().sorted().collect(Collectors.toList());
 
-            Map<Integer, Integer> itemIdAndColumnPos = new HashMap<>();
-            int rowPosition = 5;
-            for (Integer itemId: itemIdsSorted) {
+            Map<String, Integer> itemIdAndColumnPos = new HashMap<>();
+            int rowPosition = 6;
+            for (String itemName: itemNamesSorted) {
                 cell = row.createCell(rowPosition);
-                cell.setCellValue(itemId);
-                itemIdAndColumnPos.put(itemId, rowPosition);
+                cell.setCellValue(itemName);
+                itemIdAndColumnPos.put(itemName, rowPosition);
                 rowPosition++;
             }
 
@@ -82,16 +85,17 @@ public class ExcelFileServiceImpl implements ExcelFileService{
                 BillWithItemAmountDto bill = billWithItemAmountDtoList.get(i);
                 Row dataRow = sheet.createRow(i + 1);
                 dataRow.createCell(0).setCellValue(bill.getId());
-                dataRow.createCell(1).setCellValue(bill.getClerk().getUsername());
-                dataRow.createCell(2).setCellValue(bill.getTotalBill());
-                dataRow.createCell(3).setCellValue(bill.getDateCreated().toString());
-                dataRow.createCell(4).setCellValue(bill.getType());
+                dataRow.createCell(1).setCellValue(bill.getBillId());
+                dataRow.createCell(2).setCellValue(bill.getClerk().getUsername());
+                dataRow.createCell(3).setCellValue(bill.getTotalBill());
+                dataRow.createCell(4).setCellValue(bill.getDateCreated().toString());
+                dataRow.createCell(5).setCellValue(bill.getType());
                 // Iterate through the itemIds in bill
-                for(Integer itemId : bill.getItemIdWithAmount().keySet()){
+                for(String itemName : bill.getItemNameWithAmount().keySet()){
                     // Fetch the Column position of specific item id
-                    if(itemIdAndColumnPos.containsKey(itemId)){
+                    if(itemIdAndColumnPos.containsKey(itemName)){
                         // Insert the amount of item in the cell in column position
-                        dataRow.createCell(itemIdAndColumnPos.get(itemId)).setCellValue(bill.getItemIdWithAmount().get(itemId));
+                        dataRow.createCell(itemIdAndColumnPos.get(itemName)).setCellValue(bill.getItemNameWithAmount().get(itemName));
                     }
                 }
             }
@@ -116,22 +120,22 @@ public class ExcelFileServiceImpl implements ExcelFileService{
             log.info("Items received: {}", items);
             Sheet sheet = workbook.getSheetAt(0);
 
-            Set<Integer> itemIds = new HashSet<>();
+            Set<String> itemNames = new HashSet<>();
 
             log.info("Fetching item ids from header row");
             // Header row
             Row headerRow = sheet.getRow(0);
 
             // Fetch all item ids in header row (5th column onwards)
-            for(int i=5; i<headerRow.getPhysicalNumberOfCells(); i++){
-                log.info("New item id from header");
-                itemIds.add((int) headerRow.getCell(i).getNumericCellValue());
+            for(int i=6; i<headerRow.getPhysicalNumberOfCells(); i++){
+                log.info("New item name from header");
+                itemNames.add(headerRow.getCell(i).getStringCellValue());
             }
-            log.info("Result Set of Item ids: {}", itemIds);
+            log.info("Result Set of Item ids: {}", itemNames);
 
             // Filter items using the Set of Ids present in GroceryBills excel file
             Set<Item> filteredItem = items.stream()
-                    .filter(item -> itemIds.contains(item.getId()))
+                    .filter(item -> itemNames.contains(item.getName()))
                     .collect(Collectors.toSet());
             log.info("Result of Set of Items: {}", filteredItem);
 
@@ -147,7 +151,8 @@ public class ExcelFileServiceImpl implements ExcelFileService{
                 // Fetch information about bill
                 log.info("Fetching all information in a row");
                 Integer id = (int) billRow.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK).getNumericCellValue();
-                String shoppingClerkUsername = billRow.getCell(1).getStringCellValue();
+                String billId = billRow.getCell(1).getStringCellValue();
+                String shoppingClerkUsername = billRow.getCell(2).getStringCellValue();
                 LocalDateTime dateCreated = LocalDateTime.parse(billRow.getCell(3).getStringCellValue());
                 String type = billRow.getCell(4).getStringCellValue();
 
@@ -158,8 +163,8 @@ public class ExcelFileServiceImpl implements ExcelFileService{
                     Double itemAmount = billRow.getCell(c, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK).getNumericCellValue();
                     log.info("Amount found: {}", itemAmount);
                     if(itemAmount > 0){
-                        Integer itemId = (int) headerRow.getCell(c).getNumericCellValue();
-                        List<Item> filteredBillItems = filteredItem.stream().filter(item -> item.getId().equals(itemId)).collect(Collectors.toList());
+                        String itemName = headerRow.getCell(c).getStringCellValue();
+                        List<Item> filteredBillItems = filteredItem.stream().filter(item -> item.getName().equals(itemName)).collect(Collectors.toList());
                         if(filteredBillItems.size() > 0){
                             Item billItem = filteredBillItems.get(0);
                             log.info("Item to use: {}", billItem);
@@ -181,6 +186,7 @@ public class ExcelFileServiceImpl implements ExcelFileService{
                             dateCreated);
                 }
                 bill.setId(id);
+                bill.setBillId(billId);
                 bill.getTotalBill();
                 bills.add(bill);
                 log.info("Added bill in bill list: {}", bill);
