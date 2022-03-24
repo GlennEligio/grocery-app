@@ -8,9 +8,6 @@ import {
   RESET_USER_LIST,
   RESET_USER_STATES,
   UPDATE_USER_SELECTED,
-  EDIT_USER_BEGIN,
-  EDIT_USER_SUCCESS,
-  EDIT_USER_FAILED,
 } from "./types";
 
 export const registerUserBegin = () => (dispatch) => {
@@ -24,24 +21,6 @@ export const registerUserSuccess = () => (dispatch) => {
 };
 
 export const registerUserFailed = () => (dispatch) => {
-  dispatch({
-    type: CREATE_USER_FAILED,
-  });
-};
-
-export const createUserBegin = () => (dispatch) => {
-  dispatch({
-    type: CREATE_USER_BEGIN,
-  });
-};
-
-export const createUserSuccess = () => (dispatch) => {
-  dispatch({
-    type: CREATE_USER_SUCCESS,
-  });
-};
-
-export const createUserFailed = () => (dispatch) => {
   dispatch({
     type: CREATE_USER_FAILED,
   });
@@ -63,24 +42,6 @@ export const fetchUsersSuccess = (users) => (dispatch) => {
 export const fetchUsersFailed = () => (dispatch) => {
   dispatch({
     type: FETCH_USERS_FAILED,
-  });
-};
-
-export const editUserBegin = () => (dispatch) => {
-  dispatch({
-    type: EDIT_USER_BEGIN,
-  });
-};
-
-export const editUserSuccess = () => (dispatch) => {
-  dispatch({
-    type: EDIT_USER_SUCCESS,
-  });
-};
-
-export const editUserFailed = () => (dispatch) => {
-  dispatch({
-    type: EDIT_USER_FAILED,
   });
 };
 
