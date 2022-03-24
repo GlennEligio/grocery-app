@@ -2,14 +2,6 @@ import * as Components from "./components";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function App() {
-  // Remove modal when click outside content
-  window.onclick = (e) => {
-    const modal = document.getElementById("modal-id");
-    if (e.target === modal) {
-      modal.style.display = "none";
-    }
-  };
-
   return (
     <Router>
       <Routes>

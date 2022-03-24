@@ -6,19 +6,44 @@ import * as Modals from "./modal";
 import NavBar from "./NavBar";
 import { connect } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import UserService from "../api/UserService";
+import { updateJwt, resetAuthState } from "../actions/authActions";
 
-const AdminHome = ({ user, isLoggedIn }) => {
+const AdminHome = ({ user, isLoggedIn, updateJwt, resetAuthState }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
     if (isLoggedIn) {
-      if (user.role === "ROLE_CLERK") {
-        navigate("/unauthorized");
-      }
+      UserService.validateToken(user.jwt).then((res) => {
+        switch (res.status) {
+          case 403:
+            UserService.refreshToken(user.refreshToken)
+              .then((res1) => {
+                switch (res1.status) {
+                  case 200:
+                    return res1.json();
+                  default:
+                    return null;
+                }
+              })
+              .then((data) => {
+                switch (data) {
+                  case null:
+                    resetAuthState();
+                  default:
+                    updateJwt(data.jwt);
+                }
+              });
+          case 200:
+            if (user.role === "ROLE_CLERK") {
+              navigate("/unauthorized");
+            }
+        }
+      });
     } else {
       navigate("/unauthorized");
     }
-  }, [user, isLoggedIn, navigate]);
+  }, [user, isLoggedIn]);
 
   return (
     <>
@@ -111,4 +136,6 @@ const mapStateToProps = (state) => ({
   isLoggedIn: state.auth.isLoggedIn,
 });
 
-export default connect(mapStateToProps, {})(AdminHome);
+export default connect(mapStateToProps, { updateJwt, resetAuthState })(
+  AdminHome
+);

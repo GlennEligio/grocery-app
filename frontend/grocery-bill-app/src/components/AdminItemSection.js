@@ -64,7 +64,9 @@ const AdminItemSection = ({
   });
 
   useEffect(() => {
-    fetchItems(queryType, queryValue);
+    if (user.role !== "ROLE_CLERK") {
+      fetchItems(queryType, queryValue);
+    }
   }, [user.jwt, currentPage, sort, field]);
 
   return (

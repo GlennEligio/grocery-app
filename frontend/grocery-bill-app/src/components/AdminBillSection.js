@@ -27,6 +27,7 @@ const AdminBillSection = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(20);
+
   const fetchBills = useCallback((queryType, queryValue) => {
     fetchBillsBegin();
     BillService.fetchBillsWithQueryPagingSorting(
@@ -62,7 +63,9 @@ const AdminBillSection = ({
   });
 
   useEffect(() => {
-    fetchBills(queryType, queryValue);
+    if (user.role !== "ROLE_CLERK") {
+      fetchBills(queryType, queryValue);
+    }
   }, [user.jwt, currentPage, sort, field]);
 
   return (

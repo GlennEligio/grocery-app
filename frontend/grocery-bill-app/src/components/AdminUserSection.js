@@ -65,7 +65,9 @@ const AdminUserSection = ({
   });
 
   useEffect(() => {
-    fetchUsers(queryType, queryValue);
+    if (user.role !== "ROLE_CLERK") {
+      fetchUsers(queryType, queryValue);
+    }
   }, [user.jwt, currentPage, sort, field]);
 
   return (

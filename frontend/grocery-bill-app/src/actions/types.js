@@ -32,6 +32,7 @@ export const CREATE_JWT = "CREATE_JWT";
 export const FETCH_JWT_BEGIN = "FETCH_JWT_BEGIN";
 export const FETCH_JWT_SUCCESS = "FETCH_JWT_SUCCESS";
 export const FETCH_JWT_FAILED = "FETCH_JWT_FAILED";
+export const UPDATE_JWT = "UPDATE_JWT";
 export const UPDATE_STATUS = "UPDATE_STATUS";
 export const RESET_AUTH_STATES = "RESET_AUTH_STATES";
 

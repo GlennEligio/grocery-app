@@ -78,6 +78,21 @@ const login = async (user) => {
   });
 };
 
+const validateToken = (jwt) => {
+  return fetch(
+    `http://localhost:8080/api/v1/users/validateToken?token=${jwt}`,
+    {
+      method: "POST",
+    }
+  );
+};
+
+const refreshToken = (refreshToken) => {
+  return fetch(`http://localhost:8080/api/v1/users/refreshToken`, {
+    method: "POST",
+  });
+};
+
 const editUser = async (jwt, userToEdit) => {
   return await fetch("http://localhost:8080/api/v1/users", {
     method: "PUT",
@@ -110,4 +125,6 @@ export default {
   download,
   downloadTemplate,
   upload,
+  validateToken,
+  refreshToken,
 };
