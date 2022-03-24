@@ -1,12 +1,46 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { connect } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import BillSection from "./ClerkBillSection";
 import ClerkCalculatorSection from "./ClerkCalculatorSection";
 import ClerkItemSection from "./ClerkItemSection";
 import * as Modals from "./modal";
 import NavBar from "./NavBar";
+import UserService from "../api/UserService";
+import { updateJwt, resetAuthState } from "../actions/authActions";
 
-const ClerkHome = ({ modalName }) => {
+const ClerkHome = ({ user, isLoggedIn, updateJwt, resetAuthState }) => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      UserService.validateToken(user.jwt).then((res) => {
+        if (res.status === 403) {
+          UserService.refreshToken(user.refreshToken)
+            .then((res1) => {
+              switch (res1.status) {
+                case 200:
+                  return res1.json();
+                default:
+                  return null;
+              }
+            })
+            .then((data) => {
+              switch (data) {
+                case null:
+                  resetAuthState();
+                default:
+                  updateJwt(data.jwt);
+              }
+            });
+        } else {
+          navigate("/unauthorized");
+        }
+      });
+    } else {
+      navigate("/unauthorized");
+    }
+  }, [user, isLoggedIn]);
   return (
     <main>
       <div className="container-lg py-5 vh-100">
@@ -29,7 +63,10 @@ const ClerkHome = ({ modalName }) => {
 };
 
 const mapStateToProps = (state) => ({
-  modalName: state.component.modalName,
+  user: state.auth.user,
+  isLoggedIn: state.auth.isLoggedIn,
 });
 
-export default connect(mapStateToProps, {})(ClerkHome);
+export default connect(mapStateToProps, { updateJwt, resetAuthState })(
+  ClerkHome
+);

@@ -280,8 +280,9 @@ public class UserControllerTest {
     public void login_withValidUser_returnAuthenticationResponse() throws Exception {
         // Arrange
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyMCIsImV4cCI6IjE2NzI1MDIzOTkiLCJpYXQiOiIxNjQ1NDU2MDQ4In0.N3bMK3g9SNxcvfoa-4MOAjhGBA9eYzH4f1pKeEQV81k";
+        String refreshToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyMCIsImV4cCI6IjE2NzI1MDIzOTkiLCJpYXQiOiIxNjQ1NDU2MDQ4In0.N3bMK3g9SNxcvfoa-4MOAjhGBA9eYzH4f1pKeEQV81k";
         User validUser = new User("user0", "pass0");
-        AuthenticationResponse response = new AuthenticationResponse("user0", token, "ROLE_CLERK");
+        AuthenticationResponse response = new AuthenticationResponse("user0", token, "ROLE_CLERK", refreshToken);
         MyUserDetails userDetails = new MyUserDetails(user);
         ReflectionTestUtils.setField(service, "secretKey", "grocerybillapp");
         when(service.loadUserByUsername("user0")).thenReturn(userDetails);
@@ -334,7 +335,8 @@ public class UserControllerTest {
     public void validateToken_withValidToken_returnOk() throws Exception{
         // Arrange
         String validJwt = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyMCIsImV4cCI6IjIwMjItMDMtMTZUMDE6MjY6MTAuNDY2WiIsImlhdCI6IjE2Nzg5MzAwMjIifQ.cPdCjq8xI37rttfSVi-DShV3utl6U8g_bVowAhzJpIU";
-        AuthenticationResponse resp = new AuthenticationResponse("user0", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyMCIsImV4cCI6IjIwMjItMDMtMTZUMDE6MjY6MTAuNDY2WiIsImlhdCI6IjE2Nzg5MzAwMjIifQ.cPdCjq8xI37rttfSVi-DShV3utl6U8g_bVowAhzJpIU" , "ROLE_CLERK");
+        String validRefreshToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyMCIsImV4cCI6IjIwMjItMDMtMTZUMDE6MjY6MTAuNDY2WiIsImlhdCI6IjE2Nzg5MzAwMjIifQ.cPdCjq8xI37rttfSVi-DShV3utl6U8g_bVowAhzJpIU";
+        AuthenticationResponse resp = new AuthenticationResponse("user0", validJwt , "ROLE_CLERK", validRefreshToken);
         when(service.validateToken(validJwt)).thenReturn(resp);
 
         // Assert
@@ -347,12 +349,13 @@ public class UserControllerTest {
     @DisplayName("Validate an invalid JWT")
     public void validateToken_withInvalidToken_returnNotFound() throws Exception{
         // Arrange
-        String validJwt = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyMCIsImV4cCI6IjIwMjItMDMtMTZUMDE6MjY6MTAuNDY2WiIsImlhdCI6IjE2Nzg5MzAwMjIifQ.cPdCjq8xI37rttfSVi-DShV3utl6U8g_bVowAhzJpIU";
-        AuthenticationResponse resp = new AuthenticationResponse("user0", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyMCIsImV4cCI6IjIwMjItMDMtMTZUMDE6MjY6MTAuNDY2WiIsImlhdCI6IjE2Nzg5MzAwMjIifQ.cPdCjq8xI37rttfSVi-DShV3utl6U8g_bVowAhzJpIU" , "ROLE_CLERK");
-        when(service.validateToken(validJwt)).thenThrow(new AppException("Jwt validation failed, Username in claims not found", HttpStatus.NOT_FOUND));
+        String invalidJwt = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyMCIsImV4cCI6IjIwMjItMDMtMTZUMDE6MjY6MTAuNDY2WiIsImlhdCI6IjE2Nzg5MzAwMjIifQ.cPdCjq8xI37rttfSVi-DShV3utl6U8g_bVowAhzJpIU";
+        String invalidRefreshToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyMCIsImV4cCI6IjIwMjItMDMtMTZUMDE6MjY6MTAuNDY2WiIsImlhdCI6IjE2Nzg5MzAwMjIifQ.cPdCjq8xI37rttfSVi-DShV3utl6U8g_bVowAhzJpIU";
+        AuthenticationResponse resp = new AuthenticationResponse("user0", invalidJwt , "ROLE_CLERK", invalidRefreshToken);
+        when(service.validateToken(invalidJwt)).thenThrow(new AppException("Jwt validation failed, Username in claims not found", HttpStatus.NOT_FOUND));
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users/validateToken?token="+validJwt))
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users/validateToken?token="+invalidJwt))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 }

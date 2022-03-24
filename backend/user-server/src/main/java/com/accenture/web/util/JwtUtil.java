@@ -26,10 +26,15 @@ public class JwtUtil {
 
 	private static final Logger log = LoggerFactory.getLogger(JwtUtil.class);
 
-	// GENERATE JWT TOKEN
+	// GENERATE JWT TOKENS
 	public String generateToken(UserDetails userDetails) {
 		Map<String, Object> claims = new HashMap<>();
 		return createToken(claims, userDetails.getUsername());
+	}
+
+	public String generateRefreshToken(UserDetails userDetails){
+		Map<String, Object> claims = new HashMap<>();
+		return createRefreshToken(claims, userDetails.getUsername());
 	}
 
 	private String createToken(Map<String, Object> claims, String username) {
@@ -37,7 +42,7 @@ public class JwtUtil {
 				.setClaims(claims)
 				.setSubject(username)
 				.setIssuedAt(new Date(System.currentTimeMillis()))
-				.setExpiration(new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 10)))
+				.setExpiration(new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 3)))
 				.signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
 	}
 
@@ -46,7 +51,7 @@ public class JwtUtil {
 				.setClaims(claims)
 				.setSubject(username)
 				.setIssuedAt(new Date(System.currentTimeMillis()))
-				.setExpiration(new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 10)))
+				.setExpiration(new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 180)))
 				.signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
 	}
 

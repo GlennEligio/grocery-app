@@ -179,10 +179,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 		User user = repository.findByUsername(username);
 
 		if(user != null){
-			AuthenticationResponse response = new AuthenticationResponse(user.getUsername(), token, user.getRoles());
-			return response;
+			return new AuthenticationResponse(user.getUsername(), token, user.getRoles());
 		}
 
-		throw new AppException("Jwt validation failed, Username in claims not found", HttpStatus.NOT_FOUND);
+		throw new AppException("Jwt validation failed, Username in claims not found", HttpStatus.UNAUTHORIZED);
 	}
 }
