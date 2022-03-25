@@ -5,7 +5,6 @@ import {
   fetchUsersFailed,
   fetchUsersSuccess,
 } from "../actions/userActions";
-import { setModalComponent } from "../actions/componentActions";
 import AdminUser from "./AdminUser";
 import UserService from "../api/UserService";
 import Pagination from "./Pagination";
@@ -349,5 +348,4 @@ export default connect(mapStateToProps, {
   fetchUsersBegin,
   fetchUsersFailed,
   fetchUsersSuccess,
-  setModalComponent,
 })(AdminUserSection);

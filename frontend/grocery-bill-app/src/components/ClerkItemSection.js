@@ -4,7 +4,6 @@ import {
   fetchItemsFailed,
   fetchItemsSuccess,
 } from "../actions/itemActions";
-import { setModalComponent } from "../actions/componentActions";
 import { connect } from "react-redux";
 import ItemService from "../api/ItemService";
 import ClerkItem from "./ClerkItem";
@@ -124,5 +123,4 @@ export default connect(mapStateToProps, {
   fetchItemsBegin,
   fetchItemsFailed,
   fetchItemsSuccess,
-  setModalComponent,
 })(ClerkItemSection);

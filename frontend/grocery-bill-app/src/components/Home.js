@@ -4,7 +4,6 @@ import { connect } from "react-redux";
 import { resetAuthState } from "../actions/authActions";
 import { resetUserState } from "../actions/userActions";
 import { resetBillStates } from "../actions/billActions";
-import { resetComponentStates } from "../actions/componentActions";
 import { resetItemStates } from "../actions/itemActions";
 
 const Home = ({
@@ -13,7 +12,6 @@ const Home = ({
   resetAuthState,
   resetUserState,
   resetBillStates,
-  resetComponentStates,
   resetItemStates,
 }) => {
   const navigate = useNavigate();
@@ -29,7 +27,6 @@ const Home = ({
       resetAuthState();
       resetUserState();
       resetBillStates();
-      resetComponentStates();
       resetItemStates();
     }
   }, [isLoggedIn]);
@@ -85,7 +82,6 @@ const mapStateToProps = (state) => ({
 export default connect(mapStateToProps, {
   resetAuthState,
   resetUserState,
-  resetComponentStates,
   resetItemStates,
   resetBillStates,
 })(Home);

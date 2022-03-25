@@ -24,8 +24,9 @@ const Register = ({
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [repassword, setRePassword] = useState("");
   const [status, setStatus] = useState();
-  const form = useRef();
+  const [errorMessage, setErrorMessage] = useState("");
 
   const navigate = useNavigate();
 
@@ -44,35 +45,107 @@ const Register = ({
 
   const onSubmit = (e) => {
     e.preventDefault();
-    if (!form.current.checkValidity()) {
-      e.stopPropagation();
-    } else {
-      const user = {
-        name: name,
-        username: username,
-        password: password,
-      };
 
-      registerUserBegin();
+    if (!checkFormValidity(e)) {
+      return;
+    }
 
-      UserService.register(user).then((res) => {
+    const user = {
+      name: name,
+      username: username,
+      password: password,
+    };
+
+    registerUserBegin();
+
+    UserService.register(user)
+      .then((res) => {
         switch (res.status) {
           case 200:
             registerUserSuccess();
             setStatus(true);
-            form.current.classList.remove("was-validated");
+            break;
+          case 409:
+            console.log("409");
+            registerUserFailed();
+            setErrorMessage("Username already in use");
+            setStatus(false);
             break;
           default:
+            setErrorMessage("Something went wrong");
             registerUserFailed();
             setStatus(false);
-            form.current.classList.add("was-validated");
         }
+      })
+      .catch((error) => {
+        console.log(error);
       });
 
-      setName("");
-      setPassword("");
-      setUsername("");
+    setName("");
+    setPassword("");
+    setRePassword("");
+    setUsername("");
+
+    removeFormValidity(e);
+  };
+
+  const checkFormValidity = (e) => {
+    let valid = true;
+
+    // Name input
+    if (!e.target.name.checkValidity()) {
+      e.target.name.classList.add("is-invalid");
+      e.target.name.classList.remove("is-valid");
+      valid = false;
+    } else {
+      e.target.name.classList.add("is-valid");
+      e.target.name.classList.remove("is-invalid");
     }
+
+    // Username input
+    if (!e.target.username.checkValidity()) {
+      e.target.username.classList.add("is-invalid");
+      e.target.username.classList.remove("is-valid");
+      valid = false;
+    } else {
+      e.target.username.classList.add("is-valid");
+      e.target.username.classList.remove("is-invalid");
+    }
+
+    // Password input
+    if (!e.target.password.checkValidity()) {
+      e.target.password.classList.add("is-invalid");
+      e.target.password.classList.remove("is-valid");
+      valid = false;
+    } else {
+      e.target.password.classList.add("is-valid");
+      e.target.password.classList.remove("is-invalid");
+    }
+
+    // Repassword input
+    if (!e.target.repassword.checkValidity()) {
+      e.target.repassword.classList.add("is-invalid");
+      e.target.repassword.classList.remove("is-valid");
+      valid = false;
+    } else {
+      e.target.repassword.classList.add("is-valid");
+      e.target.repassword.classList.remove("is-invalid");
+    }
+
+    // Password and repassword match
+    if (e.target.password.value !== e.target.repassword.value) {
+      e.target.repassword.classList.add("is-invalid");
+      e.target.repassword.classList.remove("is-valid");
+      valid = false;
+    }
+    return valid;
+  };
+
+  const removeFormValidity = (e) => {
+    e.target.name.classList.remove("is-valid");
+    e.target.username.classList.remove("is-valid");
+    e.target.password.classList.remove("is-valid");
+    e.target.repassword.classList.remove("is-valid");
   };
 
   return (
@@ -128,12 +201,11 @@ const Register = ({
               <div className="d-flex align-items-center justify-content-center text-danger fs-6">
                 <i className="bi bi-x-circle-fill fs-3"></i>
                 <span className="ms-2">
-                  <strong>Something went wrong...</strong>
+                  <strong>{errorMessage}</strong>
                 </span>
               </div>
             )}
             <form
-              ref={form}
               onSubmit={onSubmit}
               noValidate
               className="w-100 text-center needs-validation"
@@ -181,7 +253,26 @@ const Register = ({
                 />
                 <label htmlFor="username">Password</label>
                 <div className="valid-feedback">Looks good!</div>
-                <div className="invalid-feedback">Please enter a username!</div>
+                <div className="invalid-feedback">Please enter a password!</div>
+              </div>
+              <div className="form-floating my-3">
+                <input
+                  className="form-control"
+                  type="password"
+                  id="repassword"
+                  name="repassword"
+                  value={repassword}
+                  onChange={(e) => {
+                    setRePassword(e.target.value);
+                  }}
+                  placeholder=""
+                  required
+                />
+                <label htmlFor="username">Re-Password</label>
+                <div className="valid-feedback">Looks good</div>
+                <div className="invalid-feedback">
+                  Password and Repassword does not match
+                </div>
               </div>
               <div className="hstack justify-content-end">
                 <div className="me-3">

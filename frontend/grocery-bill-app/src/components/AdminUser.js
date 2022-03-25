@@ -1,7 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
 import { updateUserSelected } from "../actions/userActions";
-import { setModalComponent } from "../actions/componentActions";
 
 const AdminUser = ({ user, updateUserSelected }) => {
   return (
@@ -45,6 +44,4 @@ const AdminUser = ({ user, updateUserSelected }) => {
   );
 };
 
-export default connect(null, { updateUserSelected, setModalComponent })(
-  AdminUser
-);
+export default connect(null, { updateUserSelected })(AdminUser);
