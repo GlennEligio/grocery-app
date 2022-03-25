@@ -33,8 +33,6 @@ const ClerkHome = ({ user, isLoggedIn, updateJwt, resetAuthState }) => {
                   updateJwt(data.jwt);
               }
             });
-        } else {
-          navigate("/unauthorized");
         }
       });
     } else {

@@ -77,13 +77,13 @@ public class UserController {
 
 	@PostMapping("/users/validateToken")
 	public ResponseEntity<AuthenticationResponse> validateToken(@RequestParam("token") String token){
-		log.info("Authenticating with token {}", token);
+		log.info("Validating token {}", token);
 		return ResponseEntity.ok(service.validateToken(token));
 	}
 
 	@PostMapping("/users/refreshToken")
 	public ResponseEntity<?> refreshToken(@RequestParam("token") String token){
-		log.info("Authenticating with token {}", token);
+		log.info("Refreshing token using {}", token);
 		String username = jwtUtil.extractUsername(token);
 		final UserDetails userDetails = service.loadUserByUsername(username);
 		final String jwt = jwtUtil.generateToken(userDetails);
