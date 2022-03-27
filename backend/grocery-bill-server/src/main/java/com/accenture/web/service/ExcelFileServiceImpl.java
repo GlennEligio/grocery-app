@@ -168,7 +168,7 @@ public class ExcelFileServiceImpl implements ExcelFileService{
                 // Fetch bill items and amounts
                 log.info("Populating arrayList for bill's items");
                 List<Item> billItems = new ArrayList<>();
-                for (int c = 5; c < billRow.getPhysicalNumberOfCells(); c++){
+                for (int c = HEADER_ITEM_START_COLUMN; c < billRow.getPhysicalNumberOfCells(); c++){
                     Double itemAmount = billRow.getCell(c, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK).getNumericCellValue();
                     log.info("Amount found: {}", itemAmount);
                     if(itemAmount > 0){
