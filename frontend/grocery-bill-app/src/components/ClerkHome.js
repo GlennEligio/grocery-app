@@ -14,8 +14,10 @@ const ClerkHome = ({ user, isLoggedIn, updateJwt, resetAuthState }) => {
 
   useEffect(() => {
     if (isLoggedIn) {
+      console.log("Logged in");
       UserService.validateToken(user.jwt).then((res) => {
         if (res.status === 403) {
+          console.log("JWT Expired, will try to refresh it using refreshToken");
           UserService.refreshToken(user.refreshToken)
             .then((res1) => {
               switch (res1.status) {
@@ -28,14 +30,25 @@ const ClerkHome = ({ user, isLoggedIn, updateJwt, resetAuthState }) => {
             .then((data) => {
               switch (data) {
                 case null:
+                  console.log("Invalid refreshToken, navigating to 403");
                   resetAuthState();
+                  navigate("/unauthorized");
+                  break;
                 default:
+                  console.log("Successful refresh of jwt");
                   updateJwt(data.jwt);
               }
+            })
+            .catch(() => {
+              console.log("Error occurred, navigating to unauthorized");
+              navigate("/unauthorized");
             });
+        } else {
+          console.log("JWT Not Expired, will navigate user to page");
         }
       });
     } else {
+      console.log("Not Logged in");
       navigate("/unauthorized");
     }
   }, [user, isLoggedIn]);

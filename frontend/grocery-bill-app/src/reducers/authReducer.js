@@ -50,7 +50,7 @@ const authReducer = function (state = initialState, action) {
         ...state,
         user: {
           ...state.user,
-          refreshToken: action.payload,
+          jwt: action.payload,
         },
       };
     case RESET_AUTH_STATES:

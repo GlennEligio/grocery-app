@@ -14,36 +14,54 @@ const AdminHome = ({ user, isLoggedIn, updateJwt, resetAuthState }) => {
 
   useEffect(() => {
     if (isLoggedIn) {
+      console.log("Logged in");
       UserService.validateToken(user.jwt).then((res) => {
         switch (res.status) {
           case 403:
-            UserService.refreshToken(user.refreshToken)
-              .then((res1) => {
-                switch (res1.status) {
-                  case 200:
-                    return res1.json();
-                  default:
-                    return null;
-                }
-              })
-              .then((data) => {
-                switch (data) {
-                  case null:
-                    resetAuthState();
-                  default:
-                    updateJwt(data.jwt);
-                }
-              });
+            console.log(
+              "JWT Expired, will try to refresh it using refreshToken"
+            );
+            refreshToken();
+            break;
           case 200:
+            console.log("JWT not expired");
             if (user.role === "ROLE_CLERK") {
+              console.log("User is CLERK, 403");
               navigate("/unauthorized");
             }
+            break;
+          default:
+            navigate("/unauthorized");
         }
       });
     } else {
       navigate("/unauthorized");
     }
   }, [user, isLoggedIn]);
+
+  const refreshToken = () => {
+    UserService.refreshToken(user.refreshToken)
+      .then((res1) => {
+        switch (res1.status) {
+          case 200:
+            return res1.json();
+          default:
+            return null;
+        }
+      })
+      .then((data) => {
+        switch (data) {
+          case null:
+            console.log("Invalid refreshToken, navigating to 403");
+            resetAuthState();
+            navigate("/unauthorized");
+            break;
+          default:
+            console.log("Successful refresh of JWT");
+            updateJwt(data.jwt);
+        }
+      });
+  };
 
   return (
     <>
@@ -106,11 +124,11 @@ const AdminHome = ({ user, isLoggedIn, updateJwt, resetAuthState }) => {
           {/** Tab contents for Admin nav tab */}
           <div className="row h-80 tab-content" role="pills-adminTabContent">
             {/** User table */}
-            <AdminUserSection />
+            <AdminUserSection refreshToken={refreshToken} />
             {/** Item table */}
-            <AdminItemSection />
+            <AdminItemSection refreshToken={refreshToken} />
             {/** Grocery Bill table */}
-            <AdminBillSection />
+            <AdminBillSection refreshToken={refreshToken} />
           </div>
         </div>
       </main>

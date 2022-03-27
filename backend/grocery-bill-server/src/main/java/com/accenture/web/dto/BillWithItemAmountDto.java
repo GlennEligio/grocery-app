@@ -16,6 +16,8 @@ public class BillWithItemAmountDto {
     private final LocalDateTime dateCreated;
     private final String type;
     private final double totalBill;
+    private final double payment;
+    private final double change;
     private final Map<String, Integer> itemNameWithAmount;
 
     public BillWithItemAmountDto(GroceryBill bill){
@@ -25,6 +27,8 @@ public class BillWithItemAmountDto {
         this.dateCreated = bill.getDateCreated();
         this.type = bill.getClass().equals(DiscountedBill.class) ? "discounted" : "regular";
         this.totalBill = bill.getTotalBill();
+        this.payment = bill.getPayment();
+        this.change = bill.getChange();
         this.itemNameWithAmount = new HashMap<>();
         for (Item item: bill.getItemList()) {
             if(itemNameWithAmount.isEmpty() || !itemNameWithAmount.containsKey(item.getName())) {
@@ -59,5 +63,13 @@ public class BillWithItemAmountDto {
 
     public Map<String, Integer> getItemNameWithAmount() {
         return itemNameWithAmount;
+    }
+
+    public double getPayment() {
+        return payment;
+    }
+
+    public double getChange() {
+        return change;
     }
 }

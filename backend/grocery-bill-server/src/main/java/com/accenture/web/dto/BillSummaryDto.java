@@ -15,6 +15,8 @@ public class BillSummaryDto {
     private ShoppingClerk shoppingClerk;
     private String type;
     private double totalBill;
+    private double payment;
+    private double change;
     private String dateCreated;
 
     public BillSummaryDto() {
@@ -28,61 +30,44 @@ public class BillSummaryDto {
         this.shoppingClerk = bill.getShoppingClerk();
         this.dateCreated = bill.getDateCreated().format(DateTimeFormatter.ofPattern("MM-dd-yyyy hh:mm a"));
         this.totalBill = bill.getTotalBill();
+        this.payment  =bill.getPayment();
+        this.change = bill.getChange();
     }
 
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public int getItemCount() {
         return itemCount;
-    }
-
-    public void setItemCount(int itemCount) {
-        this.itemCount = itemCount;
     }
 
     public ShoppingClerk getShoppingClerk() {
         return shoppingClerk;
     }
 
-    public void setShoppingClerk(ShoppingClerk shoppingClerk) {
-        this.shoppingClerk = shoppingClerk;
-    }
-
     public String getType() {
         return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     public double getTotalBill() {
         return totalBill;
     }
 
-    public void setTotalBill(double totalBill) {
-        this.totalBill = totalBill;
-    }
-
     public String getDateCreated() {
         return dateCreated;
-    }
-
-    public void setDateCreated(String dateCreated) {
-        this.dateCreated = dateCreated;
     }
 
     public String getBillId() {
         return billId;
     }
 
-    public void setBillId(String billId) {
-        this.billId = billId;
+    public double getPayment() {
+        return payment;
     }
+
+    public double getChange() {
+        return change;
+    }
+
 }

@@ -15,6 +15,7 @@ import {
   RESET_BILL_LIST,
   UPDATE_ITEM_IN_CURRENT_BILL,
   REMOVE_ITEM_ON_CURRENT_BILL,
+  UPDATE_CURRENT_BILL_PAYMENT,
 } from "../actions/types";
 
 export const createBillBegin = () => (dispatch) => {
@@ -87,6 +88,13 @@ export const updateCurrentBillType = (type) => (dispatch) => {
   dispatch({
     type: UPDATE_CURRENT_BILL_TYPE,
     payload: type,
+  });
+};
+
+export const updateCurrentBillPayment = (payment) => (dispatch) => {
+  dispatch({
+    type: UPDATE_CURRENT_BILL_PAYMENT,
+    payload: payment,
   });
 };
 

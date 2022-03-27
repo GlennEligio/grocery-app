@@ -1,10 +1,7 @@
 package com.accenture.web.service;
 
-import com.accenture.web.controller.GroceryBillController;
 import com.accenture.web.domain.*;
 import com.accenture.web.dto.BillWithItemAmountDto;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -26,6 +23,8 @@ import java.util.stream.Collectors;
 public class ExcelFileServiceImpl implements ExcelFileService{
 
     private static final Logger log = LoggerFactory.getLogger(ExcelFileServiceImpl.class);
+
+    public static final int HEADER_ITEM_START_COLUMN = 8;
 
     @Override
     public ByteArrayInputStream billListToExcelFile(List<GroceryBill> bills) {
@@ -53,9 +52,15 @@ public class ExcelFileServiceImpl implements ExcelFileService{
             cell.setCellValue("Total Bill");
 
             cell = row.createCell(4);
-            cell.setCellValue("Date created");
+            cell.setCellValue("Payment");
 
             cell = row.createCell(5);
+            cell.setCellValue("Change");
+
+            cell = row.createCell(6);
+            cell.setCellValue("Date created");
+
+            cell = row.createCell(7);
             cell.setCellValue("Bill Type");
 
             // Creating headers for item ids
@@ -72,7 +77,7 @@ public class ExcelFileServiceImpl implements ExcelFileService{
             List<String> itemNamesSorted = itemNames.stream().sorted().collect(Collectors.toList());
 
             Map<String, Integer> itemIdAndColumnPos = new HashMap<>();
-            int rowPosition = 6;
+            int rowPosition = HEADER_ITEM_START_COLUMN;
             for (String itemName: itemNamesSorted) {
                 cell = row.createCell(rowPosition);
                 cell.setCellValue(itemName);
@@ -88,8 +93,10 @@ public class ExcelFileServiceImpl implements ExcelFileService{
                 dataRow.createCell(1).setCellValue(bill.getBillId());
                 dataRow.createCell(2).setCellValue(bill.getClerk().getUsername());
                 dataRow.createCell(3).setCellValue(bill.getTotalBill());
-                dataRow.createCell(4).setCellValue(bill.getDateCreated().toString());
-                dataRow.createCell(5).setCellValue(bill.getType());
+                dataRow.createCell(4).setCellValue(bill.getPayment());
+                dataRow.createCell(5).setCellValue(bill.getChange());
+                dataRow.createCell(6).setCellValue(bill.getDateCreated().toString());
+                dataRow.createCell(7).setCellValue(bill.getType());
                 // Iterate through the itemIds in bill
                 for(String itemName : bill.getItemNameWithAmount().keySet()){
                     // Fetch the Column position of specific item id
@@ -127,7 +134,7 @@ public class ExcelFileServiceImpl implements ExcelFileService{
             Row headerRow = sheet.getRow(0);
 
             // Fetch all item ids in header row (5th column onwards)
-            for(int i=6; i<headerRow.getPhysicalNumberOfCells(); i++){
+            for(int i=HEADER_ITEM_START_COLUMN; i<headerRow.getPhysicalNumberOfCells(); i++){
                 log.info("New item name from header");
                 itemNames.add(headerRow.getCell(i).getStringCellValue());
             }
@@ -154,7 +161,9 @@ public class ExcelFileServiceImpl implements ExcelFileService{
                 String billId = billRow.getCell(1).getStringCellValue();
                 String shoppingClerkUsername = billRow.getCell(2).getStringCellValue();
                 LocalDateTime dateCreated = LocalDateTime.parse(billRow.getCell(3).getStringCellValue());
-                String type = billRow.getCell(4).getStringCellValue();
+                Double payment = billRow.getCell(4).getNumericCellValue();
+                Double change = billRow.getCell(5).getNumericCellValue();
+                String type = billRow.getCell(7).getStringCellValue();
 
                 // Fetch bill items and amounts
                 log.info("Populating arrayList for bill's items");
@@ -187,7 +196,9 @@ public class ExcelFileServiceImpl implements ExcelFileService{
                 }
                 bill.setId(id);
                 bill.setBillId(billId);
+                bill.setPayment(payment);
                 bill.getTotalBill();
+                bill.getChange();
                 bills.add(bill);
                 log.info("Added bill in bill list: {}", bill);
             }
