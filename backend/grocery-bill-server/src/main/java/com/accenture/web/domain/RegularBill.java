@@ -2,9 +2,7 @@ package com.accenture.web.domain;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import java.text.NumberFormat;
 import java.time.LocalDateTime;
-import java.util.Formatter;
 import java.util.List;
 
 @Entity
@@ -35,6 +33,15 @@ public class RegularBill extends GroceryBill {
 			return totalBill;
 		}
 		return totalBill;
+	}
+
+	@Override
+	public double getChange() {
+		change = 0;
+		if(totalBill > 0 && payment > 0 && payment > totalBill){
+			change = payment - totalBill;
+		}
+		return change;
 	}
 
 	@Override

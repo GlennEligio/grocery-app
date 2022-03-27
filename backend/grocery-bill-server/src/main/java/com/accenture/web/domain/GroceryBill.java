@@ -33,6 +33,11 @@ public abstract class GroceryBill implements Serializable {
 
 	protected double totalBill;
 
+	protected double payment;
+
+	@Column(name = "bill_change")
+	protected double change;
+
 	@Column(columnDefinition = "TIMESTAMP")
 	protected LocalDateTime dateCreated;
 
@@ -107,6 +112,16 @@ public abstract class GroceryBill implements Serializable {
 	public void setBillId(String billId) {
 		this.billId = billId;
 	}
+
+	public double getPayment() {
+		return payment;
+	}
+
+	public void setPayment(double payment) {
+		this.payment = payment;
+	}
+
+	public abstract double getChange();
 
 	@Override
 	public String toString() {

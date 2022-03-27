@@ -15,6 +15,7 @@ import {
   UPDATE_ITEM_IN_CURRENT_BILL,
   RESET_BILL_LIST,
   RESET_BILL_STATES,
+  UPDATE_CURRENT_BILL_PAYMENT,
 } from "../actions/types";
 
 const initialState = {
@@ -24,6 +25,7 @@ const initialState = {
     itemList: [],
     id: "",
     type: "regular",
+    payment: 0,
   },
   billSelected: {
     id: -1,
@@ -142,6 +144,14 @@ const billReducer = function (state = initialState, action) {
           type: action.payload,
         },
       };
+    case UPDATE_CURRENT_BILL_PAYMENT:
+      return {
+        ...state,
+        currentBill: {
+          ...state.currentBill,
+          payment: action.payload,
+        },
+      };
     case UPDATE_BILL_SELECTED:
       return {
         ...state,
@@ -162,6 +172,7 @@ const billReducer = function (state = initialState, action) {
         currentBill: {
           ...state.currentBill,
           itemList: [],
+          payment: 0,
         },
       };
     case RESET_BILL_LIST:
@@ -177,6 +188,7 @@ const billReducer = function (state = initialState, action) {
           itemList: [],
           id: "",
           type: "regular",
+          payment: 0,
         },
         billSelected: {
           id: -1,

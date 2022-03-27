@@ -19,6 +19,7 @@ const AdminBillSection = ({
   fetchBillsBegin,
   fetchBillsSuccess,
   fetchBillsFailed,
+  refreshToken,
 }) => {
   const [queryType, setQueryType] = useState("billId_query");
   const [queryValue, setQueryValue] = useState("");
@@ -43,6 +44,9 @@ const AdminBillSection = ({
         switch (res.status) {
           case 200:
             return res.json();
+          case 403:
+            refreshToken();
+            break;
           default:
             return null;
         }

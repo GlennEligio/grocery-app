@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { updateCurrentBillType } from "../actions/billActions";
+import billTotal from "../util/billTotal";
 
 const ClerkBillTotal = ({ currentBill, updateCurrentBillType }) => {
   const [subTotal, setSubTotal] = useState(0);
@@ -11,27 +12,6 @@ const ClerkBillTotal = ({ currentBill, updateCurrentBillType }) => {
     setSubTotal(billTotal(currentBill, false));
     setSubTotalDiscount(billTotal(currentBill, true));
   }, [currentBill]);
-
-  const billTotal = (bill, isDiscounted) => {
-    var total = 0;
-    var totalDiscounted = 0;
-
-    bill.itemList.forEach((item) => {
-      total += item.price * item.amount;
-      if (item.discounted) {
-        totalDiscounted +=
-          item.price * (1 - item.discountPercentage) * item.amount;
-      } else {
-        totalDiscounted += item.price * item.amount;
-      }
-    });
-
-    if (isDiscounted) {
-      return totalDiscounted;
-    } else {
-      return total;
-    }
-  };
 
   return (
     <div className="card-footer m-1 h-25 vstack">

@@ -19,6 +19,7 @@ const AdminItemSection = ({
   fetchItemsBegin,
   fetchItemsSuccess,
   fetchItemsFailed,
+  refreshToken,
 }) => {
   const [queryType, setQueryType] = useState("id_query");
   const [queryValue, setQueryValue] = useState("");
@@ -42,6 +43,9 @@ const AdminItemSection = ({
         switch (res.status) {
           case 200:
             return res.json();
+          case 403:
+            refreshToken();
+            break;
           default:
             return null;
         }
