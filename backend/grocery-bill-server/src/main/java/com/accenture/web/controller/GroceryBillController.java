@@ -128,7 +128,9 @@ public class GroceryBillController {
 		itemsDummy.add(item1);
 		ShoppingClerk clerk = new ShoppingClerk(0, "Dummy Clerk");
 		GroceryBill billDummy = new DiscountedBill(clerk, itemsDummy, LocalDateTime.now());
+		billDummy.setPayment(420);
 		billDummy.getTotalBill();
+		billDummy.getChange();
 		billDummy.setId(0);
 		billsDummy.add(billDummy);
 
