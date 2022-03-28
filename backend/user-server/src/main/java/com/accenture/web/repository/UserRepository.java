@@ -8,10 +8,15 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.accenture.web.domain.User;
 
+import java.util.List;
+
 public interface UserRepository extends JpaRepository<User, Integer> {
 	
 	@Query("SELECT u FROM User u WHERE u.username=:username")
 	User findByUsername(String username);
+
+	@Query("SELECT u FROM User u WHERE u.roles LIKE CONCAT('%', :roles, '%')")
+	List<User> findByRoles(String roles);
 
 	@Query("SELECT u " +
 			"FROM User u " +
