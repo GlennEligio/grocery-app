@@ -11,8 +11,6 @@ public interface ItemService {
 
     Page<Item> findByIdWithPagingAndSorting(String id, Pageable pageable);
 
-    Page<Item> findItemsWithPaging(Pageable pageable);
-
     Page<Item> findItemsWithPagingAndSorting(Pageable pageable);
 
     List<Item> getAllItems();

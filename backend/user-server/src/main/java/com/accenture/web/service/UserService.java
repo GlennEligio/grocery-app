@@ -10,7 +10,6 @@ import java.util.List;
 public interface UserService {
 
     List<User> getAllUsers();
-    Page<User> getUsersWithPaging(Pageable pageable);
     Page<User> getUsersWithPagingAndSorting(Pageable pageable);
     Page<User> getUserWithIdPagingAndSorting(String id, Pageable pageable);
     Page<User> getUserWithNamePagingAndSorting(String name, Pageable pageable);

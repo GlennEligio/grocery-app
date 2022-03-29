@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -40,7 +41,7 @@ class ItemServiceTest {
 
     @Test
     @DisplayName("Get All Items")
-    public void getAllItems_withExistingItems_returnItems(){
+    void getAllItems_withExistingItems_returnItems(){
         // Arrange
         when(repository.findAll()).thenReturn(items);
 
@@ -56,7 +57,7 @@ class ItemServiceTest {
 
     @Test
     @DisplayName("Get Item with Valid Id")
-    public void getItem_withValidId_returnItem(){
+    void getItem_withValidId_returnItem(){
         // Arrange
         Integer id = 0;
         when(repository.findById(0)).thenReturn(Optional.of(item));
@@ -72,7 +73,7 @@ class ItemServiceTest {
     
     @Test
     @DisplayName("Get Item with Invalid Id")
-    public void getItem_withInvalidId_throwsException(){
+    void getItem_withInvalidId_throwsException(){
         // Arrange
         Integer id = 3;
         when(repository.findById(3)).thenReturn(Optional.empty());
@@ -83,10 +84,12 @@ class ItemServiceTest {
 
     @Test
     @DisplayName("Add New Item")
-    public void addItem_withNewItem_returnItem(){
+    void addItem_withNewItem_returnItem(){
         // Arrange
         Item newItem = new Item("name0", 100, true, 0.5);
+        when(repository.findByNameContainingIgnoreCase(newItem.getName())).thenReturn(new ArrayList<>());
         when(repository.save(newItem)).thenReturn(item);
+
 
         // Act
         Item itemDb = service.addItem(newItem);
@@ -101,7 +104,7 @@ class ItemServiceTest {
 
     @Test
     @DisplayName("Update Existing Item")
-    public void updateItem_withExistingItem_returnUpdatedItem(){
+    void updateItem_withExistingItem_returnUpdatedItem(){
         // Arrange
         Item updatedItem = new Item(0, "name0", 1000, true, 0.8);
         when(repository.findById(0)).thenReturn(Optional.of(item));
@@ -117,7 +120,7 @@ class ItemServiceTest {
 
     @Test
     @DisplayName("Update Non-existing Item")
-    public void updateItem_withNonExistingItem_returnUpdatedItem(){
+    void updateItem_withNonExistingItem_returnUpdatedItem(){
         // Arrange
         Item updatedItem = new Item(1, "name0", 1000, true, 0.8);
         when(repository.findById(1)).thenReturn(Optional.empty());
@@ -128,7 +131,7 @@ class ItemServiceTest {
 
     @Test
     @DisplayName("Delete Existing Item")
-    public void deleteItem_withExistingItem_returnTrue(){
+    void deleteItem_withExistingItem_returnTrue(){
         // Arrange
         Integer id = 0;
         when(repository.findById(0)).thenReturn(Optional.of(item));
@@ -142,7 +145,7 @@ class ItemServiceTest {
 
     @Test
     @DisplayName("Delete Non existing Item")
-    public void deleteItem_withNonExistingItem_returnTrue(){
+    void deleteItem_withNonExistingItem_returnTrue(){
         // Arrange
         Integer id = 1;
         when(repository.findById(1)).thenReturn(Optional.empty());

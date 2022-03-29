@@ -14,15 +14,15 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @RestControllerAdvice
 public class UserResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
-//	@ExceptionHandler(value = Exception.class)
-//	public ResponseEntity<Object> handleAllException(Exception ex, WebRequest request) {
-//
-//		ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(),
-//				ex.getMessage(),
-//				request.getDescription(false));
-//
-//		return new ResponseEntity<Object>(exceptionResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-//	}
+	@ExceptionHandler(value = Exception.class)
+	public ResponseEntity<Object> handleAllException(Exception ex, WebRequest request) {
+
+		ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(),
+				ex.getMessage(),
+				request.getDescription(false));
+
+		return new ResponseEntity<>(exceptionResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
 
 	@ExceptionHandler(value = AppException.class)
 	public ResponseEntity<Object> handleAppException(AppException ex, WebRequest request) {
@@ -30,7 +30,7 @@ public class UserResponseEntityExceptionHandler extends ResponseEntityExceptionH
 				ex.getMessage(),
 				request.getDescription(false));
 
-		return new ResponseEntity<Object>(exceptionResponse, ex.getStatus());
+		return new ResponseEntity<>(exceptionResponse, ex.getStatus());
 	}
 
 	@Override
@@ -41,7 +41,7 @@ public class UserResponseEntityExceptionHandler extends ResponseEntityExceptionH
 																	ex.getMessage(),
 																	ex.getBindingResult().getAllErrors().toString());
 		
-		return new ResponseEntity<Object>(exceptionResponse, HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
 	}
 
 }

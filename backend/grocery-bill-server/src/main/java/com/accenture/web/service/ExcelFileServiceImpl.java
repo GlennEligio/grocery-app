@@ -27,7 +27,7 @@ public class ExcelFileServiceImpl implements ExcelFileService{
     public static final int HEADER_ITEM_START_COLUMN = 8;
 
     @Override
-    public ByteArrayInputStream billListToExcelFile(List<GroceryBill> bills) {
+    public ByteArrayInputStream billListToExcel(List<GroceryBill> bills) {
         try(Workbook workbook = new XSSFWorkbook()){
             // Transform GroceryBill into BillsWithItemCount
             List<BillWithItemAmountDto> billWithItemAmountDtoList = bills.stream()
@@ -122,22 +122,17 @@ public class ExcelFileServiceImpl implements ExcelFileService{
     }
 
     @Override
-    public List<GroceryBill> excelFileToBillList(MultipartFile excelFile, List<Item> items) {
+    public List<GroceryBill> excelToBillList(MultipartFile excelFile, List<Item> items) {
         try(Workbook workbook = new XSSFWorkbook(excelFile.getInputStream())){
             log.info("Items received: {}", items);
             Sheet sheet = workbook.getSheetAt(0);
-
-            Set<String> itemNames = new HashSet<>();
 
             log.info("Fetching item ids from header row");
             // Header row
             Row headerRow = sheet.getRow(0);
 
-            // Fetch all item ids in header row (5th column onwards)
-            for(int i=HEADER_ITEM_START_COLUMN; i<headerRow.getPhysicalNumberOfCells(); i++){
-                log.info("New item name from header");
-                itemNames.add(headerRow.getCell(i).getStringCellValue());
-            }
+            // Fetch all item ids in header row (8th column onwards)
+            Set<String> itemNames = extractItemNames(headerRow);
             log.info("Result Set of Item ids: {}", itemNames);
 
             // Filter items using the Set of Ids present in GroceryBills excel file
@@ -161,29 +156,12 @@ public class ExcelFileServiceImpl implements ExcelFileService{
                 String billId = billRow.getCell(1).getStringCellValue();
                 String shoppingClerkUsername = billRow.getCell(2).getStringCellValue();
                 LocalDateTime dateCreated = LocalDateTime.parse(billRow.getCell(3).getStringCellValue());
-                Double payment = billRow.getCell(4).getNumericCellValue();
-                Double change = billRow.getCell(5).getNumericCellValue();
+                double payment = billRow.getCell(4).getNumericCellValue();
                 String type = billRow.getCell(7).getStringCellValue();
 
                 // Fetch bill items and amounts
                 log.info("Populating arrayList for bill's items");
-                List<Item> billItems = new ArrayList<>();
-                for (int c = HEADER_ITEM_START_COLUMN; c < billRow.getPhysicalNumberOfCells(); c++){
-                    Double itemAmount = billRow.getCell(c, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK).getNumericCellValue();
-                    log.info("Amount found: {}", itemAmount);
-                    if(itemAmount > 0){
-                        String itemName = headerRow.getCell(c).getStringCellValue();
-                        List<Item> filteredBillItems = filteredItem.stream().filter(item -> item.getName().equals(itemName)).collect(Collectors.toList());
-                        if(filteredBillItems.size() > 0){
-                            Item billItem = filteredBillItems.get(0);
-                            log.info("Item to use: {}", billItem);
-                            for (int j = 0; j < itemAmount; j++) {
-                                billItems.add(billItem);
-                                log.info("Adding item: {}", j+1);
-                            }
-                        }
-                    }
-                }
+                List<Item> billItems = extractListOfItems(headerRow, filteredItem, billRow);
 
                 if(type.equals("discounted")){
                     bill = new DiscountedBill(new ShoppingClerk(shoppingClerkUsername),
@@ -205,7 +183,37 @@ public class ExcelFileServiceImpl implements ExcelFileService{
             return bills;
         }catch (IOException ex){
             ex.printStackTrace();
-            return null;
+            return new ArrayList<>();
         }
+    }
+
+    private List<Item> extractListOfItems(Row headerRow, Set<Item> filteredItem, Row billRow) {
+        List<Item> billItems = new ArrayList<>();
+        for (int c = HEADER_ITEM_START_COLUMN; c < billRow.getPhysicalNumberOfCells(); c++){
+            double itemAmount = billRow.getCell(c, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK).getNumericCellValue();
+            log.info("Amount found: {}", itemAmount);
+            if(itemAmount > 0){
+                String itemName = headerRow.getCell(c).getStringCellValue();
+                List<Item> filteredBillItems = filteredItem.stream().filter(item -> item.getName().equals(itemName)).collect(Collectors.toList());
+                if(!filteredBillItems.isEmpty()){
+                    Item billItem = filteredBillItems.get(0);
+                    log.info("Item to use: {}", billItem);
+                    for (int j = 0; j < itemAmount; j++) {
+                        billItems.add(billItem);
+                        log.info("Adding item: {}", j+1);
+                    }
+                }
+            }
+        }
+        return billItems;
+    }
+
+    private Set<String> extractItemNames(Row headerRow) {
+        Set<String> itemNames = new HashSet<>();
+        for(int i = HEADER_ITEM_START_COLUMN; i< headerRow.getPhysicalNumberOfCells(); i++){
+            log.info("New item name from header");
+            itemNames.add(headerRow.getCell(i).getStringCellValue());
+        }
+        return itemNames;
     }
 }

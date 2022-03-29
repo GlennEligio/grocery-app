@@ -16,9 +16,6 @@ const AddUserModal = ({ user, users, role }) => {
   const modal = useRef();
 
   useEffect(() => {
-    setLoading(false);
-    setError(false);
-    setStatus(false);
     if (modal.current !== undefined) {
       modal.current.addEventListener("hidden.bs.modal", function (e) {
         setLoading(false);

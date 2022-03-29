@@ -7,7 +7,7 @@ import org.springframework.boot.ApplicationRunner;
 
 public class DataLoader implements ApplicationRunner {
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     public DataLoader(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -15,7 +15,7 @@ public class DataLoader implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        if(userRepository.findByRoles("SADMIN").size() == 0){
+        if(userRepository.findByRoles("SADMIN").isEmpty()){
             User user = new User("sadmin", "sadmin", "sadmin", "ROLE_SADMIN");
             userRepository.save(user);
         }

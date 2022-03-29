@@ -39,13 +39,6 @@ public class ItemController {
 
 	private static final Logger log = LoggerFactory.getLogger(ItemController.class);
 
-	@GetMapping(value = "/items", params = {"page", "size"})
-	public ResponseEntity<Page<Item>> getItemWithPaging(@RequestParam("page") int page,
-														@RequestParam("size") int size){
-		log.info("Fetching items with page "+page+" and size of "+size);
-		return ResponseEntity.ok(service.findItemsWithPaging(PageRequest.of(page-1, size)));
-	}
-
 	@GetMapping(value = "/items", params = {"page", "size", "field", "sort"})
 	public ResponseEntity<Page<Item>> getItemWithPaging(@RequestParam("page") int page,
 														@RequestParam("size") int size,
@@ -80,7 +73,7 @@ public class ItemController {
 	}
 
 	@PostMapping("/items/upload")
-	public ResponseEntity<?> upload(@RequestParam("file")MultipartFile excelFile, @RequestParam("overwrite") Boolean overwrite){
+	public ResponseEntity<Object> upload(@RequestParam("file")MultipartFile excelFile, @RequestParam("overwrite") Boolean overwrite){
 		log.info("Preparing Excel for Item Database update");
 		if(!Objects.equals(excelFile.getContentType(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")){
 			throw new AppException("Can only upload .xlsx files", HttpStatus.BAD_REQUEST);
@@ -129,7 +122,7 @@ public class ItemController {
 
 	@GetMapping("/items/{id}")
 	public ResponseEntity<Item> getItem(@PathVariable("id") Integer id){
-		log.info("Fetching item with id: " + id);
+		log.info("Fetching item with id: {}", id);
 		Item item = service.getItem(id);
 		if(item != null) {
 			log.info("Fetch success");
@@ -139,14 +132,14 @@ public class ItemController {
 	}
 
 	@PostMapping(value = "/items", consumes = "application/json")
-	public ResponseEntity<Item> createItem(@Valid @RequestBody Item item){
-		log.info("Adding " + item);
-		return ResponseEntity.ok(service.addItem(item));
+	public ResponseEntity<Object> createItem(@Valid @RequestBody Item item){
+		log.info("Adding item: {}", item);
+		return new ResponseEntity<>(service.addItem(item), HttpStatus.CREATED);
 	}
 
 	@DeleteMapping("/items/{id}")
-	public ResponseEntity<?> deleteItem(@PathVariable("id") Integer id){
-		log.info("Deleting item with id: " + id);
+	public ResponseEntity<Object> deleteItem(@PathVariable("id") Integer id){
+		log.info("Deleting item with id: {}", id);
 		boolean success = service.deleteItem(id);
 		if(success) {
 			return ResponseEntity.ok().build();
@@ -155,8 +148,8 @@ public class ItemController {
 	}
 
 	@PutMapping(value="/items", consumes = "application/json")
-	public ResponseEntity<?> updateItem(@Valid @RequestBody Item item){
-		log.info("Updating item with " + item);
+	public ResponseEntity<Object> updateItem(@Valid @RequestBody Item item){
+		log.info("Updating item: {}", item);
 		Item itemUpdated = service.updateItem(item);
 		if(itemUpdated != null) {
 			log.info("Update success");

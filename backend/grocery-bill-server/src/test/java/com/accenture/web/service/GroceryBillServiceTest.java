@@ -8,7 +8,6 @@ import com.accenture.web.exception.AppException;
 import com.accenture.web.repository.GroceryBillRepository;
 import com.accenture.web.repository.ItemRepository;
 import com.accenture.web.repository.ShoppingClerkRepository;
-import com.google.gson.Gson;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 @SpringBootTest
-public class GroceryBillServiceTest {
+class GroceryBillServiceTest {
 
     @Autowired
     private GroceryBillServiceImpl service;
@@ -63,7 +62,7 @@ public class GroceryBillServiceTest {
 
     @Test
     @DisplayName("Get All Bills")
-    public void getAllGroceryBill_withExistingBill_returnBills(){
+    void getAllGroceryBill_withExistingBill_returnBills(){
         // Arrange
         when(billRepo.findAll()).thenReturn(bills);
 
@@ -76,7 +75,7 @@ public class GroceryBillServiceTest {
 
     @Test
     @DisplayName("Get Existing Bill")
-    public void getGroceryBill_withValidId_returnGroceryBill(){
+    void getGroceryBill_withValidId_returnGroceryBill(){
         // Arrange
         Integer id = 0;
         when(billRepo.findById(0)).thenReturn(Optional.of(bill));
@@ -91,7 +90,7 @@ public class GroceryBillServiceTest {
 
     @Test
     @DisplayName("Get Non existing Bill")
-    public void getGroceryBill_withInvalidId_returnGroceryBill(){
+    void getGroceryBill_withInvalidId_returnGroceryBill(){
         // Arrange
         Integer id = 3;
         when(billRepo.findById(3)).thenReturn(Optional.empty());
@@ -102,7 +101,7 @@ public class GroceryBillServiceTest {
 
     @Test
     @DisplayName("Add Grocery Bill")
-    public void addGroceryBill_withNewBill_returnNewBill(){
+    void addGroceryBill_withNewBill_returnNewBill(){
         // Arrange
         when(clerkRepo.findById(0)).thenReturn(Optional.of(clerk));
         when(itemRepo.findById(0)).thenReturn(Optional.empty());
@@ -121,7 +120,7 @@ public class GroceryBillServiceTest {
 
     @Test
     @DisplayName("Update Existing Grocery Bill")
-    public void updateGroceryBill_withExistingBill_returnUpdatedBill(){
+    void updateGroceryBill_withExistingBill_returnUpdatedBill(){
         // Arrange
         Item updatedItem = new Item(1, "name1", 101, true, 0.5);
         GroceryBill updatedBill = bill;
@@ -144,7 +143,7 @@ public class GroceryBillServiceTest {
 
     @Test
     @DisplayName("Update Non existing Grocery Bill")
-    public void updateGroceryBill_withNonExistingBill_returnNull(){
+    void updateGroceryBill_withNonExistingBill_returnNull(){
         // Arrange
         when(billRepo.findById(0)).thenReturn(Optional.empty());
 
@@ -154,7 +153,7 @@ public class GroceryBillServiceTest {
 
     @Test
     @DisplayName("Delete Existing Grocery Bill")
-    public void deleteGroceryBill_withExistingBill_returnTrue(){
+    void deleteGroceryBill_withExistingBill_returnTrue(){
         // Arrange
         Integer id = 0;
         when(billRepo.findById(0)).thenReturn(Optional.of(bill));
@@ -168,7 +167,7 @@ public class GroceryBillServiceTest {
 
     @Test
     @DisplayName("Delete Non Existing Grocery Bill")
-    public void deleteGroceryBill_withNonExistingBill_returnFalse(){
+    void deleteGroceryBill_withNonExistingBill_returnFalse(){
         // Arrange
         Integer id = 3;
         when(billRepo.findById(3)).thenReturn(Optional.empty());

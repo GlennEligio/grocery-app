@@ -89,7 +89,7 @@ public class ExcelFileServiceImpl implements ExcelFileService{
             return users;
         }catch (IOException ex){
             ex.printStackTrace();
-            return null;
+            return new ArrayList<>();
         }
     }
 }

@@ -10,8 +10,6 @@ public interface GroceryBillService {
 
     List<GroceryBill> getAllGroceryBills();
 
-    Page<GroceryBill> findBillsWithPaging(Pageable pageable);
-
     Page<GroceryBill> findBillsWithPagingAndSorting(Pageable pageable);
 
     Page<GroceryBill> findBillsWithIdPagingAndSorting(String id, Pageable pageable);

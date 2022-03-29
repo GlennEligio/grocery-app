@@ -24,7 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @WebMvcTest(GroceryBillController.class)
-public class GroceryBillControllerTest {
+class GroceryBillControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -63,7 +63,7 @@ public class GroceryBillControllerTest {
 
     @Test
     @DisplayName("Get All Bills")
-    public void getAllGroceryBills_withExistingBills_returnOk() throws Exception {
+    void getAllGroceryBills_withExistingBills_returnOk() throws Exception {
         // Arrange
         when(service.getAllGroceryBills()).thenReturn(bills);
 
@@ -75,7 +75,7 @@ public class GroceryBillControllerTest {
 
     @Test
     @DisplayName("Get Non existent Bills")
-    public void getAllGroceryBills_withNonExistingBills_returnNotFound() throws Exception {
+    void getAllGroceryBills_withNonExistingBills_returnNotFound() throws Exception {
         // Arrange
         when(service.getAllGroceryBills()).thenReturn(null);
 
@@ -86,7 +86,7 @@ public class GroceryBillControllerTest {
 
     @Test
     @DisplayName("Get Existing Bill")
-    public void getGroceryBill_withExistingBill_returnOk() throws Exception {
+    void getGroceryBill_withExistingBill_returnOk() throws Exception {
         // Arrange
         Integer id = 0;
         when(service.getGroceryBill(id)).thenReturn(bill);
@@ -99,7 +99,7 @@ public class GroceryBillControllerTest {
 
     @Test
     @DisplayName("Get Non existent Bill")
-    public void getGroceryBill_withNonExistingBill_returnNotFound() throws Exception {
+    void getGroceryBill_withNonExistingBill_returnNotFound() throws Exception {
         // Arrange
         Integer id = 3;
         when(service.getGroceryBill(id)).thenReturn(null);
@@ -112,7 +112,7 @@ public class GroceryBillControllerTest {
     // TODO Find way to make service.addGroceryBill Mock work without Mockito.any()
     @Test
     @DisplayName("Create New Bill")
-    public void createGroceryBill_withNewBill_returnCreated() throws Exception {
+    void createGroceryBill_withNewBill_returnCreated() throws Exception {
         // Arrange
         GroceryBill newBill = new DiscountedBill(clerk);
         newBill.setItemList(items);
@@ -131,7 +131,7 @@ public class GroceryBillControllerTest {
 
     @Test
     @DisplayName("Create Non Existing Bill")
-    public void createGroceryBill_withNonExistingBill_returnNotFound() throws Exception {
+    void createGroceryBill_withNonExistingBill_returnNotFound() throws Exception {
         // Arrange
         GroceryBill newBill = new DiscountedBill(clerk);
         newBill.setItemList(items);
@@ -149,7 +149,7 @@ public class GroceryBillControllerTest {
 
     @Test
     @DisplayName("Delete Existing Bill")
-    public void deleteGroceryBill_withValidId_returnOk() throws Exception {
+    void deleteGroceryBill_withValidId_returnOk() throws Exception {
         // Arrange
         Integer id = 0;
         when(service.deleteGroceryBill(id)).thenReturn(true);
@@ -161,7 +161,7 @@ public class GroceryBillControllerTest {
 
     @Test
     @DisplayName("Delete Non Existing Bill")
-    public void deleteGroceryBill_withInvalidId_returnNotFound() throws Exception {
+    void deleteGroceryBill_withInvalidId_returnNotFound() throws Exception {
         // Arrange
         Integer id = 3;
         when(service.deleteGroceryBill(id)).thenReturn(false);
@@ -174,7 +174,7 @@ public class GroceryBillControllerTest {
     // TODO Find way to make service.updateGroceryBill Mock work without Mockito.any()
     @Test
     @DisplayName("Update Existing Bill")
-    public void updateGroceryBill_withExistingBill_returnOk() throws Exception {
+    void updateGroceryBill_withExistingBill_returnOk() throws Exception {
         // Arrange
         ObjectNode objectNode = objectMapper.valueToTree(bill);
         objectNode.put("type", "discounted");
@@ -189,7 +189,7 @@ public class GroceryBillControllerTest {
 
     @Test
     @DisplayName("Update Non Existing Bill")
-    public void updateGroceryBill_withNonExistingBill_returnNotFound() throws Exception {
+    void updateGroceryBill_withNonExistingBill_returnNotFound() throws Exception {
         // Arrange
         GroceryBill newBill = bill;
         ObjectNode objectNode = objectMapper.valueToTree(bill);

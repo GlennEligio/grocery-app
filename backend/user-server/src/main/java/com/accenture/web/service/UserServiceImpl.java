@@ -29,6 +29,7 @@ import com.accenture.web.domain.User;
 @RefreshScope
 public class UserServiceImpl implements UserService, UserDetailsService {
 
+	public static final String PAGE_REQUESTED_IS_OUT_OF_BOUNDS = "Page requested is out of bounds";
 	@Value("${user-service.secretKey}")
 	private String secretKey;
 
@@ -42,22 +43,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	
 	public List<User> getAllUsers(){
 		log.info("Fetching users from repository");
-		List<User> users = (List<User>) repository.findAll();
-		return users.stream().filter((user) -> !user.getRoles().contains("ROLE_SADMIN")).collect(Collectors.toList());
-	}
-
-	public Page<User> getUsersWithPaging(Pageable pageable){
-		Page<User> userPage = repository.findAll(pageable);
-		if(pageable.getPageNumber() > userPage.getTotalPages()){
-			throw new AppException("Page requested is out of bounds", HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
-		}
-		return userPage;
+		List<User> users = repository.findAll();
+		return users.stream().filter(user -> !user.getRoles().contains("ROLE_SADMIN")).collect(Collectors.toList());
 	}
 
 	public Page<User> getUsersWithPagingAndSorting(Pageable pageable){
 		Page<User> userPage = repository.findAll(pageable);
 		if(pageable.getPageNumber() > userPage.getTotalPages()){
-			throw new AppException("Page requested is out of bounds", HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
+			throw new AppException(PAGE_REQUESTED_IS_OUT_OF_BOUNDS, HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
 		}
 		return userPage;
 	}
@@ -66,7 +59,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	public Page<User> getUserWithIdPagingAndSorting(String id, Pageable pageable) {
 		Page<User> userPage = repository.findByIdQuery(id, pageable);
 		if(pageable.getPageNumber() > userPage.getTotalPages()){
-			throw new AppException("Page requested is out of bounds", HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
+			throw new AppException(PAGE_REQUESTED_IS_OUT_OF_BOUNDS, HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
 		}
 		return userPage;
 	}
@@ -75,7 +68,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	public Page<User> getUserWithNamePagingAndSorting(String name, Pageable pageable) {
 		Page<User> userPage = repository.findByNameQuery(name, pageable);
 		if(pageable.getPageNumber() > userPage.getTotalPages()){
-			throw new AppException("Page requested is out of bounds", HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
+			throw new AppException(PAGE_REQUESTED_IS_OUT_OF_BOUNDS, HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
 		}
 		return userPage;
 	}
@@ -84,7 +77,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	public Page<User> getUserWithUsernamePagingAndSorting(String username, Pageable pageable) {
 		Page<User> userPage = repository.findByUsername(username, pageable);
 		if(pageable.getPageNumber() > userPage.getTotalPages()){
-			throw new AppException("Page requested is out of bounds", HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
+			throw new AppException(PAGE_REQUESTED_IS_OUT_OF_BOUNDS, HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
 		}
 		return userPage;
 	}
@@ -114,7 +107,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	}
 
 	public User getUser(Integer id) {
-		log.info("Fetching a user with id: " + id);
+		log.info("Fetching a user with id: {}", id);
 		Optional<User> userOp = repository.findById(id);
 		if(userOp.isPresent()){
 			return userOp.get();
@@ -123,7 +116,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	}
 	
 	public User addUser(User user) {
-		log.info("Adding user " + user);
+		log.info("Adding user: {}", user);
 		User userDb = repository.findByUsername(user.getUsername());
 		if(userDb != null){
 			throw new AppException("User with username already exist", HttpStatus.CONFLICT);
@@ -134,7 +127,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	}
 
 	public boolean updateUser(User user) {
-		log.info("Updating user in Service" + user);
+		log.info("Updating user in Service: {}", user);
 		Optional<User> op = repository.findById(user.getId());
 		
 		if(op.isPresent()) {
@@ -151,7 +144,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	}
 	
 	public boolean deleteUser(Integer id) {
-		log.info("Deleting user with id: " + id);
+		log.info("Deleting user with id: {}", id);
 		Optional<User> userOp = repository.findById(id);
 		if(userOp.isPresent()) {
 			repository.delete(userOp.get());
@@ -165,7 +158,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 		log.info("Looking for a User with username: {}", username);
 		User user  = repository.findByUsername(username);
 		if(user != null) {
-			log.info("User found: " + user);
+			log.info("User found: {}", user);
 			return new MyUserDetails(user);
 		}
 		log.info("User not found..");

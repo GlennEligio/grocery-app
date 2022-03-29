@@ -9,6 +9,6 @@ import java.util.List;
 
 public interface ExcelFileService {
 
-    ByteArrayInputStream billListToExcelFile (List<GroceryBill> bills);
-    List<GroceryBill> excelFileToBillList (MultipartFile excelFile, List<Item> items);
+    ByteArrayInputStream billListToExcel(List<GroceryBill> bills);
+    List<GroceryBill> excelToBillList(MultipartFile excelFile, List<Item> items);
 }

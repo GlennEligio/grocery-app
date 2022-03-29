@@ -4,7 +4,6 @@ import static org.mockito.Mockito.*;
 
 import com.accenture.web.domain.Item;
 import com.accenture.web.exception.AppException;
-import com.accenture.web.service.ExcelFileService;
 import com.accenture.web.service.ExcelFileServiceImpl;
 import com.accenture.web.service.ItemServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,7 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @WebMvcTest(ItemController.class)
-public class ItemControllerTest {
+class ItemControllerTest {
 
     private static final Logger log = LoggerFactory.getLogger(ItemController.class);
 
@@ -54,12 +53,12 @@ public class ItemControllerTest {
 
     @Test
     @DisplayName("Get All Items")
-    public void getAllItems_withExistingUser_returnOk() throws Exception {
+    void getAllItems_withExistingUser_returnOk() throws Exception {
         // Arrange
         when(service.getAllItems()).thenReturn(items);
 
         // Assert
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/items"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/items").header("X-auth-role", "ROLE_SADMIN"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(items)));
     }
@@ -68,9 +67,9 @@ public class ItemControllerTest {
 
     @Test
     @DisplayName("Get Existing item")
-    public void getItem_withValidId_returnOk() throws Exception {
+    void getItem_withValidId_returnOk() throws Exception {
         // Arrange
-        Integer id = 0;
+        int id = 0;
         when(service.getItem(0)).thenReturn(item);
 
         // Assert
@@ -81,7 +80,7 @@ public class ItemControllerTest {
 
     @Test
     @DisplayName("Get Non existing item")
-    public void getItem_withInvalidId_returnOk() throws Exception {
+    void getItem_withInvalidId_returnOk() throws Exception {
         // Arrange
         Integer id = 3;
         when(service.getItem(3)).thenReturn(null);
@@ -93,7 +92,7 @@ public class ItemControllerTest {
 
     @Test
     @DisplayName("Add New Item")
-    public void addItem_withNewItem_returnCreated() throws Exception {
+    void addItem_withNewItem_returnCreated() throws Exception {
         // Arrange
         Item newItem = new Item("name0", 100, true, 0.5);
         item.setDeleteFlag(false);
@@ -109,7 +108,7 @@ public class ItemControllerTest {
 
     @Test
     @DisplayName("Add Existing Item")
-    public void addItem_withExistingItem_returnNotFound() throws Exception {
+    void addItem_withExistingItem_returnNotFound() throws Exception {
         // Arrange
         Item existingItem = new Item("name3", 103, true, 0.5);
         when(service.addItem(existingItem)).thenThrow(new AppException("Item with same name already exist", HttpStatus.BAD_REQUEST));
@@ -123,9 +122,9 @@ public class ItemControllerTest {
 
     @Test
     @DisplayName("Delete Existing Item")
-    public void deleteItem_withValidId_returnOk() throws Exception {
+    void deleteItem_withValidId_returnOk() throws Exception {
         // Arrange
-        Integer id = 0;
+        int id = 0;
         when(service.deleteItem(0)).thenReturn(true);
 
         // Assert
@@ -135,9 +134,9 @@ public class ItemControllerTest {
 
     @Test
     @DisplayName("Delete Non existing Item")
-    public void deleteItem_withInvalidId_returnNotFound() throws Exception {
+    void deleteItem_withInvalidId_returnNotFound() throws Exception {
         // Arrange
-        Integer id = 3;
+        int id = 3;
         when(service.deleteItem(3)).thenReturn(false);
 
         // Assert
@@ -147,7 +146,7 @@ public class ItemControllerTest {
 
     @Test
     @DisplayName("Update Existing Item")
-    public void updateItem_withExistingItem_returnOk() throws Exception {
+    void updateItem_withExistingItem_returnOk() throws Exception {
         // Arrange
         Item existingItem = new Item(0, "name0", 1000, true, 0.5);
         when(service.updateItem(existingItem)).thenReturn(existingItem);
@@ -161,7 +160,7 @@ public class ItemControllerTest {
 
     @Test
     @DisplayName("Update Non existing Item")
-    public void updateItem_withNonExistingItem_returnOk() throws Exception {
+    void updateItem_withNonExistingItem_returnOk() throws Exception {
         // Arrange
         Item nonExistingItem = new Item(3, "name0", 1000, true, 0.5);
         when(service.updateItem(nonExistingItem)).thenReturn(null);

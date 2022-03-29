@@ -4,7 +4,6 @@ import com.accenture.web.domain.DiscountedBill;
 import com.accenture.web.domain.GroceryBill;
 import com.accenture.web.domain.ShoppingClerk;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class BillSummaryDto {

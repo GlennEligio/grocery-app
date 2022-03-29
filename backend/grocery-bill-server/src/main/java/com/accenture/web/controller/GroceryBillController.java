@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
@@ -19,14 +18,11 @@ import com.accenture.web.domain.ShoppingClerk;
 import com.accenture.web.dto.BillSummaryDto;
 import com.accenture.web.exception.AppException;
 import com.accenture.web.service.ExcelFileService;
-import com.accenture.web.service.ExcelFileServiceImpl;
 import org.apache.commons.io.IOUtils;
-import org.apache.xmlbeans.impl.common.IOUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -51,15 +47,6 @@ public class GroceryBillController {
 	private ExcelFileService excelFileService;
 	
 	private static final Logger log = LoggerFactory.getLogger(GroceryBillController.class);
-
-	@GetMapping(value = "/bills", params = {"page", "size"})
-	public ResponseEntity<Page<BillSummaryDto>> getBillsWithPaging(@RequestParam("page") int page,
-																@RequestParam("size") int size){
-		log.info("Fetching grocery bills in page " + page + " of size " + size);
-		Page<GroceryBill> billPage = service.findBillsWithPaging(PageRequest.of(page-1, size));
-		Page<BillSummaryDto> billSummaryPage = billPage.map(BillSummaryDto::new);
-		return ResponseEntity.ok(billSummaryPage);
-	}
 
 	@GetMapping(value = "/bills", params = {"page", "size", "field", "sort"})
 	public ResponseEntity<Page<BillSummaryDto>> getBillsWithPagingAndSorting(@RequestParam("page") int page,
@@ -110,7 +97,7 @@ public class GroceryBillController {
 		log.info("Downloading Grocery bill excel file");
 		response.setContentType("application/octet-stream");
 		response.setHeader("Content-Disposition", "attachment; filename=bills.xlsx");
-		ByteArrayInputStream stream = excelFileService.billListToExcelFile(service.getAllGroceryBills());
+		ByteArrayInputStream stream = excelFileService.billListToExcel(service.getAllGroceryBills());
 		IOUtils.copy(stream, response.getOutputStream());
 	}
 
@@ -134,12 +121,12 @@ public class GroceryBillController {
 		billDummy.setId(0);
 		billsDummy.add(billDummy);
 
-		ByteArrayInputStream stream = excelFileService.billListToExcelFile(billsDummy);
+		ByteArrayInputStream stream = excelFileService.billListToExcel(billsDummy);
 		IOUtils.copy(stream, response.getOutputStream());
 	}
 
 	@PostMapping("/bills/upload")
-	public ResponseEntity<?> upload(@RequestParam("file") MultipartFile excelFile,
+	public ResponseEntity<Object> upload(@RequestParam("file") MultipartFile excelFile,
 									@RequestParam("overwrite") Boolean overwrite,
 									@RequestHeader("X-auth-role") String role){
 		log.info("Preparing Excel for Bill Database update");
@@ -150,7 +137,7 @@ public class GroceryBillController {
 		if(response.getStatusCode().isError()) {
 			throw new AppException("Populate the item database first", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		List<GroceryBill> bills = excelFileService.excelFileToBillList(excelFile, response.getBody());
+		List<GroceryBill> bills = excelFileService.excelToBillList(excelFile, response.getBody());
 		int billsAffected = service.addOrUpdateBills(bills, overwrite);
 		if(billsAffected > 0){
 			return ResponseEntity.ok().header("bills-affected", String.valueOf(billsAffected)).build();
@@ -171,14 +158,14 @@ public class GroceryBillController {
 	}
 
 	@PostMapping("/bills")
-	public ResponseEntity<? extends GroceryBill> createNewGroceryBill(@Valid @RequestBody GroceryBill groceryBill) {
-		log.info("Creating Grocery Bill " + groceryBill);
+	public ResponseEntity<GroceryBill> createNewGroceryBill(@Valid @RequestBody GroceryBill groceryBill) {
+		log.info("Creating Grocery Bill {}", groceryBill);
 		return new ResponseEntity<>(service.addGroceryBill(groceryBill), HttpStatus.CREATED);
 	}
 
 	@GetMapping("/bills/{id}")
 	public ResponseEntity<GroceryBill> getGroceryBill(@PathVariable("id") Integer id) {
-		log.info("Fetching grocery bill with id: " + id);
+		log.info("Fetching grocery bill with id: {}", id);
 		GroceryBill groceryBill = service.getGroceryBill(id);
 		if (groceryBill != null) {
 			log.info("Fetch success");
@@ -188,8 +175,8 @@ public class GroceryBillController {
 	}
 
 	@DeleteMapping("/bills/{id}")
-	public ResponseEntity<?> deleteGroceryBill(@PathVariable("id") Integer id) {
-		log.info("Deleting grocery bill with id: " + id);
+	public ResponseEntity<Object> deleteGroceryBill(@PathVariable("id") Integer id) {
+		log.info("Deleting grocery bill with id: {}", id);
 		boolean success = service.deleteGroceryBill(id);
 		if (success) {
 			log.info("Delete success");
@@ -199,8 +186,8 @@ public class GroceryBillController {
 	}
 
 	@PutMapping("/bills")
-	public ResponseEntity<?> updateGroceryBill(@Valid @RequestBody GroceryBill groceryBill) {
-		log.info("Updating grocery bill: " + groceryBill);
+	public ResponseEntity<Object> updateGroceryBill(@Valid @RequestBody GroceryBill groceryBill) {
+		log.info("Updating grocery bill: {}", groceryBill);
 		GroceryBill updatedBill = service.updateGroceryBill(groceryBill);
 		if (updatedBill != null) {
 			log.info("Update success");

@@ -26,6 +26,7 @@ import com.accenture.web.domain.ShoppingClerk;
 @Service
 public class GroceryBillServiceImpl implements GroceryBillService{
 
+	public static final String PAGE_REQUEST_OUT_OF_BOUND = "Page request out of bound";
 	@Autowired
     GroceryBillRepository billRepo;
 
@@ -41,18 +42,10 @@ public class GroceryBillServiceImpl implements GroceryBillService{
 		return (List<GroceryBill>) billRepo.findAll();
 	}
 
-	public Page<GroceryBill> findBillsWithPaging(Pageable pageable){
-		Page<GroceryBill> billPage = billRepo.findAll(pageable);
-		if(pageable.getPageNumber() > billPage.getTotalPages()){
-			throw new AppException("Page request out of bound", HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
-		}
-		return billPage;
-	}
-
 	public Page<GroceryBill> findBillsWithPagingAndSorting(Pageable pageable){
 		Page<GroceryBill> billPage = billRepo.findAll(pageable);
 		if(pageable.getPageNumber() > billPage.getTotalPages()){
-			throw new AppException("Page request out of bound", HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
+			throw new AppException(PAGE_REQUEST_OUT_OF_BOUND, HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
 		}
 		return billPage;
 	}
@@ -60,7 +53,7 @@ public class GroceryBillServiceImpl implements GroceryBillService{
 	public Page<GroceryBill> findBillsWithIdPagingAndSorting(String id, Pageable pageable) {
 		Page<GroceryBill> billPage = billRepo.findByIdContaining(id, pageable);
 		if(pageable.getPageNumber() > billPage.getTotalPages()){
-			throw new AppException("Page request out of bound", HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
+			throw new AppException(PAGE_REQUEST_OUT_OF_BOUND, HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
 		}
 		return billPage;
 	}
@@ -68,12 +61,12 @@ public class GroceryBillServiceImpl implements GroceryBillService{
 	public Page<GroceryBill> findBillsWithShoppingClerkUsernamePagingAndSorting(String username, Pageable pageable) {
 		Page<GroceryBill> billPage = billRepo.findByShoppingClerkUsername(username, pageable);
 		if(pageable.getPageNumber() > billPage.getTotalPages()){
-			throw new AppException("Page request out of bound", HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
+			throw new AppException(PAGE_REQUEST_OUT_OF_BOUND, HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
 		}
 		return billPage;
 	}
 
-	@Override
+	@Transactional
 	public int addOrUpdateBills(List<GroceryBill> bills, boolean overwrite) {
 		int billsAffected = 0;
 		for (GroceryBill bill: bills) {
@@ -103,7 +96,7 @@ public class GroceryBillServiceImpl implements GroceryBillService{
 	public GroceryBill addGroceryBill(GroceryBill groceryBill) {
 		log.info("Adding bill: {}", groceryBill);
 		// Check if bill already exist
-		if(billRepo.findByBillId(groceryBill.getBillId()).size() > 0){
+		if(billRepo.findByBillId(groceryBill.getBillId()).isEmpty()){
 			throw new AppException("Bill of same Bill Id already exist", HttpStatus.BAD_REQUEST);
 		}
 
@@ -127,8 +120,8 @@ public class GroceryBillServiceImpl implements GroceryBillService{
 				Optional<Item> itemOp = itemRepo.findById(item.getId());
 				if (itemOp.isPresent()) {
 					Item itemDb = itemOp.get();
-					log.info("Item: " + item);
-					log.info("ItemDb: " + itemDb);
+					log.info("Item: {}", item);
+					log.info("ItemDb: {}", itemDb);
 					itemDb.setName(item.getName());
 					itemDb.setPrice(item.getPrice());
 					itemDb.setDiscounted(item.isDiscounted());
@@ -167,8 +160,8 @@ public class GroceryBillServiceImpl implements GroceryBillService{
 					Optional<Item> itemOp = itemRepo.findById(item.getId());
 					if (itemOp.isPresent()) {
 						Item itemDb = itemOp.get();
-						log.info("Item: " + item);
-						log.info("ItemDb: " + itemDb);
+						log.info("Item: {}", item);
+						log.info("ItemDb: {}", itemDb);
 						itemDb.setName(item.getName());
 						itemDb.setPrice(item.getPrice());
 						itemDb.setDiscounted(item.isDiscounted());

@@ -21,7 +21,7 @@ public class UserResponseEntityExceptionHandler extends ResponseEntityExceptionH
 				ex.getMessage(),
 				request.getDescription(false));
 
-		return new ResponseEntity<Object>(exceptionResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+		return new ResponseEntity<>(exceptionResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@ExceptionHandler(value = AppException.class)
@@ -30,7 +30,7 @@ public class UserResponseEntityExceptionHandler extends ResponseEntityExceptionH
 				ex.getMessage(),
 				request.getDescription(false));
 
-		return new ResponseEntity<Object>(exceptionResponse, ex.getStatus());
+		return new ResponseEntity<>(exceptionResponse, ex.getStatus());
 	}
 
 	@Override
@@ -41,7 +41,7 @@ public class UserResponseEntityExceptionHandler extends ResponseEntityExceptionH
 																	ex.getMessage(),
 																	ex.getBindingResult().getAllErrors().toString());
 		
-		return new ResponseEntity<Object>(exceptionResponse, HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
 	}
 
 }

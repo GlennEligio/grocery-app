@@ -19,7 +19,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.GrantedAuthority;
@@ -82,7 +81,7 @@ public class UserController {
 	}
 
 	@PostMapping("/users/refreshToken")
-	public ResponseEntity<?> refreshToken(@RequestParam("token") String token){
+	public ResponseEntity<Object> refreshToken(@RequestParam("token") String token){
 		log.info("Refreshing token using {}", token);
 		String username = jwtUtil.extractUsername(token);
 		final UserDetails userDetails = service.loadUserByUsername(username);
@@ -91,8 +90,8 @@ public class UserController {
 	}
 
 	@PostMapping("/users/register")
-	public ResponseEntity<?> registerUser(@Valid @RequestBody User user) {
-		log.info("Registering user " + user);
+	public ResponseEntity<Object> registerUser(@Valid @RequestBody User user) {
+		log.info("Registering user: {}", user);
 
 		user.setRoles("ROLE_CLERK");
 
@@ -112,21 +111,13 @@ public class UserController {
 		
 		List<User> users = service.getAllUsers();
 		if (users != null) {
-			users = users.stream().map((user) -> {
-				user.setPassword(null);
-				return user;
-			}).collect(Collectors.toList());
+			users = users.stream()
+					.peek(user -> user.setPassword(null))
+					.collect(Collectors.toList());
 			log.info("Fetch success");
-			return ResponseEntity.ok(service.getAllUsers());
+			return ResponseEntity.ok(users);
 		}
 		return ResponseEntity.notFound().build();
-	}
-
-	@GetMapping(value = "/users", params = {"page", "size"})
-	public ResponseEntity<Page<User>> getUsersWithPaging(@RequestParam("page") int page,
-														 @RequestParam("size") int size){
-		log.info("Fetching users in page " + page + " with size " + size);
-		return ResponseEntity.ok(service.getUsersWithPaging(PageRequest.of(page-1, size)));
 	}
 
 	@GetMapping(value = "/users", params = {"page", "size", "sort", "field"})
@@ -168,7 +159,7 @@ public class UserController {
 	}
 
 	@PostMapping("/users/upload")
-	public ResponseEntity<?> upload(@RequestParam("file")MultipartFile excelFile, @RequestParam("overwrite") Boolean overwrite){
+	public ResponseEntity<Object> upload(@RequestParam("file")MultipartFile excelFile, @RequestParam("overwrite") Boolean overwrite){
 		log.info("Preparing Excel for User Database update");
 		if(!Objects.equals(excelFile.getContentType(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")){
 			throw new AppException("Can only upload .xlsx files", HttpStatus.BAD_REQUEST);
@@ -205,7 +196,7 @@ public class UserController {
 
 	@GetMapping("/users/{id}")
 	public ResponseEntity<User> getUser(@PathVariable("id") Integer id) {
-		log.info("Fetching user with id: " + id);
+		log.info("Fetching user with id: {}", id);
 		User user = service.getUser(id);
 		if (user != null) {
 			log.info("Fetch success");
@@ -215,8 +206,8 @@ public class UserController {
 	}
 
 	@PostMapping("/users")
-	public ResponseEntity<?> createUser(@Valid @RequestBody User user) {
-		log.info("Adding user: " + user);
+	public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
+		log.info("Adding user: {}", user);
 
 		if(user.getRoles().contains("ROLE_ADMIN")
 			&& !SecurityContextHolder.getContext().getAuthentication().getAuthorities().contains(new SimpleGrantedAuthority("ROLE_SADMIN"))){
@@ -227,14 +218,14 @@ public class UserController {
 
 		if (userDb != null) {
 			log.info("User added");
-			return new ResponseEntity<User>(userDb, HttpStatus.CREATED);
+			return new ResponseEntity<>(userDb, HttpStatus.CREATED);
 		}
 		return ResponseEntity.notFound().build();
 	}
 
 	@DeleteMapping("/users/{id}")
-	public ResponseEntity<?> deleteUser(@PathVariable("id") Integer id) {
-		log.info("Deleting user with id: " + id);
+	public ResponseEntity<Object> deleteUser(@PathVariable("id") Integer id) {
+		log.info("Deleting user with id: {}", id);
 		boolean success = service.deleteUser(id);
 		if (success) {
 			log.info("Delete success");
@@ -244,8 +235,8 @@ public class UserController {
 	}
 
 	@PutMapping("/users")
-	public ResponseEntity<?> updateUser(@RequestBody User user) {
-		log.info("Updating user " + user);
+	public ResponseEntity<Object> updateUser(@RequestBody User user) {
+		log.info("Updating user: {}", user);
 		boolean success = service.updateUser(user);
 		if(success) return ResponseEntity.ok().build();
 		else return ResponseEntity.notFound().build();
