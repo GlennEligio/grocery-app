@@ -35,3 +35,7 @@
 - Replace filename to the files inside
 - ex: **kubectl apply -f frontend.yml**
 - Check if all pods are ready **kubectl get pods**
+
+# TODO:
+- Create ingress controller to expose the services in Cluster inside of them being a LoadBalancer
+- Fixed issues related to CORS/Proxy of ReactJS when calling the backend inside K8s
