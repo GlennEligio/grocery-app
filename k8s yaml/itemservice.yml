@@ -1,0 +1,126 @@
+# Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+  labels:
+    app: item-service
+  name: item-service
+  namespace: default
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: item-service
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: item-service
+    spec:
+      containers:
+        - image: shuntjg/gba-item-service:0.0.1-SNAPSHOT
+          imagePullPolicy: IfNotPresent
+          name: item-service
+          envFrom:
+            - configMapRef:
+                name: item-service
+          readinessProbe:
+            httpGet:
+              port: 8030
+              path: /actuator/health/readiness
+          livenessProbe:
+            httpGet:
+              port: 8030
+              path: /actuator/health/liveness
+      restartPolicy: Always
+
+---
+# Service
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: item-service
+  name: item-service
+  namespace: default
+spec:
+  ports:
+    - port: 8030
+      protocol: TCP
+      targetPort: 8030
+  selector:
+    app: item-service
+  sessionAffinity: None
+  type: ClusterIP
+
+---
+# Configmap
+apiVersion: v1
+data:
+  MYSQL_SERVICE_URI: item-mariadb
+  MYSQL_USERNAME: root
+  MYSQL_PASSWORD: P4ssw0rd
+kind: ConfigMap
+metadata:
+  name: item-service
+  namespace: default
+
+
+---
+# StatefulSet for Mysql Server
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: item-mariadb
+spec:
+  serviceName: "item-mariadb"
+  selector:
+    matchLabels:
+      app: item-mariadb
+  template:
+    metadata:
+      labels:
+        app: item-mariadb
+    spec:
+      containers:
+      - name: item-mariadb
+        image: mariadb:10.8.2-rc
+        ports:
+        - containerPort: 3306
+        env:
+          - name: MARIADB_ROOT_PASSWORD
+            value: "P4ssw0rd"
+          - name: MARIADB_DATABASE
+            value: assign-item
+        volumeMounts:
+          - mountPath: /data/item
+            name: item-data
+  volumeClaimTemplates:
+    - metadata:
+        name: item-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: item-mariadb
+spec:
+  clusterIP: None
+  selector:
+    app: item-mariadb
+  ports:
+  - port: 3306
+    targetPort: 3306

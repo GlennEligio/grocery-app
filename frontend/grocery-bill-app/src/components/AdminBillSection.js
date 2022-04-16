@@ -269,7 +269,7 @@ const AdminBillSection = ({
                     scope="col"
                     className="w-10"
                   >
-                    <span className="me-2">Id</span>
+                    <span className="me-2">Total Bill</span>
                     {field === "totalBill" && (
                       <span>
                         {sort === "asc" ? (

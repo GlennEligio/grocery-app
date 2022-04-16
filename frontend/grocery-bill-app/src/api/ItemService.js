@@ -1,5 +1,10 @@
+const gatewayUri =
+  process.env.NODE_ENV === "development"
+    ? process.env.REACT_APP_BACKEND_GATEWAY_URI_DEV
+    : process.env.REACT_APP_BACKEND_GATEWAY_URI_PROD;
+
 const fetchItems = async (jwt) => {
-  return await fetch("http://localhost:8080/api/v1/items", {
+  return await fetch(`${gatewayUri}/api/v1/items`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${jwt}`,
@@ -16,7 +21,7 @@ const fetchItemsWithQueryPagingSorting = async (
   sort,
   field
 ) => {
-  var url = `http://localhost:8080/api/v1/items?${queryType}=${encodeURIComponent(
+  var url = `${gatewayUri}/api/v1/items?${queryType}=${encodeURIComponent(
     queryValue
   )}&page=${encodeURIComponent(currentPage)}&size=${encodeURIComponent(
     pageSize
@@ -31,7 +36,7 @@ const fetchItemsWithQueryPagingSorting = async (
 };
 
 const upload = async (jwt, formData) => {
-  return await fetch("http://localhost:8080/api/v1/items/upload", {
+  return await fetch(`${gatewayUri}/api/v1/items/upload`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${jwt}`,
@@ -41,7 +46,7 @@ const upload = async (jwt, formData) => {
 };
 
 const download = async (jwt) => {
-  return await fetch("http://localhost:8080/api/v1/items/download", {
+  return await fetch(`${gatewayUri}/api/v1/items/download`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${jwt}`,
@@ -50,7 +55,7 @@ const download = async (jwt) => {
 };
 
 const downloadTemplate = async (jwt) => {
-  return await fetch("http://localhost:8080/api/v1/items/download/template", {
+  return await fetch(`${gatewayUri}/api/v1/items/download/template`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${jwt}`,
@@ -59,7 +64,7 @@ const downloadTemplate = async (jwt) => {
 };
 
 const addItem = async (jwt, item) => {
-  return await fetch("http://localhost:8080/api/v1/items", {
+  return await fetch(`${gatewayUri}/api/v1/items`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${jwt}`,
@@ -70,7 +75,7 @@ const addItem = async (jwt, item) => {
 };
 
 const editItem = async (jwt, item) => {
-  return await fetch("http://localhost:8080/api/v1/items", {
+  return await fetch(`${gatewayUri}/api/v1/items`, {
     method: "PUT",
     headers: {
       Authorization: `Bearer ${jwt}`,
@@ -81,7 +86,7 @@ const editItem = async (jwt, item) => {
 };
 
 const deleteItem = async (jwt, id) => {
-  return await fetch(`http://localhost:8080/api/v1/items/${id}`, {
+  return await fetch(`${gatewayUri}/api/v1/items/${id}`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${jwt}`,

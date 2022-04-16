@@ -8,10 +8,10 @@
 		<version>2.6.3</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.accenture</groupId>
-	<artifactId>web</artifactId>
+	<groupId>com.accenture.web</groupId>
+	<artifactId>config-server</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>web</name>
+	<name>config-server</name>
 	<description>Grocery Bill App Config Server</description>
 	<properties>
 		<java.version>11</java.version>

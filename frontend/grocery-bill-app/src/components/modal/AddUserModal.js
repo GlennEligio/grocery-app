@@ -3,7 +3,7 @@ import { useState, useRef } from "react";
 import { connect } from "react-redux";
 import UserService from "../../api/UserService";
 
-const AddUserModal = ({ user, users, role }) => {
+const AddUserModal = ({ user, users }) => {
   const [name, setName] = useState("");
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
@@ -173,7 +173,7 @@ const AddUserModal = ({ user, users, role }) => {
                       required
                     >
                       <option value="ROLE_CLERK">Clerk</option>
-                      {role === "ROLE_SADMIN" && (
+                      {user.role === "ROLE_SADMIN" && (
                         <option value="ROLE_ADMIN">Admin</option>
                       )}
                     </select>
@@ -226,7 +226,6 @@ const AddUserModal = ({ user, users, role }) => {
 
 const mapStateToProps = (state) => ({
   user: state.auth.user,
-  role: state.auth.role,
   users: state.user.users,
 });
 
