@@ -75,7 +75,7 @@ const register = async (user) => {
 
 const login = async (user) => {
   console.log(gatewayUri);
-  return await fetch(`/api/v1/users/login`, {
+  return await fetch(`${gatewayUri}/api/v1/users/login`, {
     method: "POST",
     mode: "cors",
     headers: {
