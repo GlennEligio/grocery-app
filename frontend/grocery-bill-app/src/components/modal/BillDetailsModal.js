@@ -1,6 +1,7 @@
 import React, { useLayoutEffect, useState } from "react";
 import { connect } from "react-redux";
 import billConverter from "../../util/billConverter";
+import BillService from "../../api/BillService";
 
 const BillDetailsModal = ({ user, billSelected }) => {
   const [bill, setBill] = useState(null);
@@ -11,12 +12,7 @@ const BillDetailsModal = ({ user, billSelected }) => {
     if (billSelected.id === -1) {
       return;
     }
-    fetch(`http://localhost:8080/api/v1/bills/${billSelected.id}`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${user.jwt}`,
-      },
-    })
+    BillService.fetchBill(user.jwt, billSelected.id)
       .then((res) => {
         switch (res.status) {
           case 200:

@@ -1,5 +1,5 @@
 import React from "react";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { connect } from "react-redux";
 import { resetItemList } from "../../actions/itemActions";
 import ItemService from "../../api/ItemService";
@@ -15,10 +15,7 @@ const AddItemModal = ({ user, items, resetItemList }) => {
   const form = useRef();
   const modal = useRef();
 
-  useState(() => {
-    setLoading(false);
-    setError(false);
-    setStatus(false);
+  useEffect(() => {
     if (modal.current !== undefined) {
       modal.current.addEventListener("hidden.bs.modal", function (e) {
         setLoading(false);
@@ -27,7 +24,7 @@ const AddItemModal = ({ user, items, resetItemList }) => {
         form.current.classList.remove("was-validated");
       });
     }
-  }, [items, modal]);
+  }, [items.length, modal]);
 
   const onSubmit = (e) => {
     setLoading(false);
@@ -97,7 +94,6 @@ const AddItemModal = ({ user, items, resetItemList }) => {
           </div>
           <div className="modal-body">
             <div className="mb-2">
-              {" "}
               {loading && (
                 <div className="hstack align-items-center justify-content-center">
                   <div className="spinner-border" role="status">

@@ -1,0 +1,63 @@
+# Gateway deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+  labels:
+    app: api-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+        - name: api-gateway
+          image: shuntjg/gba-api-gateway:0.0.1-SNAPSHOT
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: api-gateway
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              port: 8080
+              path: /actuator/health/readiness
+          livenessProbe:
+            httpGet:
+              port: 8080
+              path: /actuator/health/liveness
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 10
+
+---
+#Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-gateway
+spec:
+  selector:
+    app: api-gateway
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: 8080
+
+---
+# Configmap
+apiVersion: v1
+data:
+  USER_SERVICE_URI: http://user-service:8020
+  ITEM_SERVICE_URI: http://item-service:8030
+  BILL_SERVICE_URI: http://bill-service:8050
+kind: ConfigMap
+metadata:
+  name: api-gateway
+  namespace: default

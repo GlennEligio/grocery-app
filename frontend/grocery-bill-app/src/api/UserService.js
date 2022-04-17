@@ -1,5 +1,10 @@
+const gatewayUri =
+  process.env.NODE_ENV === "production"
+    ? process.env.REACT_APP_BACKEND_GATEWAY_URI_PROD
+    : process.env.REACT_APP_BACKEND_GATEWAY_URI_DEV;
+
 const fetchUsers = async (jwt) => {
-  return await fetch("http://localhost:8080/api/v1/users", {
+  return await fetch(`${gatewayUri}/api/v1/users`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${jwt}`,
@@ -16,7 +21,7 @@ const fetchUsersWithQueryPagingSorting = async (
   sort,
   field
 ) => {
-  var url = `http://localhost:8080/api/v1/users?${queryType}=${encodeURIComponent(
+  var url = `${gatewayUri}/api/v1/users?${queryType}=${encodeURIComponent(
     queryValue
   )}&page=${encodeURIComponent(currentPage)}&size=${encodeURIComponent(
     pageSize
@@ -31,7 +36,7 @@ const fetchUsersWithQueryPagingSorting = async (
 };
 
 const upload = async (jwt, formData) => {
-  return await fetch("http://localhost:8080/api/v1/users/upload", {
+  return await fetch(`${gatewayUri}/api/v1/users/upload`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${jwt}`,
@@ -41,7 +46,7 @@ const upload = async (jwt, formData) => {
 };
 
 const download = async (jwt) => {
-  return await fetch("http://localhost:8080/api/v1/users/download", {
+  return await fetch(`${gatewayUri}/api/v1/users/download`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${jwt}`,
@@ -50,7 +55,7 @@ const download = async (jwt) => {
 };
 
 const downloadTemplate = async (jwt) => {
-  return await fetch("http://localhost:8080/api/v1/users/download/template", {
+  return await fetch(`${gatewayUri}/api/v1/users/download/template`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${jwt}`,
@@ -59,7 +64,7 @@ const downloadTemplate = async (jwt) => {
 };
 
 const register = async (user) => {
-  return await fetch("http://localhost:8080/api/v1/users/register", {
+  return await fetch(`${gatewayUri}/api/v1/users/register`, {
     method: "POST",
     headers: {
       "Content-type": "application/json",
@@ -69,8 +74,10 @@ const register = async (user) => {
 };
 
 const login = async (user) => {
-  return await fetch("http://localhost:8080/api/v1/users/login", {
+  console.log(gatewayUri);
+  return await fetch(`${gatewayUri}/api/v1/users/login`, {
     method: "POST",
+    mode: "cors",
     headers: {
       "Content-type": "application/json",
     },
@@ -79,17 +86,14 @@ const login = async (user) => {
 };
 
 const validateToken = async (jwt) => {
-  return fetch(
-    `http://localhost:8080/api/v1/users/validateToken?token=${jwt}`,
-    {
-      method: "POST",
-    }
-  );
+  return await fetch(`${gatewayUri}/api/v1/users/validateToken?token=${jwt}`, {
+    method: "POST",
+  });
 };
 
 const refreshToken = async (refreshToken) => {
-  return fetch(
-    `http://localhost:8080/api/v1/users/refreshToken?token=${refreshToken}`,
+  return await fetch(
+    `${gatewayUri}/api/v1/users/refreshToken?token=${refreshToken}`,
     {
       method: "POST",
     }
@@ -97,7 +101,7 @@ const refreshToken = async (refreshToken) => {
 };
 
 const editUser = async (jwt, userToEdit) => {
-  return await fetch("http://localhost:8080/api/v1/users", {
+  return await fetch(`${gatewayUri}/api/v1/users`, {
     method: "PUT",
     headers: {
       Authorization: `Bearer ${jwt}`,
@@ -108,13 +112,22 @@ const editUser = async (jwt, userToEdit) => {
 };
 
 const createUser = async (jwt, userToCreate) => {
-  return await fetch("http://localhost:8080/api/v1/users", {
+  return await fetch(`${gatewayUri}/api/v1/users`, {
     method: "POST",
     headers: {
       "Content-type": "application/json",
       Authorization: `Bearer ${jwt}`,
     },
     body: JSON.stringify(userToCreate),
+  });
+};
+
+const deleteUser = async (jwt, id) => {
+  return await fetch(`${gatewayUri}/api/v1/users/${id}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+    },
   });
 };
 
@@ -130,4 +143,5 @@ export default {
   upload,
   validateToken,
   refreshToken,
+  deleteUser,
 };

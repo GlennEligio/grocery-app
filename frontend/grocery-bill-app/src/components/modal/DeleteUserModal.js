@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { connect } from "react-redux";
 import { resetUserList } from "../../actions/userActions";
+import UserService from "../../api/UserService";
 
 const DeleteUserModal = ({ userSelected, user, resetUserList }) => {
   const [loading, setLoading] = useState(false);
@@ -22,12 +23,7 @@ const DeleteUserModal = ({ userSelected, user, resetUserList }) => {
     setLoading(false);
     setError(false);
     setStatus(false);
-    fetch(`http://localhost:8080/api/v1/users/${userSelected.id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${user.jwt}`,
-      },
-    }).then((res) => {
+    UserService.deleteUser(user.jwt, userSelected.id).then((res) => {
       switch (res.status) {
         case 200:
           setLoading(false);

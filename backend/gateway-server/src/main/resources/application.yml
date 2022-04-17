@@ -9,30 +9,26 @@ spring:
         corsConfigurations:
           '[/**]':
             allowedOrigins: "*"
-            allowedHeaders:
-              - Authorization
-              - content-type
-            allowedMethods:
-              - GET
-              - POST
-              - DELETE
-              - PUT
-      discovery:
-        locator: enabled
+            allowedHeaders: "*"
+            allowedMethods: "*"
+            exposedHeaders: "*"
+#      discovery:
+#        locator:
+#          enabled: true
       routes:
         - id: service-user-id
-          uri: lb://user-service
+          uri: ${USER_SERVICE_URI:lb://user-service}
           predicates:
             Path=/api/v1/users/**
         - id: service-grocerybill-id
-          uri: lb://grocery-bill-service
+          uri: ${BILL_SERVICE_URI:lb://bill-service}
           predicates:
             Path=/api/v1/bills/**
           filters:
             - AuthFilter
             - RoleFilter
         - id: service-item-id
-          uri: lb://item-service
+          uri: ${ITEM_SERVICE_URI:lb://item-service}
           predicates:
             Path=/api/v1/items/**
           filters:
@@ -41,19 +37,29 @@ spring:
 
 management:
   endpoint:
-    gateway:
+    health:
+      probes:
+        enabled: true
+  health:
+    livenessState:
+      enabled: true
+    readinessState:
       enabled: true
   endpoints:
     web:
       exposure:
-        include: gateway
+        include: health,gateway
 
 server:
   port: 8080
-  error:
-    include-stacktrace: never
 
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: http://localhost:7777/eureka
+logging:
+  level:
+    org.springframework.cloud.gateway: TRACE
+    org.springframework.cloud.loadbalancer: TRACE
+
+
+#eureka:
+#  client:
+#    serviceUrl:
+#      defaultZone: http://${NAMING_SERVER_URI:localhost}:8761/eureka
