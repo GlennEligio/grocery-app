@@ -12,9 +12,9 @@ spring:
             allowedHeaders: "*"
             allowedMethods: "*"
             exposedHeaders: "*"
-#      discovery:
-#        locator:
-#          enabled: true
+      discovery:
+        locator:
+          enabled: true
       routes:
         - id: service-user-id
           uri: ${USER_SERVICE_URI:lb://user-service}
@@ -59,7 +59,7 @@ logging:
     org.springframework.cloud.loadbalancer: TRACE
 
 
-#eureka:
-#  client:
-#    serviceUrl:
-#      defaultZone: http://${NAMING_SERVER_URI:localhost}:8761/eureka
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://${NAMING_SERVER_URI:localhost}:8761/eureka

@@ -14,7 +14,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Component
 public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> {
 
-    private String userServiceUri;
+    private final String userServiceUri;
 
     private static final Logger log = LoggerFactory.getLogger(AuthFilter.class);
 
@@ -23,7 +23,12 @@ public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> 
     public AuthFilter(WebClient.Builder webClientBuilder, Environment env) {
         super(Config.class);
         this.webClientBuilder = webClientBuilder;
-        this.userServiceUri = env.getProperty("USER_SERVICE_URI");
+        String envUserServiceUri = env.getProperty("USER_SERVICE_URI");
+        if(envUserServiceUri != null){
+            this.userServiceUri = envUserServiceUri;
+            return;
+        }
+        this.userServiceUri = "lb://user-service";
     }
 
     @Override
