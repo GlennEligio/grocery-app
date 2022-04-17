@@ -3,14 +3,15 @@
 ## POS, and User/Inventory Management for Grocery Store Cashier usage
 
 # Technologies uses
-
 ## Backend
 - Spring Boot
 - Spring Cloud
-
 ## Frontend
 - React
 - HTML, CSS, JS
+
+# Front end service
+- **grocery-bill-app** for User Interface (port 3000)
 
 # Backend Services
 - **User Service** for User management
