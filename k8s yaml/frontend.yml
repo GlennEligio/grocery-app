@@ -7,7 +7,7 @@ metadata:
   labels: 
     app: frontend
   name: frontend
-  namespace: default
+  namespace: glenneligio
 spec: 
   replicas: 1
   revisionHistoryLimit: 10
@@ -50,7 +50,7 @@ metadata:
   labels:
     app: frontend
   name: frontend
-  namespace: default
+  namespace: glenneligio
 spec:
   ports:
     - port: 80
