@@ -39,6 +39,8 @@ spec:
             httpGet:
               port: 8050
               path: /actuator/health/liveness
+            initialDelaySeconds: 30
+            periodSeconds: 50
       restartPolicy: Always
 
 ---
