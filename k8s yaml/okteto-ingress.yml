@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   annotations:
     dev.okteto.com/generate-host: "true"
-  name: hello-world
+  name: gba
 spec:
   rules:
   - http:
@@ -11,4 +11,4 @@ spec:
       - backend:
           serviceName: api-gateway
           servicePort: 8080
-        path: /**
+        path: /
