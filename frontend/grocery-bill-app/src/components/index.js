@@ -1,8 +1,8 @@
 import Home from "./Home";
 import Login from "./Login";
-import ClerkHome from "./ClerkHome";
+import ClerkHome from "./Clerk/ClerkHome";
 import Register from "./Register";
-import AdminHome from "./AdminHome";
+import AdminHome from "./Admin/AdminHome";
 import Unauthorized from "./Unauthorized";
 import NotFound from "./NotFound";
 
