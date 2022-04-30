@@ -119,21 +119,21 @@ const Register = ({ user, isLoggedIn, resetAuthState }) => {
     if (!e.target.repassword.checkValidity()) {
       e.target.repassword.classList.add("is-invalid");
       e.target.repassword.classList.remove("is-valid");
-      valid = false;
     } else {
       e.target.repassword.classList.add("is-valid");
       e.target.repassword.classList.remove("is-invalid");
+
+      // Password and repassword match
+      if (passwords.password !== passwords.repassword) {
+        e.target.repassword.classList.add("is-invalid");
+        e.target.repassword.classList.remove("is-valid");
+        valid = false;
+      } else {
+        e.target.repassword.classList.add("is-valid");
+        e.target.repassword.classList.remove("is-invalid");
+      }
     }
 
-    // Password and repassword match
-    if (e.target.password.value !== e.target.repassword.value) {
-      e.target.repassword.classList.add("is-invalid");
-      e.target.repassword.classList.remove("is-valid");
-      valid = false;
-    } else {
-      e.target.repassword.classList.add("is-valid");
-      e.target.repassword.classList.remove("is-invalid");
-    }
     return valid;
   };
 
@@ -163,6 +163,9 @@ const Register = ({ user, isLoggedIn, resetAuthState }) => {
 
   const repasswordChangeHandler = (e) => {
     setPasswords((prevPass) => {
+      const repasswordInput = e.target.value;
+      if (repasswordInput != prevPass.password) {
+      }
       return {
         password: prevPass.password,
         repassword: e.target.value,
@@ -197,6 +200,8 @@ const Register = ({ user, isLoggedIn, resetAuthState }) => {
                   type="text"
                   id="name"
                   name="name"
+                  minLength={6}
+                  maxLength={40}
                   value={name}
                   onChange={nameChangeHandler}
                   placeholder=""
@@ -215,6 +220,8 @@ const Register = ({ user, isLoggedIn, resetAuthState }) => {
                   id="username"
                   name="username"
                   value={username}
+                  minLength={6}
+                  maxLength={40}
                   onChange={usernameChangeHandler}
                   placeholder=""
                   required
@@ -230,6 +237,8 @@ const Register = ({ user, isLoggedIn, resetAuthState }) => {
                   id="password"
                   name="password"
                   value={passwords.password}
+                  minLength={6}
+                  maxLength={40}
                   onChange={passwordChangeHandler}
                   placeholder=""
                   required

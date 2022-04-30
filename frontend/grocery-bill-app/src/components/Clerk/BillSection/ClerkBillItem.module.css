@@ -1,0 +1,4 @@
+.bill-item:hover {
+  border-left-color: green;
+  border-left-width: 0.2rem;
+}

@@ -22,3 +22,19 @@
 .clerk-bill-item:hover {
   border-bottom: 1px red solid !important;
 }
+.admin,
+.clerk {
+  padding-bottom: 10vh;
+}
+.navbar {
+  height: 10vh;
+}
+@media (min-height: 500px) {
+  .navbar {
+    height: 50px;
+  }
+  .admin,
+  .clerk {
+    padding-bottom: 50px;
+  }
+}

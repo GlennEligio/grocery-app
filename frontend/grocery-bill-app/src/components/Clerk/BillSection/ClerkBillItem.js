@@ -4,81 +4,79 @@ import {
   updateItemOnCurrentBill,
   removeItemOnCurrentBill,
 } from "../../../actions/billActions";
+import classes from "./ClerkBillItem.module.css";
 
 const ClerkBillItem = ({
   billItem,
   updateItemOnCurrentBill,
   removeItemOnCurrentBill,
 }) => {
-  const removeItem = () => {
+  const removeItemHandler = () => {
     removeItemOnCurrentBill(billItem);
   };
 
-  return (
-    <li className="list-group-item clerk-bill-item">
-      <div className="row gx-0">
-        <div className="col-5 d-flex flex-column justify-content-start text-truncate">
-          <strong className="my-auto">{billItem.name}</strong>
+  const addItemCount = () => {
+    updateItemOnCurrentBill({
+      ...billItem,
+      amount: parseInt(billItem.amount + 1),
+    });
+  };
 
-          <p className="ms-2">{`@ $${billItem.price}`}</p>
-        </div>
-        <div className="col-4 d-flex align-items-start">
-          <div className="input-group">
-            <button
-              onClick={() => {
-                if (billItem.amount > 0) {
-                  updateItemOnCurrentBill({
-                    ...billItem,
-                    amount: parseInt(billItem.amount - 1),
-                  });
-                } else {
-                  updateItemOnCurrentBill({
-                    ...billItem,
-                    amount: parseInt(0),
-                  });
-                }
-              }}
-              className="btn btn-outline-danger"
-            >
-              <strong>-</strong>
-            </button>
+  const subtractItemCount = () => {
+    if (billItem.amount > 0) {
+      updateItemOnCurrentBill({
+        ...billItem,
+        amount: parseInt(billItem.amount - 1),
+      });
+    } else {
+      updateItemOnCurrentBill({
+        ...billItem,
+        amount: parseInt(0),
+      });
+    }
+  };
+
+  const itemCountChangeHandler = (e) => {
+    updateItemOnCurrentBill({
+      ...billItem,
+      amount: parseInt(e.target.value),
+    });
+  };
+
+  return (
+    <>
+      <div
+        className={`card position-relative pe-2 mb-2 ${classes["bill-item"]}`}
+      >
+        <div className="card-body d-flex align-items-center">
+          <div className="d-flex flex-column flex-grow-1">
+            <h5 className="card-title">{billItem.name}</h5>
+            <p className="card-text">@ $ {billItem.price} / pc</p>
+            <p className="card-text">= $ {billItem.amount * billItem.price}</p>
+          </div>
+          <div className="d-flex flex-column align-items-center">
+            <i className="bi bi-caret-up-fill fs-5" onClick={addItemCount}></i>
             <input
               type="text"
+              className="text-center"
+              style={{ width: "2rem" }}
               value={billItem.amount}
-              onChange={(e) => {
-                updateItemOnCurrentBill({
-                  ...billItem,
-                  amount: parseInt(e.target.value),
-                });
-              }}
-              className="form-control"
-              aria-label="Amount (to the nearest dollar)"
-              required
+              onChange={itemCountChangeHandler}
             />
-            <button
-              onClick={() => {
-                updateItemOnCurrentBill({
-                  ...billItem,
-                  amount: parseInt(billItem.amount + 1),
-                });
-              }}
-              className="btn btn-outline-primary"
-            >
-              <strong>+</strong>
-            </button>
+            <i
+              className="bi bi-caret-down-fill fs-5"
+              onClick={subtractItemCount}
+            ></i>
           </div>
         </div>
-        <div className="col-2 d-flex justify-content-center align-items-start">
-          <p>{`$ ${billItem.amount * billItem.price}`}</p>
-        </div>
-        <div className="col-1 d-flex justify-content-center align-items-start">
-          <i
-            onClick={removeItem}
-            className="bi bi-x-circle fs-3 text-danger"
-          ></i>
-        </div>
+        <button
+          type="button"
+          className="btn-close position-absolute top-0 end-0"
+          aria-label="Close"
+          onClick={removeItemHandler}
+        ></button>
       </div>
-    </li>
+    </>
   );
 };
 

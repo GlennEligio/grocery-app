@@ -7,8 +7,8 @@ import ClerkBillTotal from "./ClerkBillTotal";
 
 const ClerkBillSection = ({ currentBill, onHoldBills, changeCurrentBill }) => {
   return (
-    <div className="col-6 col-lg-6 col-xl-5 h-100 pb-5">
-      <div className="card h-90">
+    <div className="col-6 col-lg-6 col-xl-5 h-100 pb-5 d-flex flex-column">
+      <div className="card flex-grow-1">
         <div className="card-header text-center border-bottom-2 border-primary">
           {/** Nav tab for Current Bill and On Hold Bill */}
           <nav>
@@ -93,7 +93,6 @@ const ClerkBillSection = ({ currentBill, onHoldBills, changeCurrentBill }) => {
         {/** Bill total */}
         <ClerkBillTotal />
       </div>
-      {/** Bill buttons */}
       <ClerkBillButtons />
     </div>
   );

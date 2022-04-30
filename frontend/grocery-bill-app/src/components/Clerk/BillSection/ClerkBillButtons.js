@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { resetCurrentBill } from "../../../actions/billActions";
-const ClerkBillButtons = ({ resetCurrentBill }) => {
+const ClerkBillButtons = ({ resetCurrentBill, onHoldBills }) => {
   return (
     <div className="row mt-3 gx-1 gy-1 text-center">
       <div className="col-4">

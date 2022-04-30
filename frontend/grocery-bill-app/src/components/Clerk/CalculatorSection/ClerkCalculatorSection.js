@@ -17,7 +17,7 @@ const ClerkCalculatorSection = ({ currentBill, updateCurrentBillPayment }) => {
   }, [currentBill.payment, currentBill.itemList]);
 
   return (
-    <div className="card h-50 d-flex flex-column justify-content-between">
+    <div className="card flex-grow-1 d-flex flex-column justify-content-between">
       <div className="row">
         <div className="col">
           <div className="input-group">

@@ -9,17 +9,21 @@ const AddItemModal = ({ user, items, resetItemList }) => {
   const [discounted, setDiscounted] = useState(false);
   const [discountPercentage, setDiscountPercentage] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
   const [status, setStatus] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const form = useRef();
   const modal = useRef();
 
   useEffect(() => {
     if (modal.current !== undefined) {
-      modal.current.addEventListener("hidden.bs.modal", function (e) {
+      modal.current.addEventListener("hidden.bs.modal", (e) => {
         setLoading(false);
-        setError(false);
-        setStatus(false);
+        setStatus(null);
+        setName("");
+        setPrice(0);
+        setDiscountPercentage(0);
+        setDiscounted(false);
+        setErrorMessage("");
         form.current.classList.remove("was-validated");
       });
     }
@@ -27,6 +31,7 @@ const AddItemModal = ({ user, items, resetItemList }) => {
 
   const onSubmit = (e) => {
     setLoading(false);
+    setStatus(null);
 
     e.preventDefault();
 
@@ -52,16 +57,24 @@ const AddItemModal = ({ user, items, resetItemList }) => {
               resetItemList();
               form.current.classList.remove("was-validated");
               return;
+            case 400:
+              setLoading(false);
+              setStatus(false);
+              setErrorMessage("Item with same name already exist");
+              form.current.classList.remove("was-validated");
+              return;
             default:
               setLoading(false);
-              setError(true);
-              form.current.classList.add("was-validated");
+              setStatus(false);
+              setErrorMessage("Something went wrong");
+              form.current.classList.remove("was-validated");
               return;
           }
         })
         .catch(() => {
           setLoading(false);
-          setError(true);
+          setStatus(false);
+          setErrorMessage("Something went wrong");
           form.current.classList.add("was-validated");
         });
     }
@@ -101,13 +114,13 @@ const AddItemModal = ({ user, items, resetItemList }) => {
                   <strong className="ms-2">Adding item...</strong>
                 </div>
               )}
-              {error && (
+              {status !== null && !status && (
                 <div className="hstack align-items-center justify-content-center text-danger">
                   <i className="bi bi-x-circle-fill fs-3"></i>
-                  <strong className="ms-2">Something went wrong....</strong>
+                  <strong className="ms-2">{errorMessage}</strong>
                 </div>
               )}
-              {status && (
+              {status !== null && status && (
                 <div className="hstack align-items-center justify-content-center text-success">
                   <i className="bi bi-check-circle-fill fs-3"></i>
                   <strong className="ms-2">Add Item Success</strong>

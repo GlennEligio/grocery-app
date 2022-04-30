@@ -65,10 +65,8 @@ const AdminHome = ({ user, isLoggedIn, updateJwt, resetAuthState }) => {
 
   return (
     <>
-      {/** Main Content */}
       <main>
-        <div className="container vh-100 overflow-hidden">
-          {/** Nav tabs admin section */}
+        <div className="container vh-100 pt-1 admin overflow-hidden d-flex flex-column">
           <div className="row mt-1">
             <div className="col">
               <ul
@@ -122,7 +120,10 @@ const AdminHome = ({ user, isLoggedIn, updateJwt, resetAuthState }) => {
             </div>
           </div>
           {/** Tab contents for Admin nav tab */}
-          <div className="row h-80 tab-content" role="pills-adminTabContent">
+          <div
+            className="row flex-grow-1 tab-content"
+            role="pills-adminTabContent"
+          >
             {/** User table */}
             <AdminUserSection refreshToken={refreshToken} />
             {/** Item table */}

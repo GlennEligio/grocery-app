@@ -54,11 +54,11 @@ const ClerkHome = ({ user, isLoggedIn, updateJwt, resetAuthState }) => {
   }, [user, isLoggedIn]);
   return (
     <main>
-      <div className="container-lg py-5 vh-100">
+      <div className="container-lg clerk vh-100 pt-1">
         <div className="row h-100">
           <ClerkBillSection />
           {/** Clerk Item and Calculator Section */}
-          <div className="col-6 h-100 col-lg-6 col-xl-7 pb-5">
+          <div className="col-6 h-100 col-lg-6 col-xl-7 pb-5 d-flex flex-column">
             <ClerkItemSection />
             <ClerkCalculatorSection />
           </div>

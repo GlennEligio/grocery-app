@@ -62,50 +62,15 @@ const ClerkItemSection = ({
           />
           <i className="bi bi-search input-group-text"></i>
         </div>
-        {/** Item list header */}
-        <div className="row mt-2 gx-0 text-center">
-          <div className="table-responsive">
-            <table className="table table-sm">
-              <thead>
-                <tr>
-                  <th scope="col">Id</th>
-                  <th scope="col" className="w-20">
-                    Name
-                  </th>
-                  <th scope="col" className="w-20">
-                    Price
-                  </th>
-                  <th scope="col" className="w-30">
-                    Discounted?
-                  </th>
-                  <th scope="col" className="w-20">
-                    Discount
-                  </th>
-                </tr>
-              </thead>
-            </table>
-          </div>
-        </div>
         {/** Item list body */}
-        <div className="row gx-0 overflow-auto text-center">
-          <div className="table-responsive">
-            <table className="table table-sm table-hover">
-              <tbody>
-                {items.length > 0 &&
-                  items
-                    .filter((item) =>
-                      item.id
-                        .toString()
-                        .toLowerCase()
-                        .includes(query.toString())
-                    )
-                    .sort()
-                    .map((item, index) => (
-                      <ClerkItem key={index} item={item} />
-                    ))}
-              </tbody>
-            </table>
-          </div>
+        <div className="row gx-0 overflow-auto">
+          {items.length > 0 &&
+            items
+              .filter((item) =>
+                item.id.toString().toLowerCase().includes(query.toString())
+              )
+              .sort()
+              .map((item, index) => <ClerkItem key={index} item={item} />)}
         </div>
       </div>
     </div>

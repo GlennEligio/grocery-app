@@ -1,19 +1,31 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { addOnHoldBill } from "../../../actions/billActions";
 import { connect } from "react-redux";
+import billTotal from "../../../util/billTotal";
 
 const OnHoldBillModal = ({ currentBill, onHoldBills, addOnHoldBill }) => {
   const [id, setId] = useState(currentBill.id);
-  const [alreadyExist, setAlreadyExist] = useState(false);
+  const [status, setStatus] = useState(null);
+  const [errorMessage, setErrorMessage] = useState();
   const form = useRef();
+  const modal = useRef();
+
+  useEffect(() => {
+    if (modal.current !== undefined) {
+      modal.current.addEventListener("hidden.bs.modal", function (e) {
+        setStatus(null);
+      });
+    }
+  }, [currentBill, form]);
 
   const onSubmit = (e) => {
     e.preventDefault();
-    setAlreadyExist(false);
+    setStatus(null);
 
     // Checks if currentBill have items
-    if (currentBill.itemList.length === 0) {
-      alert("Current Bill doesnt have items inside!");
+    if (billTotal(currentBill) === 0) {
+      setStatus(false);
+      setErrorMessage("No items inside the current bill");
       return;
     }
     if (!form.current.checkValidity()) {
@@ -26,20 +38,22 @@ const OnHoldBillModal = ({ currentBill, onHoldBills, addOnHoldBill }) => {
           idAlreadyExist = true;
         }
       });
-      if (!idAlreadyExist) {
-        addOnHoldBill(id);
-        setAlreadyExist(false);
+      if (idAlreadyExist) {
+        setStatus(false);
+        setErrorMessage("ID already exist");
         form.current.classList.remove("was-validated");
         return;
       } else {
+        addOnHoldBill(id);
         form.current.classList.remove("was-validated");
-        setAlreadyExist(true);
+        setStatus(true);
       }
     }
   };
 
   return (
     <div
+      ref={modal}
       className="modal fade"
       id="holdBillModal"
       tabIndex="-1"
@@ -62,13 +76,13 @@ const OnHoldBillModal = ({ currentBill, onHoldBills, addOnHoldBill }) => {
             </button>
           </div>
           <div className="modal-body">
-            {alreadyExist && (
+            {!status && status !== null && (
               <div className="text-center mb-2 text-danger">
                 <i className="bi bi-exclamation-circle-fill"></i>
-                <strong className="ms-2">Id is already in use</strong>
+                <strong className="ms-2">{errorMessage}</strong>
               </div>
             )}
-            {alreadyExist === false && (
+            {status && (
               <div className="text-center mb-2 text-success">
                 <i className="bi bi-check-circle-fill"></i>
                 <strong className="ms-2">Add success</strong>
@@ -96,7 +110,11 @@ const OnHoldBillModal = ({ currentBill, onHoldBills, addOnHoldBill }) => {
                 <div className="invalid-feedback text-center">Required.</div>
               </div>
               <div className="mt-4 hstack justify-content-end">
-                <button className="btn btn-dark" data-bs-dismiss="modal">
+                <button
+                  type="button"
+                  className="btn btn-dark"
+                  data-bs-dismiss="modal"
+                >
                   Close
                 </button>
                 <button type="submit" className="btn btn-primary ms-3">
