@@ -25,7 +25,7 @@ spec:
         app: frontend
     spec: 
       containers: 
-        - image: "shuntjg/gba-frontend:0.0.1.PROD"
+        - image: "shuntjg/gba-frontend:0.0.2.PROD"
           name: frontend
           livenessProbe:
             exec:
@@ -59,4 +59,4 @@ spec:
   selector:
     app: frontend
   sessionAffinity: None
-  type: LoadBalancer
+  type: ClusterIP
