@@ -25,7 +25,7 @@ spec:
         app: user-service
     spec:
       containers:
-        - image: shuntjg/gba-user-service:0.0.1-SNAPSHOT
+        - image: shuntjg/gba-user-service:0.0.2-SNAPSHOT
           imagePullPolicy: IfNotPresent
           name: user-service
           envFrom:
