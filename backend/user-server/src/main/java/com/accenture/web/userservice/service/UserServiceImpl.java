@@ -122,7 +122,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 			throw new AppException("User with username already exist", HttpStatus.CONFLICT);
 		}
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
-		user.setActive(true);
+		user.setActive(user.isActive());
 		return repository.save(user);
 	}
 

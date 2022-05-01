@@ -5,7 +5,6 @@ metadata:
     dev.okteto.com/generate-host: "true"
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/cors-allow-origin: "https://gba-glenneligio.cloud.okteto.net"
-    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
   name: gba
 spec:
   rules:

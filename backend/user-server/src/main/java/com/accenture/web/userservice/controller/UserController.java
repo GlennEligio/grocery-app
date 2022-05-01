@@ -206,11 +206,11 @@ public class UserController {
 	}
 
 	@PostMapping("/users")
-	public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
+	public ResponseEntity<User> createUser(@Valid @RequestBody User user, @RequestHeader("X-auth-role") String role) {
 		log.info("Adding user: {}", user);
 
 		if(user.getRoles().contains("ROLE_ADMIN")
-			&& !SecurityContextHolder.getContext().getAuthentication().getAuthorities().contains(new SimpleGrantedAuthority("ROLE_SADMIN"))){
+			&& !role.equals("ROLE_SADMIN")){
 			throw new AppException("Only Super Admin can create Admins", HttpStatus.UNAUTHORIZED);
 		}
 
