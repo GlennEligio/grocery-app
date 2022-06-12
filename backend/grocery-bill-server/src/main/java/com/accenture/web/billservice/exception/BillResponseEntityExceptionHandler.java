@@ -12,7 +12,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @RestControllerAdvice
-public class UserResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
+public class BillResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler(value = Exception.class)
 	public ResponseEntity<Object> handleAllException(Exception ex, WebRequest request) {
